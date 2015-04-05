@@ -31,10 +31,9 @@ endif
 bin_SCRIPTS = ../scripts/alias_dsl_cpe.sh ../scripts/dsl_cpe_pipe.sh
 
 dsl_cpe_control_bnd_sources = \
-   dsl_cpe_bnd.c
+   dsl_cpe_bnd_vrx.c
 
 dsl_cpe_control_soap_sources = \
-	stdsoap2.c \
 	dsl_cpe_soap.c \
 	dsl_cpe_soap_C.c \
 	dsl_cpe_soap_Client.c \
@@ -77,6 +76,7 @@ dsl_cpe_control_SOURCES = \
 	dsl_cpe_control.c \
 	dsl_cpe_init_cfg.c \
 	dsl_cpe_linux.c \
+	dsl_cpe_debug_vrx.c \
 	dsl_cpe_debug.c
 
 dsl_cpe_control_SOURCES += \
@@ -143,7 +143,7 @@ EXTRA_DIST = \
 	dsl_cpe_init_cfg.h \
 	dsl_cpe_cli.h \
 	dsl_cpe_dti.h \
-        dsl_cpe_bnd.h \
+        dsl_cpe_bnd_vrx.h \
 	dsl_cpe_cli_console.h \
 	dsl_cpe_simulator.c \
 	dsl_cpe_simulator.h \
@@ -152,11 +152,11 @@ EXTRA_DIST = \
 	dsl_cpe_os.h \
 	dsl_cpe_os_lint_map.h \
 	dsl_cpe_linux.h \
-	dsl_cpe_vxworks.c \
 	dsl_cpe_vxworks.h \
 	dsl_cpe_rtems.c \
 	dsl_cpe_rtems.h \
 	dsl_cpe_debug.h \
+	dsl_cpe_debug_vrx.h \
 	dsl_cpe_debug_danube.h \
 	dsl_cpe_debug_vxx.h \
 	dsl_cpe_soap_Stub.h \
