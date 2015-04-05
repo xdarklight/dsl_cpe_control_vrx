@@ -1,5 +1,45 @@
 NEXT VERSION
 
+V4.11.11 - 2013-01-24
+-
+
+V4.11.10 - 2013-01-16
+-
+
+V4.11.9 - 2012-12-07
+common:
+- Changed default configuration of TC-Layer to DSL_TC_AUTO (to support xTM
+  multimode handling within context of (DSLCPE_SW-660))
+
+V4.11.8 - 2012-09-14
+common:
+- (DSLCPE_SW-637) [VRX200] API for FW R5.1 Release - Support for Virtual Noise.
+  Added default configuration for virtual noise US+DS "disabled".
+
+V4.11.7 - 2012-09-03
+-
+
+V4.11.6 - 2012-07-26
+Bug fix(es):
+- (DSLCPE_SW-626) Fixes needed for compiling DSL Subsystem with glibc/eglibc.
+  Fixed compile issues for C libraries eglibc/glibc according to
+  011-fix-glibc-compilation.patch
+common:
+- (configure.in) predifined value added for build model typical:
+  PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS='yes'
+- (configure.in) predifined value added for build model typical:
+  PREDEFINED_CONF_DSL_CCA_DBG_MAX_LEVEL_PRE='err'
+- (configure.in) predifined value added for build model full:
+  PREDEFINED_CONF_DSL_CCA_DBG_MAX_LEVEL_PRE='wrn'
+CLI:
+- VRX (DSLCPE_SW-610) [VRX200] Correct includation of ReTx functionality:
+  - rtsg/ReTxStatisticsGet command added
+
+V4.11.5 - 2012-03-28
+CLI:
+- (Danube & VRX) ActualNetDataRate parameter added to:
+  + g997csg/G997_ChannelStatusGet
+
 V4.11.4 - 2012-03-05
 - VRX (DSLCPE_SW-598) [VRX200]  Missing T1.413 related ModemState needs to be added.
   T1.413 line state handling added.
@@ -10,6 +50,8 @@ CLI:
  + mfcs/MultimodeFsmConfigSet
  + mfcg/MultimodeFsmConfigGet
  + mfsg/MultimodeFsmStatusGet
+- VRX (DSLCPE_SW-598) [VRX200]  Missing T1.413 related ModemState needs to be
+  added. T1.413 line state handling added to lsg/LineStateGet.
 VRX:
 - '-S' startup option added to specify T1.413 activation sequence and mode.
 Bug fix(es):

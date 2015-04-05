@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 nostdinc
+AUTOMAKE_OPTIONS = foreign 1.9 nostdinc
 
 SUBDIRS = src
 
@@ -28,6 +28,13 @@ dist-hook:
 			cp -p $$specfile $(distdir); \
 		fi \
 	done
+
+# Check for correct line ends (reduce scope to 'src' because Win32 files can have CRLF)
+distcheck-hook:
+	chmod a+w $(distdir)
+	echo "Checking line ends ...!!!"; \
+	find $(distdir)/src -type f -exec file {} \; | grep -e "CRLF" -e "Non-ISO" && exit 1; \
+	echo "Checking line ends ... done."
 
 lint:
 	@target=lint; \

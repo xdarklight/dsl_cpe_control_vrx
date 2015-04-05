@@ -11,7 +11,7 @@ else
 dsl_cpe_control_common_ldflags =
 endif
 
-dsl_cpe_control_LDADD = -lpthread
+dsl_cpe_control_LDADD = -lpthread -lrt
 
 if INCLUDE_DSL_CPE_SOAP_SUPPORT
     dsl_cpe_control_LDADD += -lm

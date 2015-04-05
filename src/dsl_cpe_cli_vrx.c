@@ -610,7 +610,7 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
 #ifdef INCLUDE_FW_REQUEST_SUPPORT
    memset(&autobootCtrl, 0x00, sizeof(DSL_AutobootControl_t));
    memset(&AutobootStatus, 0x00, sizeof(DSL_AutobootStatus_t));
-   
+
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_AUTOBOOT_STATUS_GET, (int) &AutobootStatus);
 
    if ((ret < 0) && (AutobootStatus.accessCtl.nReturn < DSL_SUCCESS))
@@ -647,7 +647,7 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
       }
    }
 #else
-   ret = DSL_CPE_DownloadFirmware(fd, DSL_FW_REQUEST_NA, pcFw, pcFw2);
+   ret = DSL_CPE_DownloadFirmware(fd, DSL_FW_REQUEST_NA, pcFw, DSL_NULL);
 
    DSL_CPE_FPrintf (out, DSL_CPE_RET, DSL_CPE_RET_VAL(ret));
    if (ret < DSL_SUCCESS)

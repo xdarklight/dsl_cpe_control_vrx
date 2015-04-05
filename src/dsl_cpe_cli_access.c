@@ -3190,6 +3190,7 @@ static const DSL_char_t g_sG997csg[] =
    "- DSL_uint32_t PreviousDataRate" DSL_CPE_CRLF
    "- DSL_uint32_t ActualInterleaveDelay" DSL_CPE_CRLF
    "- DSL_uint8_t ActualImpulseNoiseProtection" DSL_CPE_CRLF
+   "- DSL_uint32_t ActualNetDataRate" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -3223,12 +3224,13 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_ChannelStatusGet(
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nChannel=%hu nDirection=%u ActualDataRate=%u "
          "PreviousDataRate=%u ActualInterleaveDelay=%u "
-         "ActualImpulseNoiseProtection=%hu" DSL_CPE_CRLF,
+         "ActualImpulseNoiseProtection=%hu ActualNetDataRate=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
          pData.nChannel, pData.nDirection,
          (DSL_uint32_t)pData.data.ActualDataRate,(DSL_uint32_t) pData.data.PreviousDataRate,
          (DSL_uint32_t)pData.data.ActualInterleaveDelay,
-         (DSL_uint32_t)pData.data.ActualImpulseNoiseProtection);
+         (DSL_uint32_t)pData.data.ActualImpulseNoiseProtection,
+         (DSL_uint32_t)pData.data.ActualNetDataRate);
    }
 
    return 0;
@@ -12094,6 +12096,78 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_HybridSelectionDataGet(
 }
 #endif /* defined(INCLUDE_DSL_CPE_API_DANUBE) || defined(INCLUDE_DSL_CPE_API_VRX)*/
 
+#ifdef INCLUDE_DSL_CPE_PM_RETX_COUNTERS
+#ifdef INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS
+static const DSL_char_t g_sRtsg[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Input Parameter" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
+   "   near end = 0" DSL_CPE_CRLF
+   "   far end = 1" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
+   "   near end = 0" DSL_CPE_CRLF
+   "   far end = 1" DSL_CPE_CRLF
+   "- DSL_uint32_t nRxCorruptedTotal" DSL_CPE_CRLF
+   "- DSL_uint32_t nRxUncorrectedProtected" DSL_CPE_CRLF
+   "- DSL_uint32_t nRxRetransmitted" DSL_CPE_CRLF
+   "- DSL_uint32_t nRxCorrected" DSL_CPE_CRLF
+   "- DSL_uint32_t nTxRetransmitted" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_ReTxStatisticsGet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0;
+   DSL_ReTxStatistics_t pData;
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(DSL_ReTxStatistics_t));
+
+   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
+
+   ret = DSL_CPE_Ioctl (fd, DSL_FIO_RETX_STATISTICS_GET, (int) &pData);
+
+   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out,
+         DSL_CPE_RET"nDirection=%u nRxCorruptedTotal=%u "
+                    "nRxUncorrectedProtected=%u nRxRetransmitted=%u nRxCorrected=%u "
+                    "nTxRetransmitted=%u" DSL_CPE_CRLF,
+         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
+         pData.data.nRxCorruptedTotal, pData.data.nRxUncorrectedProtected,
+         pData.data.nRxRetransmitted, pData.data.nRxCorrected, pData.data.nTxRetransmitted);
+   }
+
+   return 0;
+}
+#endif /* INCLUDE_DSL_CPE_PM_RETX_COUNTERS */
+#endif /* INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS */
+
 /**
    Register the CLI commands.
 
@@ -12493,6 +12567,13 @@ DSL_void_t DSL_CPE_CLI_AccessCommandsRegister(DSL_void_t)
 #ifdef INCLUDE_DSL_ADSL_MIB
    DSL_CPE_CLI_MibCommandsRegister();
 #endif /* INCLUDE_DSL_ADSL_MIB*/
+
+#ifdef INCLUDE_DSL_CPE_PM_RETX_COUNTERS
+#ifdef INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS
+   DSL_CPE_CLI_CMD_ADD_COMM ("rtsg", "ReTxStatisticsGet", DSL_CPE_CLI_ReTxStatisticsGet, g_sRtsg);
+#endif /* INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS */
+#endif /* INCLUDE_DSL_CPE_PM_RETX_COUNTERS */
+
 }
 
 #endif /* defined(INCLUDE_DSL_CPE_CLI_SUPPORT) && !defined(INCLUDE_DSL_CPE_CLI_AUTOGEN_SUPPORT) */
