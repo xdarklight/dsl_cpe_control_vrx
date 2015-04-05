@@ -1,6 +1,6 @@
 AC_REVISION($Revision: 1.173 $)
 
-AC_INIT([DSL CPE Control application],[4.11.11],[],[dsl_cpe_control])
+AC_INIT([DSL CPE Control application],[4.15.2],[],[dsl_cpe_control])
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE
 
