@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -486,7 +485,7 @@ DSL_int_t DSL_CPE_CLI_HelpPrint(
    #ifdef WIN32
       " | file |"
    #endif
-      " all | device | g997 | pm |"
+      " all | device | g997 | pm | bnd | dsm"
    #ifdef INCLUDE_DEPRECATED
       " deprecated |"
    #endif
@@ -536,10 +535,16 @@ DSL_int_t DSL_CPE_CLI_HelpPrint(
          DSL_CPE_FPrintf(out, DSL_CPE_PREFIX "performance related functions" DSL_CPE_CRLF );
          DSL_CPE_treePrint(root_node, mask | DSL_CPE_MASK_PM, target);
       }
-      if(strstr(command, "sar") != 0)
+      if(strstr(command, "bnd") != 0)
       {
-         DSL_CPE_FPrintf(out, DSL_CPE_PREFIX "SAR related functions" DSL_CPE_CRLF );
-         DSL_CPE_treePrint(root_node, mask | DSL_CPE_MASK_SAR, target);
+         DSL_CPE_FPrintf(out, DSL_CPE_PREFIX "Bonding related functions" DSL_CPE_CRLF );
+         DSL_CPE_treePrint(root_node, mask | DSL_CPE_MASK_BND, target);
+      }
+      if(strstr(command, "dsm") != 0)
+      {
+         DSL_CPE_FPrintf(out, DSL_CPE_PREFIX
+            "(D)igital (S)pectrum (M)anagement (vectoring) related functions" DSL_CPE_CRLF );
+         DSL_CPE_treePrint(root_node, mask | DSL_CPE_MASK_DSM, target);
       }
       if(strlen(command)==0 || strstr(command, "all") != 0)
       {
@@ -714,7 +719,7 @@ DSL_Error_t DSL_CPE_CLI_CommandAdd(
       return DSL_ERROR;
    }
 
-   for(i = 0; (i < strlen(long_name)) && (k < sizeof(buf)/sizeof(buf[0])); i++)
+   for(i = 0; (i < strlen(long_name)) && (k < sizeof(buf)/sizeof(buf[0]) - 1); i++)
    {
       if(long_name[i] >= 'A' && long_name[i] <= 'Z')
       {
@@ -725,17 +730,7 @@ DSL_Error_t DSL_CPE_CLI_CommandAdd(
          buf[k++] = long_name[i];
       }
    }
-
-   if (k < sizeof(buf)/sizeof(buf[0]))
-   {
-      buf[k] = 0;
-   }  
-   else
-   { 
-      DSL_CPE_FPrintf(DSL_CPE_STDERR, DSL_CPE_PREFIX 
-                                       " long_name is too long" DSL_CPE_CRLF );
-      return DSL_ERROR;
-   }
+   buf[k] = 0;
 
    if(strcmp(buf, name) != 0)
    {
@@ -755,9 +750,13 @@ DSL_Error_t DSL_CPE_CLI_CommandAdd(
    {
       rec.mask |= DSL_CPE_MASK_PM;
    }
-   else if(strstr(name, "sar") != 0)
+   else if(strstr(name, "bnd") != 0)
    {
-      rec.mask |= DSL_CPE_MASK_SAR;
+      rec.mask |= DSL_CPE_MASK_BND;
+   }
+   else if(strstr(name, "dsm") != 0)
+   {
+      rec.mask |= DSL_CPE_MASK_DSM;
    }
    else
    {

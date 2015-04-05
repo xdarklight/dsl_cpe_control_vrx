@@ -1,65 +1,46 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
 
 ******************************************************************************/
 
-#ifndef _DSL_CPE_DEBUG_VXX_H
-#define _DSL_CPE_DEBUG_VXX_H
+#ifndef _DSL_CPE_DEBUG_VRX_H
+#define _DSL_CPE_DEBUG_VRX_H
 
 #ifdef DSL_DEBUG_TOOL_INTERFACE
 
 
 #include "cmv_message_format.h"
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-/* VINAX driver specific headers*/
-#include "drv_vinax_interface.h"
-#elif defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 /* MEI CPE driver specific headers*/
 #include "drv_mei_cpe_interface.h"
 #else
 #error "Device undefined!"
 #endif
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   #define DSL_CPE_IFX_LOW_DEV "/dev/vinax"
-#elif defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_IFX_LOW_DEV "/dev/mei_cpe"
 #endif
 
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-/* Vinax driver interface IOCTLs wrappers*/
-#define FIO_VXX_REQ_CONFIG         FIO_VINAX_REQ_CONFIG
-#define FIO_VXX_MBOX_MSG_RAW_SEND  FIO_VINAX_MBOX_MSG_RAW_SEND
-#define FIO_VXX_REG_GET            FIO_VINAX_REG_GET
-#define FIO_VXX_REG_SET            FIO_VINAX_REG_SET
-#define FIO_VXX_DBG_LS_WRITE       FIO_VINAX_DBG_LS_WRITE
-#define FIO_VXX_DBG_LS_READ        FIO_VINAX_DBG_LS_READ
-/* Vinax driver interface data types wrappers*/
-typedef IOCTL_VINAX_reqCfg_t    IOCTL_VXX_reqCfg_t;
-typedef IOCTL_VINAX_mboxSend_t  IOCTL_VXX_mboxSend_t;
-typedef IOCTL_VINAX_regInOut_t  IOCTL_VXX_regInOut_t;
-typedef IOCTL_VINAX_dbgAccess_t IOCTL_VXX_dbgAccess_t;
-#elif defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 /* MEI CPE driver interface IOCTLs wrappers*/
-#define FIO_VXX_REQ_CONFIG         FIO_MEI_REQ_CONFIG
-#define FIO_VXX_MBOX_MSG_RAW_SEND  FIO_MEI_MBOX_MSG_RAW_SEND
-#define FIO_VXX_REG_GET            FIO_MEI_REG_GET
-#define FIO_VXX_REG_SET            FIO_MEI_REG_SET
-#define FIO_VXX_DBG_LS_WRITE       FIO_MEI_DBG_LS_WRITE
-#define FIO_VXX_DBG_LS_READ        FIO_MEI_DBG_LS_READ
+#define FIO_VRX_REQ_CONFIG         FIO_MEI_REQ_CONFIG
+#define FIO_VRX_MBOX_MSG_RAW_SEND  FIO_MEI_MBOX_MSG_RAW_SEND
+#define FIO_VRX_REG_GET            FIO_MEI_REG_GET
+#define FIO_VRX_REG_SET            FIO_MEI_REG_SET
+#define FIO_VRX_DBG_LS_WRITE       FIO_MEI_DBG_LS_WRITE
+#define FIO_VRX_DBG_LS_READ        FIO_MEI_DBG_LS_READ
 /* MEI CPE driver interface data types wrappers*/
-typedef IOCTL_MEI_reqCfg_t    IOCTL_VXX_reqCfg_t;
-typedef IOCTL_MEI_mboxSend_t  IOCTL_VXX_mboxSend_t;
-typedef IOCTL_MEI_regInOut_t  IOCTL_VXX_regInOut_t;
-typedef IOCTL_MEI_dbgAccess_t IOCTL_VXX_dbgAccess_t;
+typedef IOCTL_MEI_reqCfg_t    IOCTL_VRX_reqCfg_t;
+typedef IOCTL_MEI_mboxSend_t  IOCTL_VRX_mboxSend_t;
+typedef IOCTL_MEI_regInOut_t  IOCTL_VRX_regInOut_t;
+typedef IOCTL_MEI_dbgAccess_t IOCTL_VRX_dbgAccess_t;
 #endif
 
 #define WINHOST_VDSL2_DFE_CHANNELS_AVAILABLE   2
@@ -75,7 +56,7 @@ typedef struct
    DSL_char_t   *pEndReceive;
    /* Buffer for the received data*/
    DSL_char_t   Buffer[3*CMV_MESSAGE_SIZE];
-} DSL_VXX_TcpDebugInfo_t;
+} DSL_VRX_TcpDebugInfo_t;
 
 
 #ifndef __BYTE_ORDER
@@ -335,4 +316,4 @@ DSL_int_t DSL_CPE_DEV_DeviceOpen(DSL_char_t *pDevName, DSL_uint32_t dev_num);
 
 #endif /* #ifdef DSL_DEBUG_TOOL_INTERFACE*/
 
-#endif /* _DSL_CPE_DEBUG_VINAX_H */
+#endif /* _DSL_CPE_DEBUG_VRX_H */

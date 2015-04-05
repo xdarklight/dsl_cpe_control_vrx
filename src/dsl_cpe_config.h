@@ -1,3 +1,4 @@
+/* src/dsl_cpe_config.h.  Generated from dsl_cpe_config.h.in by configure.  */
 /* src/dsl_cpe_config.h.in.  Generated from configure.in by autoheader.  */
 
 
@@ -5,287 +6,287 @@
 #define _DSL_CPE_CONFIG_H
 
 /* Debug level = local */
-#undef DSL_CCA_DBG_MAX_LEVEL_PRE
+/* #undef DSL_CCA_DBG_MAX_LEVEL_PRE */
 
 /* Preselection of max. debug level = no (using default) */
-#undef DSL_CCA_DBG_MAX_LEVEL_SET
+#define DSL_CCA_DBG_MAX_LEVEL_SET /**/
 
 /* Channels per line to support */
-#undef DSL_CHANNELS_PER_LINE
+#define DSL_CHANNELS_PER_LINE 1
 
 /* Disabled debug prints */
-#undef DSL_CPE_DEBUG_DISABLE
+#define DSL_CPE_DEBUG_DISABLE /**/
 
 /* Maximum lines per DSL device to support */
-#undef DSL_CPE_LINES_PER_DEVICE
+#define DSL_CPE_LINES_PER_DEVICE 1
 
 /* Maximum DSL devices to support */
-#undef DSL_CPE_MAX_DEVICE_NUMBER
+#define DSL_CPE_MAX_DEVICE_NUMBER 1
 
 /* Include DSL TCP debug support */
-#undef DSL_DEBUG_TOOL_INTERFACE
+#define DSL_DEBUG_TOOL_INTERFACE /**/
+
+/* Add VR10 support */
+/* #undef DSL_VRX_DEVICE_VR10 */
+
+/* Add VR9 support */
+#define DSL_VRX_DEVICE_VR9 /**/
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
-#undef HAVE_ARPA_INET_H
+#define HAVE_ARPA_INET_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
-#undef HAVE_FCNTL_H
+#define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the <float.h> header file. */
-#undef HAVE_FLOAT_H
+#define HAVE_FLOAT_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#undef HAVE_INTTYPES_H
+#define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <limits.h> header file. */
-#undef HAVE_LIMITS_H
+#define HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
+#define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the <netdb.h> header file. */
-#undef HAVE_NETDB_H
+#define HAVE_NETDB_H 1
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
-#undef HAVE_NETINET_IN_H
+#define HAVE_NETINET_IN_H 1
 
 /* Define to 1 if stdbool.h conforms to C99. */
-#undef HAVE_STDBOOL_H
+#define HAVE_STDBOOL_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
+#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H
+#define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H
+#define HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H
+#define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
-#undef HAVE_SYS_IOCTL_H
+#define HAVE_SYS_IOCTL_H 1
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
-#undef HAVE_SYS_SOCKET_H
+#define HAVE_SYS_SOCKET_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#undef HAVE_SYS_STAT_H
+#define HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/time.h> header file. */
-#undef HAVE_SYS_TIME_H
+#define HAVE_SYS_TIME_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#undef HAVE_SYS_TYPES_H
+#define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H
+#define HAVE_UNISTD_H 1
 
 /* Define to 1 if the system has the type `_Bool'. */
-#undef HAVE__BOOL
+#define HAVE__BOOL 1
 
 /* Include deprecated functions */
-#undef INCLUDE_DEPRECATED
+/* #undef INCLUDE_DEPRECATED */
 
 /* Include Device Exception Codes */
-#undef INCLUDE_DEVICE_EXCEPTION_CODES
+/* #undef INCLUDE_DEVICE_EXCEPTION_CODES */
 
 /* Include ADSL MIB support */
-#undef INCLUDE_DSL_ADSL_MIB
+/* #undef INCLUDE_DSL_ADSL_MIB */
 
 /* Include DSL BONDING support */
-#undef INCLUDE_DSL_BONDING
+/* #undef INCLUDE_DSL_BONDING */
 
 /* Include DSL CEOC support */
-#undef INCLUDE_DSL_CEOC
+/* #undef INCLUDE_DSL_CEOC */
 
 /* Include configuration get support */
-#undef INCLUDE_DSL_CONFIG_GET
+#define INCLUDE_DSL_CONFIG_GET /**/
 
 /* Add DANUBE support */
-#undef INCLUDE_DSL_CPE_API_DANUBE
-
-/* Add VINAX support */
-#undef INCLUDE_DSL_CPE_API_VINAX
+/* #undef INCLUDE_DSL_CPE_API_DANUBE */
 
 /* Add VRX support */
-#undef INCLUDE_DSL_CPE_API_VRX
+#define INCLUDE_DSL_CPE_API_VRX /**/
 
 /* Enable Autogen CLI support */
-#undef INCLUDE_DSL_CPE_CLI_AUTOGEN_SUPPORT
+/* #undef INCLUDE_DSL_CPE_CLI_AUTOGEN_SUPPORT */
 
 /* Enable CLI support */
-#undef INCLUDE_DSL_CPE_CLI_SUPPORT
+#define INCLUDE_DSL_CPE_CLI_SUPPORT /**/
 
 /* Enable CMV scripts math support */
-#undef INCLUDE_DSL_CPE_CMV_SCRIPTS_MATH
+#define INCLUDE_DSL_CPE_CMV_SCRIPTS_MATH /**/
 
 /* Enable CMV scripts parser support */
-#undef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
+#define INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT /**/
 
 /* Include DTI support */
 #undef INCLUDE_DSL_CPE_DTI_SUPPORT
 
 /* Include filesystem support */
-#undef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT
+#define INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT /**/
 
 /* Include IFXOS support */
-#undef INCLUDE_DSL_CPE_IFXOS_SUPPORT
+#define INCLUDE_DSL_CPE_IFXOS_SUPPORT /**/
 
 /* Include Misc Line Status support */
-#undef INCLUDE_DSL_CPE_MISC_LINE_STATUS
+/* #undef INCLUDE_DSL_CPE_MISC_LINE_STATUS */
 
 /* Include DSL PM channel counters support */
-#undef INCLUDE_DSL_CPE_PM_CHANNEL_COUNTERS
+#define INCLUDE_DSL_CPE_PM_CHANNEL_COUNTERS /**/
 
 /* Include DSL PM channel extended counters support */
-#undef INCLUDE_DSL_CPE_PM_CHANNEL_EXT_COUNTERS
+/* #undef INCLUDE_DSL_CPE_PM_CHANNEL_EXT_COUNTERS */
 
 /* Include DSL PM channel thresholds support */
-#undef INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS
+/* #undef INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS */
 
 /* Include PM config support */
-#undef INCLUDE_DSL_CPE_PM_CONFIG
+#define INCLUDE_DSL_CPE_PM_CONFIG /**/
 
 /* Include DSL PM datapath counters support */
-#undef INCLUDE_DSL_CPE_PM_DATA_PATH_COUNTERS
+#define INCLUDE_DSL_CPE_PM_DATA_PATH_COUNTERS /**/
 
 /* Include DSL PM datapath failure counters support */
-#undef INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS
+/* #undef INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS */
 
 /* Include DSL PM datapath thresholds support */
-#undef INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS
+/* #undef INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS */
 
 /* Include DSL PM history support */
-#undef INCLUDE_DSL_CPE_PM_HISTORY
+/* #undef INCLUDE_DSL_CPE_PM_HISTORY */
 
 /* Include DSL PM line counters support */
-#undef INCLUDE_DSL_CPE_PM_LINE_COUNTERS
+#define INCLUDE_DSL_CPE_PM_LINE_COUNTERS /**/
 
 /* Include DSL PM line event showtime counters support */
-#undef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
-
-/* Include DSL PM line failure counters support */
-#undef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
+/* #undef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 
 /* Include DSL PM line thresholds support */
-#undef INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS
+/* #undef INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS */
 
 /* Include DSL PM optional parameters support */
-#undef INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS
+/* #undef INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS */
 
 /* Include DSL PM retransmission counters support */
-#undef INCLUDE_DSL_CPE_PM_RETX_COUNTERS
+/* #undef INCLUDE_DSL_CPE_PM_RETX_COUNTERS */
 
 /* Include DSL PM retransmission thresholds support */
-#undef INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS
+/* #undef INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS */
 
 /* Include DSL PM showtime counters support */
-#undef INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS
+#define INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS /**/
 
 /* Include DSL PM total counters support */
-#undef INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS
+#define INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS /**/
 
 /* Enable SOAP support */
-#undef INCLUDE_DSL_CPE_SOAP_SUPPORT
+/* #undef INCLUDE_DSL_CPE_SOAP_SUPPORT */
 
 /* Include ADSL showtime event logging support */
-#undef INCLUDE_DSL_CPE_TRACE_BUFFER
+/* #undef INCLUDE_DSL_CPE_TRACE_BUFFER */
 
 /* Include DELT support */
-#undef INCLUDE_DSL_DELT
+#define INCLUDE_DSL_DELT /**/
 
 /* Include FW request support */
-#undef INCLUDE_DSL_EVENT_POLLING
+/* #undef INCLUDE_DSL_EVENT_POLLING */
 
 /* Include Filter Detection support */
-#undef INCLUDE_DSL_FILTER_DETECTION
+#define INCLUDE_DSL_FILTER_DETECTION /**/
 
 /* Include Framing Parameters support */
-#undef INCLUDE_DSL_FRAMING_PARAMETERS
+#define INCLUDE_DSL_FRAMING_PARAMETERS /**/
 
 /* Include G997 alarm support */
-#undef INCLUDE_DSL_G997_ALARM
+#define INCLUDE_DSL_G997_ALARM /**/
 
 /* Include G997 Framing Parameters support */
-#undef INCLUDE_DSL_G997_FRAMING_PARAMETERS
+#define INCLUDE_DSL_G997_FRAMING_PARAMETERS /**/
 
 /* Include G997 Line Inventory support */
-#undef INCLUDE_DSL_G997_LINE_INVENTORY
+#define INCLUDE_DSL_G997_LINE_INVENTORY /**/
 
 /* Include G997 per tone values support */
-#undef INCLUDE_DSL_G997_PER_TONE
+#define INCLUDE_DSL_G997_PER_TONE /**/
 
 /* Include G997 status support */
-#undef INCLUDE_DSL_G997_STATUS
+#define INCLUDE_DSL_G997_STATUS /**/
 
 /* Include DSL PM support */
-#undef INCLUDE_DSL_PM
+#define INCLUDE_DSL_PM /**/
 
 /* Include Resource Statistics support */
-#undef INCLUDE_DSL_RESOURCE_STATISTICS
+/* #undef INCLUDE_DSL_RESOURCE_STATISTICS */
 
 /* Include System Interface configuration support */
-#undef INCLUDE_DSL_SYSTEM_INTERFACE
+#define INCLUDE_DSL_SYSTEM_INTERFACE /**/
 
 /* Include FW request support */
-#undef INCLUDE_FW_REQUEST_SUPPORT
+#define INCLUDE_FW_REQUEST_SUPPORT /**/
 
 /* Pilot Tones Status support */
-#undef INCLUDE_PILOT_TONES_STATUS
+/* #undef INCLUDE_PILOT_TONES_STATUS */
 
 /* Include DSL RTT support */
-#undef INCLUDE_REAL_TIME_TRACE
+/* #undef INCLUDE_REAL_TIME_TRACE */
 
 /* Enable script notification support */
-#undef INCLUDE_SCRIPT_NOTIFICATION
+#define INCLUDE_SCRIPT_NOTIFICATION /**/
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
+/* #undef NO_MINUS_C_MINUS_O */
 
 /* Name of package */
-#undef PACKAGE
+#define PACKAGE "dsl_cpe_control"
 
 /* Define to the address where bug reports for this package should be sent. */
-#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#undef PACKAGE_NAME
+#define PACKAGE_NAME "DSL CPE Control application"
 
 /* Define to the full name and version of this package. */
-#undef PACKAGE_STRING
+#define PACKAGE_STRING "DSL CPE Control application 4.15.2"
 
 /* Define to the one symbol short name of this package. */
-#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME "dsl_cpe_control"
 
 /* Define to the home page for this package. */
-#undef PACKAGE_URL
+#define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#undef PACKAGE_VERSION
+#define PACKAGE_VERSION "4.15.2"
 
 /* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
+#define STDC_HEADERS 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
+#define TIME_WITH_SYS_TIME 1
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
-#undef TM_IN_SYS_TIME
+/* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#undef VERSION
+#define VERSION "4.15.2"
 
 /* Define to empty if `const' does not conform to ANSI C. */
-#undef const
+/* #undef const */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
-#undef size_t
+/* #undef size_t */
 
 /* Define to empty if the keyword `volatile' does not work. Warning: valid
    code using `volatile' can become incorrect without. Disable with care. */
-#undef volatile
+/* #undef volatile */
 
 
 #endif /* _DSL_CPE_CONFIG_H */

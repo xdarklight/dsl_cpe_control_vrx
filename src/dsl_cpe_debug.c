@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -332,6 +331,10 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
 
    /**$$ND FIXME: all linux and BSD sockets calls should be renamed to DSL_xxx() */
 
+   /* init variables */
+   memset((char *) &readFds, 0x0, sizeof(DSL_CPE_fd_set_t));
+   memset((char *) &tempFds, 0x0, sizeof(DSL_CPE_fd_set_t));
+
    /* Socket Address */
    memset((char *) &my_addr, '\0', sizeof(DSL_sockaddr_in_t));
    my_addr.sin_family = AF_INET;
@@ -572,7 +575,6 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    }
 
    DSL_CPE_Free(clientInfo);
-   DSL_CPE_SocketClose(sockfd);
 
    return 0;
 }
@@ -701,6 +703,10 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
    {
       return -1;
    }
+
+   /* init variables */
+   memset((char *) &readFds, 0x0, sizeof(DSL_CPE_fd_set_t));
+   memset((char *) &tempFds, 0x0, sizeof(DSL_CPE_fd_set_t));
 
    /* Socket Address */
    memset((char *) &myAddr, '\0', sizeof(DSL_sockaddr_in_t));

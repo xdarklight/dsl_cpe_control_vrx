@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -552,7 +551,7 @@ DSL_CPE_File_t *DSL_CPE_FOpen(const DSL_char_t *name,  const DSL_char_t *mode);
 */
 DSL_CPE_File_t *DSL_CPE_FMemOpen(DSL_char_t *buf, const DSL_uint32_t size, const DSL_char_t *mode);
 
-#endif /* INCLUDE_DSL_CPE_DTI_SUPPORT || INCLUDE_DSL_CPE_SOAP_SUPPORT */
+#endif /* #ifdef INCLUDE_DSL_CPE_SOAP_SUPPORT */
 /**
    Close the file or memory file.
 */
@@ -623,7 +622,7 @@ DSL_uint32_t DSL_CPE_Htonl(DSL_uint32_t hVal);
 
 #if defined(DSL_DEBUG_TOOL_INTERFACE) || defined(INCLUDE_DSL_CPE_DTI_SUPPORT)
 DSL_char_t* DSL_CPE_OwnAddrStringGet(DSL_void_t);
-#endif /* DSL_DEBUG_TOOL_INTERFACE || INCLUDE_DSL_CPE_DTI_SUPPORT */
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
 #define DSL_CPE_StringToAddress(strAddr, iAddr) inet_aton(strAddr, (iAddr))
 #define DSL_CPE_AddressToString                 inet_ntoa

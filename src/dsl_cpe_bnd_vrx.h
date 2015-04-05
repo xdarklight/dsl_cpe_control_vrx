@@ -1,16 +1,15 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
 
 *******************************************************************************/
 
-#ifndef _DSL_CPE_BND_H_
-#define _DSL_CPE_BND_H_
+#ifndef _DSL_CPE_BND_VRX_H_
+#define _DSL_CPE_BND_VRX_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +18,6 @@ extern "C" {
 /** \file
    Bonding implementation/interface for CPE Control Application
 */
-
-#include "dsl_cpe_control.h"
 
 #define DSL_CPE_BND_TX_RATE_RATIO_UNITY   (0x0100)
 
@@ -50,7 +47,8 @@ typedef struct
 {
    /**
    Line Monitor SM data*/
-   DSL_CPE_BND_LineMonitorStateMachine_t lineMonitorStateMachine[2];
+   DSL_CPE_BND_LineMonitorStateMachine_t
+      lineMonitorStateMachine[DSL_CPE_MAX_DSL_ENTITIES];
    /**
    Remote discovery code*/
    DSL_uint8_t remoteDiscoveryCode[6];
@@ -60,6 +58,21 @@ typedef struct
    /**
    CPE API Control Context*/
    DSL_CPE_Control_Context_t *pCtrlCtx;
+   /**
+   TBD*/
+   DSL_PortMode_t nPortMode;
+   /**
+   TBD*/
+   DSL_boolean_t bFwRequested[DSL_CPE_MAX_DSL_ENTITIES];
+   /**
+   TBD*/
+   DSL_boolean_t bInitialFwRequestHandled;
+   /**
+   Paf line num firts reach FULL_INIT*/
+   DSL_int8_t nPafLineHandled;
+   /**
+   Line num was disabled by absent Paf*/
+   DSL_int8_t nPafLineDisabled;
 } DSL_CPE_BND_Context_t;
 
 /*
@@ -76,11 +89,26 @@ DSL_void_t DSL_CPE_BND_Stop(
    DSL_CPE_BND_Context_t *pBndContext);
 
 /*
+   Function to check the remote PAF status
+*/
+DSL_Error_t DSL_CPE_BND_RemotePafAvailableCheck(
+                     DSL_int_t fd,
+                     DSL_uint16_t *pRemotePafAvailable);
+/*
    Bonding handling for the Autoboot Restart Wait state
 */
 DSL_Error_t DSL_CPE_BND_AutobootStatusRestartWait(
                DSL_CPE_BND_Context_t *pBndCtx,
                DSL_uint_t nDevice);
+
+/*
+   Firmware Download for bonding
+*/
+DSL_Error_t DSL_CPE_BND_SyncDownloadFirmware(
+               DSL_CPE_BND_Context_t *pBndCtx,
+               DSL_int_t nDevice,
+               DSL_FirmwareRequestType_t nFwReqType,
+               DSL_PortMode_t nPortMode);
 
 /*
    Bonding handling for the Line State change
@@ -91,9 +119,16 @@ DSL_Error_t DSL_CPE_BND_LineStateHandle(
    DSL_LineStateValue_t nLineState,
    DSL_LineStateValue_t nPrevLineState);
 
+/*
+   Bonding handling for the System Interface status notification
+*/
+DSL_Error_t DSL_CPE_BND_SystemInterfaceStatusHandle(
+               DSL_CPE_BND_Context_t *pBndCtx,
+               DSL_int_t fd,
+               DSL_uint_t nDevice);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _DSL_CPE_BND_H_ */
-
+#endif /* _DSL_CPE_BND_VRX_H_ */

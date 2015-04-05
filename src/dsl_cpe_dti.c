@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -277,14 +276,13 @@ DSL_Error_t DSL_CPE_Dti_Start(
    DTI_AgentCtx_t             *pDtiAgent = DSL_NULL;
    DTI_AgentStartupSettings_t dtiStartup;
 
+   memset(&dtiStartup, 0x00, sizeof(DTI_AgentStartupSettings_t));
+
    if (DSL_CPE_GlobalDtiContext.pDtiAgent == DSL_NULL)
    {
       /* init the DTI control struct */
       memset(&DSL_CPE_GlobalDtiContext, 0, sizeof(DSL_CPE_Dti_Context_t));
       DSL_CPE_GlobalDtiContext.ifNum = -1;
-
-
-      memset(&dtiStartup, 0x00, sizeof(DTI_AgentStartupSettings_t));
 
       /* physical device setup */
       dtiStartup.numOfDevices   = (IFX_int_t)numOfPhyDevices;

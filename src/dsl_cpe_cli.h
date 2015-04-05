@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -32,11 +31,14 @@
 #define DSL_CPE_MASK_G997       0x0002
 /** PM mask */
 #define DSL_CPE_MASK_PM         0x0004
-/** SAR mask */
-#define DSL_CPE_MASK_SAR        0x0008
+/** BND (bonding) mask */
+#define DSL_CPE_MASK_BND        0x0080
+/** DSM (Digital Spectrum Management/vectoring) mask */
+#define DSL_CPE_MASK_DSM        0x0010
 
 #define DSL_CPE_MASK_ALL        (DSL_CPE_MASK_DEVICE | DSL_CPE_MASK_G997 | \
-                                 DSL_CPE_MASK_PM | DSL_CPE_MASK_SAR)
+                                 DSL_CPE_MASK_PM | DSL_CPE_MASK_BND | \
+                                 DSL_CPE_MASK_DSM)
 
 /** detailed information (-h) */
 #define DSL_CPE_MASK_DETAILED   0x4000
@@ -51,7 +53,7 @@
 #define DSL_CPE_CLI_CMD_ADD_DEPR(short_name, long_name, pFunc, pHelp) \
            DSL_CPE_CLI_CommandAdd(short_name, long_name, pFunc, pHelp, DSL_CPE_MASK_DEPRECATED)
 
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    #define DSL_CPE_RET       "nReturn=%d%s "
    #define DSL_CPE_RET_VAL(ret)   ret, DSL_CPE_Fd2DevStr(fd)
 #else

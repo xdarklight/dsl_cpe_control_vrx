@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -1372,28 +1371,57 @@ DSL_void_t DSL_CPE_EnvVarFree(DSL_void_t)
 #define DSL_CPE_LINUX_CMD_ADD " 2> /dev/null"
 DSL_Error_t DSL_CPE_System(const DSL_char_t *sCommand)
 {
-   DSL_int_t nRet;
-   DSL_char_t *sCmd;
+   DSL_int_t nRet = 0;
+   pid_t pid;
+   DSL_int_t pstatus, i, max_fds;
 
-   sCmd = DSL_CPE_Malloc(strlen(sCommand) + strlen(DSL_CPE_LINUX_CMD_ADD) + 1);
-   if (sCmd == DSL_NULL)
+   DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+      "system command: %s" DSL_CPE_CRLF, sCommand));
+
+   pid = fork();
+
+   if (pid == 0) {
+      /* child */
+
+      max_fds = getdtablesize();
+      for (i = 0; i < max_fds; i++)
+      {
+         /* skip closing stout (fds 1) for echo correct working
+            within notification scripts */
+         if (i == 1)
+         {
+            continue;
+         }
+         close(i);
+      }
+
+      if (execl(sCommand, sCommand, NULL) == -1)
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+            "execl(); errno %u" DSL_CPE_CRLF, errno));
+
+         nRet = DSL_ERROR;
+      }
+   }
+   else if (pid < 0)
    {
-      DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "system command: memory allocation failed!" DSL_CPE_CRLF));
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "fork(); errno %u" DSL_CPE_CRLF, errno));
 
-      return DSL_ERR_MEMORY;
+      nRet = DSL_ERROR;
    }
    else
    {
-      sCmd[0] = 0;
-      strcat(sCmd, sCommand);
-      strcat(sCmd, DSL_CPE_LINUX_CMD_ADD);
+      /* parent */
 
-      DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "system command: %s" DSL_CPE_CRLF, sCmd));
+      /* wait till environment variable is set */
+      if (waitpid(pid, &pstatus, 0) == -1)
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+            "waitpid(); errno %u" DSL_CPE_CRLF, errno));
 
-      nRet = system(sCmd);
-      DSL_CPE_Free(sCmd);
+         nRet = DSL_ERROR;
+      }
    }
 
    return nRet == 0 ? DSL_SUCCESS : DSL_ERROR;
@@ -1479,7 +1507,7 @@ DSL_char_t* DSL_CPE_OwnAddrStringGet(DSL_void_t)
    return pString;
 }
 
-#endif /* DSL_DEBUG_TOOL_INTERFACE || INCLUDE_DSL_CPE_DTI_SUPPORT */
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
 #endif /* #ifndef _lint*/
 
