@@ -1,6 +1,0 @@
-DSL_CPE_API_INCLUDE_DIR=$(BUILDDIR)/pkg/include/vendor/dsl
-IFXOS_INCLUDE_DIR=$(BUILDDIR)/pkg/include/vendor/ifxos
-MEI_INCLUDE_DIR=$(BUILDDIR)/pkg/include/vendor/mei
-
-CFLAGS+=-D__LINUX__ -DLINUX -I$(DSL_CPE_API_INCLUDE_DIR) \
-  -I$(IFXOS_INCLUDE_DIR) -I$(MEI_INCLUDE_DIR) 
