@@ -4274,7 +4274,9 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
-   if (g_sRcScript != DSL_NULL || cCONFIG_OPENRG)
+#ifndef CONFIG_OPENRG
+   if (g_sRcScript != DSL_NULL)
+#endif
    {
       if ( (nLineState == DSL_LINESTATE_SILENT) &&
            (g_nPrevLineState[nDevice] != DSL_LINESTATE_SILENT) )
