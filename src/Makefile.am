@@ -62,8 +62,8 @@ dsl_cpe_control_cli_vrx_sources = \
 dsl_cpe_control_debug_danube_sources = \
 	dsl_cpe_debug_danube.c
 
-dsl_cpe_control_debug_vxx_sources = \
-	dsl_cpe_debug_vxx.c
+dsl_cpe_control_debug_vrx_sources = \
+	dsl_cpe_debug_vrx.c
 
 if INCLUDE_DSL_CPE_DTI_SUPPORT
 dsl_cpe_control_dti_sources = \
@@ -76,7 +76,6 @@ dsl_cpe_control_SOURCES = \
 	dsl_cpe_control.c \
 	dsl_cpe_init_cfg.c \
 	dsl_cpe_linux.c \
-	dsl_cpe_debug_vrx.c \
 	dsl_cpe_debug.c
 
 dsl_cpe_control_SOURCES += \
@@ -89,7 +88,7 @@ endif
 
 if DEVICE_VXX_LAYER
 dsl_cpe_control_SOURCES += \
-	$(dsl_cpe_control_debug_vxx_sources)
+	$(dsl_cpe_control_debug_vrx_sources)
 endif
 
 if INCLUDE_DSL_BONDING
@@ -138,7 +137,7 @@ EXTRA_DIST = \
 	$(dsl_cpe_control_cli_vinax_sources) \
 	$(dsl_cpe_control_cli_vrx_sources) \
         $(dsl_cpe_control_debug_danube_sources) \
-        $(dsl_cpe_control_debug_vxx_sources) \
+        $(dsl_cpe_control_debug_vrx_sources) \
 	dsl_cpe_control.h \
 	dsl_cpe_init_cfg.h \
 	dsl_cpe_cli.h \
