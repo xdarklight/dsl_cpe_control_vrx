@@ -18,7 +18,7 @@ Includes
 #include "drv_dsl_cpe_api_ioctl.h"
 #include "dsl_cpe_simulator.h"
 #include <limits.h>
-#include <ipc.h>
+#include <sys/ipc.h>
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
 #include "drv_dsl_cpe_cmv_danube.h"
