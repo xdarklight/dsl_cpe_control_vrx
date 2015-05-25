@@ -39,7 +39,6 @@ b) the usage of "<device>" indicates that a device specific file will be
    available according to the used source code delivery type.
    Currently there are deliveries as follows
    - "danube": Danube Family (includes Danube, Amazon-SE and ARX100)
-   - "vinax": Vinax
    - "vrx": VRX200 Family
 
 dsl_cpe_control\

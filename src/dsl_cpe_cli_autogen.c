@@ -29,7 +29,7 @@ static const DSL_char_t g_sAcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AutobootCtrlSet_t nCommand" DSL_CPE_CRLF
@@ -40,7 +40,7 @@ static const DSL_char_t g_sAcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -110,14 +110,14 @@ static const DSL_char_t g_sAsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AutobootStatGet_t nStatus" DSL_CPE_CRLF
@@ -194,14 +194,14 @@ static const DSL_char_t g_sLsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_LineStateValue_t nLineState (hex)" DSL_CPE_CRLF
@@ -222,6 +222,8 @@ static const DSL_char_t g_sLsg[] =
    "   DSL_LINESTATE_EXCHANGE = 0x00000700" DSL_CPE_CRLF
    "   DSL_LINESTATE_SHOWTIME_NO_SYNC = 0x00000800" DSL_CPE_CRLF
    "   DSL_LINESTATE_SHOWTIME_TC_SYNC = 0x00000801" DSL_CPE_CRLF
+   "   DSL_LINESTATE_ORDERLY_SHUTDOWN_REQUEST = 0x0000085F" DSL_CPE_CRLF
+   "   DSL_LINESTATE_ORDERLY_SHUTDOWN = 0x00000860" DSL_CPE_CRLF
    "   DSL_LINESTATE_FASTRETRAIN = 0x00000900" DSL_CPE_CRLF
    "   DSL_LINESTATE_LOWPOWER_L2 = 0x00000A00" DSL_CPE_CRLF
    "   DSL_LINESTATE_LOOPDIAGNOSTIC_ACTIVE = 0x00000B00" DSL_CPE_CRLF
@@ -298,7 +300,7 @@ static const DSL_char_t g_sLfcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -319,7 +321,7 @@ static const DSL_char_t g_sLfcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -404,7 +406,7 @@ static const DSL_char_t g_sLfcg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -413,7 +415,7 @@ static const DSL_char_t g_sLfcg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -510,7 +512,7 @@ static const DSL_char_t g_sLfsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -519,7 +521,7 @@ static const DSL_char_t g_sLfsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -616,7 +618,7 @@ static const DSL_char_t g_sFpsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -626,7 +628,7 @@ static const DSL_char_t g_sFpsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -728,7 +730,7 @@ static const DSL_char_t g_sDmls[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_debugModules_t nDbgModule" DSL_CPE_CRLF
@@ -738,8 +740,8 @@ static const DSL_char_t g_sDmls[] =
    "   DSL_DBG_PM = 3" DSL_CPE_CRLF
    "   DSL_DBG_MIB = 4" DSL_CPE_CRLF
    "   DSL_DBG_CEOC = 5" DSL_CPE_CRLF
-   "   DSL_DBG_LED = 6" DSL_CPE_CRLF
-   "   DSL_DBG_SAR = 7" DSL_CPE_CRLF
+   "   DSL_DBG_LED = 6 (not used anymore!)" DSL_CPE_CRLF
+   "   DSL_DBG_SAR = 7 (not used anymore!)" DSL_CPE_CRLF
    "   DSL_DBG_DEVICE = 8" DSL_CPE_CRLF
    "   DSL_DBG_AUTOBOOT_THREAD = 9" DSL_CPE_CRLF
    "   DSL_DBG_OS = 10" DSL_CPE_CRLF
@@ -756,7 +758,7 @@ static const DSL_char_t g_sDmls[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -829,7 +831,7 @@ static const DSL_char_t g_sDmlg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_debugModules_t nDbgModule" DSL_CPE_CRLF
@@ -850,7 +852,7 @@ static const DSL_char_t g_sDmlg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_debugLevels_t nDbgLevel" DSL_CPE_CRLF
@@ -931,7 +933,7 @@ static const DSL_char_t g_sTmcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_TestModeControlSet_t nTestMode" DSL_CPE_CRLF
@@ -944,7 +946,7 @@ static const DSL_char_t g_sTmcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1016,7 +1018,7 @@ static const DSL_char_t g_sSics[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_TcLayerSelection_t nTcLayer" DSL_CPE_CRLF
@@ -1045,7 +1047,7 @@ static const DSL_char_t g_sSics[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1124,14 +1126,14 @@ static const DSL_char_t g_sSicg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_TcLayerSelection_t nTcLayer" DSL_CPE_CRLF
@@ -1225,7 +1227,7 @@ static const DSL_char_t g_sEsmcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_EventType_t nEventType" DSL_CPE_CRLF
@@ -1258,7 +1260,7 @@ static const DSL_char_t g_sEsmcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1332,7 +1334,7 @@ static const DSL_char_t g_sEsmcg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_EventType_t nEventType" DSL_CPE_CRLF
@@ -1362,7 +1364,7 @@ static const DSL_char_t g_sEsmcg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bMask" DSL_CPE_CRLF
@@ -1438,14 +1440,14 @@ static const DSL_char_t g_sTmsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_TestModeControlSet_t nTestMode" DSL_CPE_CRLF
@@ -1516,14 +1518,14 @@ static const DSL_char_t g_sSisg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_TcLayerSelection_t nTcLayer" DSL_CPE_CRLF
@@ -1616,14 +1618,14 @@ static const DSL_char_t g_sIsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bEventActivation" DSL_CPE_CRLF
@@ -1696,7 +1698,7 @@ static const DSL_char_t g_sMlsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_MiscLineStatusSelector_t nStatusSelector" DSL_CPE_CRLF
@@ -1727,7 +1729,7 @@ static const DSL_char_t g_sMlsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int32_t nStatusValue" DSL_CPE_CRLF
@@ -1802,7 +1804,7 @@ static const DSL_char_t g_sLocs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_LineOptionsSelector_t nConfigSelector" DSL_CPE_CRLF
@@ -1814,7 +1816,7 @@ static const DSL_char_t g_sLocs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1887,14 +1889,14 @@ static const DSL_char_t g_sLocg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_LineOptionsSelector_t nConfigSelector" DSL_CPE_CRLF
@@ -1967,7 +1969,7 @@ static const DSL_char_t g_sG997lacs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_LDSF_t nLDSF" DSL_CPE_CRLF
@@ -1983,7 +1985,7 @@ static const DSL_char_t g_sG997lacs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -2058,14 +2060,14 @@ static const DSL_char_t g_sG997lacg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_LDSF_t nLDSF" DSL_CPE_CRLF
@@ -2146,7 +2148,7 @@ static const DSL_char_t g_sG997cdrtcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2158,7 +2160,7 @@ static const DSL_char_t g_sG997cdrtcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2246,7 +2248,7 @@ static const DSL_char_t g_sG997cdrtcg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2256,7 +2258,7 @@ static const DSL_char_t g_sG997cdrtcg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2343,14 +2345,14 @@ static const DSL_char_t g_sG997ltsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_LineTransmission_t nLineTransmissionStatus" DSL_CPE_CRLF
@@ -2418,14 +2420,14 @@ static const DSL_char_t g_sG997lisg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_LineInit_t nLineInitStatus" DSL_CPE_CRLF
@@ -2503,7 +2505,7 @@ static const DSL_char_t g_sG997lsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2515,7 +2517,7 @@ static const DSL_char_t g_sG997lsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2611,7 +2613,7 @@ static const DSL_char_t g_sG997csg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2621,7 +2623,7 @@ static const DSL_char_t g_sG997csg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -2714,7 +2716,7 @@ static const DSL_char_t g_sG997pmsft[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_PowerManagementStateForce_t nPowerManagementState" DSL_CPE_CRLF
@@ -2724,7 +2726,7 @@ static const DSL_char_t g_sG997pmsft[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -2794,14 +2796,14 @@ static const DSL_char_t g_sG997pmsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_G997_PowerManagement_t nPowerManagementStatus" DSL_CPE_CRLF
@@ -2872,7 +2874,7 @@ static const DSL_char_t g_sG997lstg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2881,7 +2883,7 @@ static const DSL_char_t g_sG997lstg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2963,7 +2965,7 @@ static const DSL_char_t g_sG997amlfcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -2980,7 +2982,7 @@ static const DSL_char_t g_sG997amlfcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -3061,7 +3063,7 @@ static const DSL_char_t g_sG997amlfcg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -3070,7 +3072,7 @@ static const DSL_char_t g_sG997amlfcg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -3157,7 +3159,7 @@ static const DSL_char_t g_sG997lfsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -3166,7 +3168,7 @@ static const DSL_char_t g_sG997lfsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -3253,7 +3255,7 @@ static const DSL_char_t g_sG997amdpfcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3268,7 +3270,7 @@ static const DSL_char_t g_sG997amdpfcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3354,7 +3356,7 @@ static const DSL_char_t g_sG997amdpfcg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3364,7 +3366,7 @@ static const DSL_char_t g_sG997amdpfcg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3453,7 +3455,7 @@ static const DSL_char_t g_sG997dpfsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3463,7 +3465,7 @@ static const DSL_char_t g_sG997dpfsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3552,7 +3554,7 @@ static const DSL_char_t g_sG997fpsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3562,7 +3564,7 @@ static const DSL_char_t g_sG997fpsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -3664,7 +3666,7 @@ static const DSL_char_t g_sG997dhsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -3676,7 +3678,7 @@ static const DSL_char_t g_sG997dhsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -3756,14 +3758,14 @@ static const DSL_char_t g_sG997dfr[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -3826,7 +3828,7 @@ static const DSL_char_t g_sG997racs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -3839,7 +3841,7 @@ static const DSL_char_t g_sG997racs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -3918,7 +3920,7 @@ static const DSL_char_t g_sG997racg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -3927,7 +3929,7 @@ static const DSL_char_t g_sG997racg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -4012,7 +4014,7 @@ static const DSL_char_t g_sPmlshs15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4021,7 +4023,7 @@ static const DSL_char_t g_sPmlshs15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4103,7 +4105,7 @@ static const DSL_char_t g_sPmlshs1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4112,7 +4114,7 @@ static const DSL_char_t g_sPmlshs1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4197,7 +4199,7 @@ static const DSL_char_t g_sPmlsc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4207,7 +4209,7 @@ static const DSL_char_t g_sPmlsc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4314,7 +4316,7 @@ static const DSL_char_t g_sPmlsc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4324,7 +4326,7 @@ static const DSL_char_t g_sPmlsc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4434,7 +4436,7 @@ static const DSL_char_t g_sPmlsctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4443,7 +4445,7 @@ static const DSL_char_t g_sPmlsctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4545,7 +4547,7 @@ static const DSL_char_t g_sPmlst15ms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4559,7 +4561,7 @@ static const DSL_char_t g_sPmlst15ms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4645,7 +4647,7 @@ static const DSL_char_t g_sPmlst1ds[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4659,7 +4661,7 @@ static const DSL_char_t g_sPmlst1ds[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4745,7 +4747,7 @@ static const DSL_char_t g_sPmlst15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4754,7 +4756,7 @@ static const DSL_char_t g_sPmlst15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4845,7 +4847,7 @@ static const DSL_char_t g_sPmlst1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4854,7 +4856,7 @@ static const DSL_char_t g_sPmlst1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -4947,14 +4949,14 @@ static const DSL_char_t g_sPmlihs15mg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nPrevIvs" DSL_CPE_CRLF
@@ -5021,14 +5023,14 @@ static const DSL_char_t g_sPmlihs1dg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nPrevIvs" DSL_CPE_CRLF
@@ -5099,14 +5101,14 @@ static const DSL_char_t g_sPmlic15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
@@ -5203,14 +5205,14 @@ static const DSL_char_t g_sPmlic1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
@@ -5309,14 +5311,14 @@ static const DSL_char_t g_sPmlictg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nElapsedTime" DSL_CPE_CRLF
@@ -5401,7 +5403,7 @@ static const DSL_char_t g_sPmlit15ms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nFullInits" DSL_CPE_CRLF
@@ -5411,7 +5413,7 @@ static const DSL_char_t g_sPmlit15ms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -5488,7 +5490,7 @@ static const DSL_char_t g_sPmlit1ds[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nFullInits" DSL_CPE_CRLF
@@ -5498,7 +5500,7 @@ static const DSL_char_t g_sPmlit1ds[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -5574,14 +5576,14 @@ static const DSL_char_t g_sPmlit15mg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nFullInits" DSL_CPE_CRLF
@@ -5654,14 +5656,14 @@ static const DSL_char_t g_sPmlit1dg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nFullInits" DSL_CPE_CRLF
@@ -5738,7 +5740,7 @@ static const DSL_char_t g_sPmchs15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -5748,7 +5750,7 @@ static const DSL_char_t g_sPmchs15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -5835,7 +5837,7 @@ static const DSL_char_t g_sPmchs1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -5845,7 +5847,7 @@ static const DSL_char_t g_sPmchs1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -5935,7 +5937,7 @@ static const DSL_char_t g_sPmcc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -5946,7 +5948,7 @@ static const DSL_char_t g_sPmcc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6049,7 +6051,7 @@ static const DSL_char_t g_sPmcc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6060,7 +6062,7 @@ static const DSL_char_t g_sPmcc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6166,7 +6168,7 @@ static const DSL_char_t g_sPmcctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6176,7 +6178,7 @@ static const DSL_char_t g_sPmcctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6274,7 +6276,7 @@ static const DSL_char_t g_sPmct15ms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6286,7 +6288,7 @@ static const DSL_char_t g_sPmct15ms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6371,7 +6373,7 @@ static const DSL_char_t g_sPmct1ds[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6383,7 +6385,7 @@ static const DSL_char_t g_sPmct1ds[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6468,7 +6470,7 @@ static const DSL_char_t g_sPmct15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6478,7 +6480,7 @@ static const DSL_char_t g_sPmct15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6565,7 +6567,7 @@ static const DSL_char_t g_sPmct1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6575,7 +6577,7 @@ static const DSL_char_t g_sPmct1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6665,7 +6667,7 @@ static const DSL_char_t g_sPmdphs15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6675,7 +6677,7 @@ static const DSL_char_t g_sPmdphs15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6762,7 +6764,7 @@ static const DSL_char_t g_sPmdphs1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6772,7 +6774,7 @@ static const DSL_char_t g_sPmdphs1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6862,7 +6864,7 @@ static const DSL_char_t g_sPmdpc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -6873,7 +6875,7 @@ static const DSL_char_t g_sPmdpc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7000,7 +7002,7 @@ static const DSL_char_t g_sPmdpc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7011,7 +7013,7 @@ static const DSL_char_t g_sPmdpc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7141,7 +7143,7 @@ static const DSL_char_t g_sPmdpctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7151,7 +7153,7 @@ static const DSL_char_t g_sPmdpctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7273,7 +7275,7 @@ static const DSL_char_t g_sPmdpt15ms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7293,7 +7295,7 @@ static const DSL_char_t g_sPmdpt15ms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7394,7 +7396,7 @@ static const DSL_char_t g_sPmdpt1ds[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7414,7 +7416,7 @@ static const DSL_char_t g_sPmdpt1ds[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7515,7 +7517,7 @@ static const DSL_char_t g_sPmdpt15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7525,7 +7527,7 @@ static const DSL_char_t g_sPmdpt15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7636,7 +7638,7 @@ static const DSL_char_t g_sPmdpt1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7646,7 +7648,7 @@ static const DSL_char_t g_sPmdpt1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -7760,7 +7762,7 @@ static const DSL_char_t g_sPm15meet[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bOneDayElapsed" DSL_CPE_CRLF
@@ -7769,7 +7771,7 @@ static const DSL_char_t g_sPm15meet[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -7839,14 +7841,14 @@ static const DSL_char_t g_sPmetr[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -7908,7 +7910,7 @@ static const DSL_char_t g_sPmsms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_PM_SyncModeType_t nMode" DSL_CPE_CRLF
@@ -7918,7 +7920,7 @@ static const DSL_char_t g_sPmsms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -7989,7 +7991,7 @@ static const DSL_char_t g_sPmbms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bActivate" DSL_CPE_CRLF
@@ -8001,7 +8003,7 @@ static const DSL_char_t g_sPmbms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -8081,7 +8083,7 @@ static const DSL_char_t g_sPmlscsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8091,7 +8093,7 @@ static const DSL_char_t g_sPmlscsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8198,14 +8200,14 @@ static const DSL_char_t g_sPmlicsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t nHistoryInterval" DSL_CPE_CRLF
@@ -8305,7 +8307,7 @@ static const DSL_char_t g_sPmccsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -8316,7 +8318,7 @@ static const DSL_char_t g_sPmccsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -8422,7 +8424,7 @@ static const DSL_char_t g_sPmdpcsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -8433,7 +8435,7 @@ static const DSL_char_t g_sPmdpcsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -8562,14 +8564,14 @@ static const DSL_char_t g_sPmcg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bNePollingOff" DSL_CPE_CRLF
@@ -8653,7 +8655,7 @@ static const DSL_char_t g_sPmcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bNePollingOff" DSL_CPE_CRLF
@@ -8668,7 +8670,7 @@ static const DSL_char_t g_sPmcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -8750,7 +8752,7 @@ static const DSL_char_t g_sPmlesc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8760,7 +8762,7 @@ static const DSL_char_t g_sPmlesc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8867,7 +8869,7 @@ static const DSL_char_t g_sPmlesc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8877,7 +8879,7 @@ static const DSL_char_t g_sPmlesc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8987,7 +8989,7 @@ static const DSL_char_t g_sPmlescsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -8997,7 +8999,7 @@ static const DSL_char_t g_sPmlescsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -9107,7 +9109,7 @@ static const DSL_char_t g_sPmlesctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -9116,7 +9118,7 @@ static const DSL_char_t g_sPmlesctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -9218,7 +9220,7 @@ static const DSL_char_t g_sPmleshs15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9228,7 +9230,7 @@ static const DSL_char_t g_sPmleshs15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9315,7 +9317,7 @@ static const DSL_char_t g_sPmleshs1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9325,7 +9327,7 @@ static const DSL_char_t g_sPmleshs1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9415,7 +9417,7 @@ static const DSL_char_t g_sPmdpfc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9426,7 +9428,7 @@ static const DSL_char_t g_sPmdpfc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9529,7 +9531,7 @@ static const DSL_char_t g_sPmdpfc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9540,7 +9542,7 @@ static const DSL_char_t g_sPmdpfc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9646,7 +9648,7 @@ static const DSL_char_t g_sPmdpfcsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9657,7 +9659,7 @@ static const DSL_char_t g_sPmdpfcsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9763,7 +9765,7 @@ static const DSL_char_t g_sPmdpfctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9773,7 +9775,7 @@ static const DSL_char_t g_sPmdpfctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9871,7 +9873,7 @@ static const DSL_char_t g_sPmdpfhs15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9881,7 +9883,7 @@ static const DSL_char_t g_sPmdpfhs15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9968,7 +9970,7 @@ static const DSL_char_t g_sPmdpfhs1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -9978,7 +9980,7 @@ static const DSL_char_t g_sPmdpfhs1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nChannel" DSL_CPE_CRLF
@@ -10068,7 +10070,7 @@ static const DSL_char_t g_sPmrtc15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10078,7 +10080,7 @@ static const DSL_char_t g_sPmrtc15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10182,7 +10184,7 @@ static const DSL_char_t g_sPmrtc1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10192,7 +10194,7 @@ static const DSL_char_t g_sPmrtc1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10299,7 +10301,7 @@ static const DSL_char_t g_sPmrtcsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10309,7 +10311,7 @@ static const DSL_char_t g_sPmrtcsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10416,7 +10418,7 @@ static const DSL_char_t g_sPmrtctg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10425,7 +10427,7 @@ static const DSL_char_t g_sPmrtctg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10524,7 +10526,7 @@ static const DSL_char_t g_sPmrths15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10533,7 +10535,7 @@ static const DSL_char_t g_sPmrths15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10615,7 +10617,7 @@ static const DSL_char_t g_sPmrths1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10624,7 +10626,7 @@ static const DSL_char_t g_sPmrths1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10709,7 +10711,7 @@ static const DSL_char_t g_sPmrtt15mg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10718,7 +10720,7 @@ static const DSL_char_t g_sPmrtt15mg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10806,7 +10808,7 @@ static const DSL_char_t g_sPmrtt15ms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10819,7 +10821,7 @@ static const DSL_char_t g_sPmrtt15ms[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10903,7 +10905,7 @@ static const DSL_char_t g_sPmrtt1dg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -10912,7 +10914,7 @@ static const DSL_char_t g_sPmrtt1dg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -11000,7 +11002,7 @@ static const DSL_char_t g_sPmrtt1ds[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -11013,7 +11015,7 @@ static const DSL_char_t g_sPmrtt1ds[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -11099,14 +11101,14 @@ static const DSL_char_t g_sPmsmg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_PM_SyncModeType_t nMode" DSL_CPE_CRLF

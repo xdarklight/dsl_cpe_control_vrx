@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -47,7 +46,7 @@ DSL_void_t DSL_CPE_CLI_DeviceCommandsRegister ( DSL_void_t );
 DSL_void_t DSL_CPE_CLI_MibCommandsRegister ( DSL_void_t );
 #endif /* INCLUDE_DSL_ADSL_MIB*/
 
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
 const char *sFailureReturn = "nReturn=%d%s";
 #else
 const char *sFailureReturn = "nReturn=%d";
@@ -59,7 +58,7 @@ static const DSL_char_t g_sCcaDbgmlg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_CCA_debugModules_t nCcaDbgModule (dec)" DSL_CPE_CRLF
@@ -73,7 +72,7 @@ static const DSL_char_t g_sCcaDbgmlg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_debugLevels_t nDbgLevel (hex)" DSL_CPE_CRLF
@@ -122,7 +121,7 @@ static const DSL_char_t g_sCcaDbgmls[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_CCA_debugModules_t nCcaDbgModule (dec)" DSL_CPE_CRLF
@@ -143,7 +142,7 @@ static const DSL_char_t g_sCcaDbgmls[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -195,14 +194,14 @@ static const DSL_char_t g_sNsecs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t notify_script[1-256] (Attention: Use absolute firmware path only!)"
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -265,14 +264,14 @@ static const DSL_char_t g_sNsecg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t notify_script[256]" DSL_CPE_CRLF
@@ -317,14 +316,14 @@ static const DSL_char_t g_sAsecg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t adsl_script[256]" DSL_CPE_CRLF
@@ -385,7 +384,7 @@ static const DSL_char_t g_sAsecs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t adsl_script[1-256]"
@@ -402,7 +401,7 @@ static const DSL_char_t g_sAsecs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -521,7 +520,7 @@ static const DSL_char_t g_sAcfgs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bWaitBeforeConfigWrite" DSL_CPE_CRLF
@@ -545,7 +544,7 @@ static const DSL_char_t g_sAcfgs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -567,9 +566,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionSet(
    bWaitBeforeConfigWrite = DSL_FALSE, bWaitBeforeRestart = DSL_FALSE;
    DSL_AutobootConfig_t pData;
    DSL_CPE_Control_Context_t *pCtx = DSL_NULL;
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    DSL_uint32_t nDevice = 0;
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
    DSL_int_t nDeviceNum = -1;
 
    if (DSL_CPE_CLI_CheckParamNumber(pCommands, 6, DSL_CLI_EQUALS) == DSL_FALSE)
@@ -614,10 +613,10 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionSet(
       {
          nDeviceNum = pCtx->nDevNum;
       }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
       else
       {
-         for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+         for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
          {
             if(pCtx->fd[nDevice] == fd)
             {
@@ -626,7 +625,7 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionSet(
             }
          }
       }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
    }
    else
    {
@@ -679,14 +678,14 @@ static const DSL_char_t g_sAcfgg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bWaitBeforeConfigWrite" DSL_CPE_CRLF
@@ -720,9 +719,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionGet(
    DSL_int_t ret = 0;
    DSL_AutobootConfig_t pData;
    DSL_CPE_Control_Context_t *pCtx = DSL_NULL;
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    DSL_uint32_t nDevice = 0;
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
    DSL_int_t nDeviceNum = -1;
 
    if (DSL_CPE_CLI_CheckParamNumber(pCommands, 0, DSL_CLI_EQUALS) == DSL_FALSE)
@@ -744,10 +743,10 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionGet(
          {
             nDeviceNum = pCtx->nDevNum;
          }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
          else
          {
-            for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+            for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
             {
                if(pCtx->fd[nDevice] == fd)
                {
@@ -756,7 +755,7 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootConfigOptionGet(
                }
             }
          }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
       }
       else
       {
@@ -798,13 +797,11 @@ static const DSL_char_t g_sAlf[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
 #if defined(INCLUDE_DSL_CPE_API_DANUBE)
    "- DSL_char_t adsl_firmware[1-256] (Attention: Use absolute firmware path only,"
-#elif defined(INCLUDE_DSL_CPE_API_VINAX)
-   "- DSL_char_t vdsl_firmware[1-256] (Attention: Use absolute firmware path only,"
 #else
    "- DSL_char_t firmware1[1-256] (Attention: Use absolute firmware path only,"
 #endif
@@ -815,7 +812,7 @@ static const DSL_char_t g_sAlf[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -838,10 +835,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
    DSL_char_t sFirmwareName2[256] = { 0 };
 #endif
 #ifdef INCLUDE_FW_REQUEST_SUPPORT
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   DSL_AutobootControl_t autobootCtrl;
-   DSL_AutobootStatus_t  AutobootStatus;
-#endif /* defined(DSL_FIRMWARE_MEMORY_FREE_ENABLED) || defined(INCLUDE_DSL_CPE_API_VINAX)*/
 #endif /* INCLUDE_FW_REQUEST_SUPPORT*/
 
 #if (INCLUDE_DSL_CPE_API_VDSL_SUPPORT == 1)
@@ -982,14 +975,14 @@ static const DSL_char_t g_sRusg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t drvStaticMemUsage" DSL_CPE_CRLF
@@ -1059,7 +1052,7 @@ static const DSL_char_t g_sIcs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_boolean_t bEventActivation" DSL_CPE_CRLF
@@ -1071,7 +1064,7 @@ static const DSL_char_t g_sIcs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1143,14 +1136,14 @@ static const DSL_char_t g_sSe[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t sFileName[1-" _MKSTR(DSL_MAX_COMMAND_LINE_LENGTH) "] (full path to the script)" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -1195,7 +1188,7 @@ static const DSL_char_t g_sBbsg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1204,7 +1197,7 @@ static const DSL_char_t g_sBbsg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1277,7 +1270,7 @@ static const DSL_char_t g_sG997bang[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1286,7 +1279,7 @@ static const DSL_char_t g_sG997bang[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1414,7 +1407,7 @@ static const DSL_char_t g_sG997bansg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1423,7 +1416,7 @@ static const DSL_char_t g_sG997bansg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1505,7 +1498,7 @@ static const DSL_char_t g_sG997gang[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1514,7 +1507,7 @@ static const DSL_char_t g_sG997gang[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1645,7 +1638,7 @@ static const DSL_char_t g_sG997gansg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1654,7 +1647,7 @@ static const DSL_char_t g_sG997gansg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -1724,7 +1717,7 @@ static const DSL_char_t g_sG997lig[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -1733,7 +1726,7 @@ static const DSL_char_t g_sG997lig[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -1815,7 +1808,7 @@ static const DSL_char_t g_sG997listrg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -1824,7 +1817,7 @@ static const DSL_char_t g_sG997listrg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_XTUDir_t nDirection" DSL_CPE_CRLF
@@ -1916,7 +1909,7 @@ static const DSL_char_t g_sG997lis[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t SystemVendorID[" _MKSTR(DSL_G997_LI_MAXLEN_VENDOR_ID) "]" DSL_CPE_CRLF
@@ -1928,7 +1921,7 @@ static const DSL_char_t g_sG997lis[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -2071,14 +2064,14 @@ static const DSL_char_t g_sG997sms[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t nMessageData[1-" _MKSTR(DSL_G997_SNMP_MESSAGE_LENGTH) "]" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -2168,14 +2161,14 @@ static const DSL_char_t g_sG997smr[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint16_t nMessageLength" DSL_CPE_CRLF
@@ -2232,7 +2225,7 @@ static const DSL_char_t g_sG997sang[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2241,7 +2234,7 @@ static const DSL_char_t g_sG997sang[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2370,7 +2363,7 @@ static const DSL_char_t g_sG997sansg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2379,7 +2372,7 @@ static const DSL_char_t g_sG997sansg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2464,7 +2457,7 @@ static const DSL_char_t g_sG997dhling[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2476,7 +2469,7 @@ static const DSL_char_t g_sG997dhling[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2601,7 +2594,7 @@ static const DSL_char_t g_sG997dhlogg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2613,7 +2606,7 @@ static const DSL_char_t g_sG997dhlogg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2737,7 +2730,7 @@ static const DSL_char_t g_sG997dqlng[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2749,7 +2742,7 @@ static const DSL_char_t g_sG997dqlng[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2826,7 +2819,7 @@ static const DSL_char_t g_sG997dsnrg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2838,7 +2831,7 @@ static const DSL_char_t g_sG997dsnrg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
@@ -2917,14 +2910,14 @@ static const DSL_char_t g_sG997xtusecg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t XTSE1 (hex)" DSL_CPE_CRLF
@@ -2980,7 +2973,7 @@ static const DSL_char_t g_sG997xtusecs[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
@@ -2997,7 +2990,7 @@ static const DSL_char_t g_sG997xtusecs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -3048,14 +3041,14 @@ static const DSL_char_t g_sG997xtusesg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t XTSE1 (hex)" DSL_CPE_CRLF
@@ -3111,7 +3104,7 @@ static const DSL_char_t g_sLocs[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_LineOptionsSelector_t nConfigSelector (dec)" DSL_CPE_CRLF
@@ -3123,7 +3116,7 @@ static const DSL_char_t g_sLocs[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -3138,7 +3131,7 @@ static const DSL_char_t g_sPMr[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_PM_ResetTypes_t nResetType" DSL_CPE_CRLF
@@ -3164,7 +3157,7 @@ static const DSL_char_t g_sPMr[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    DSL_CPE_CRLF "";
@@ -3214,45 +3207,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_Reset(
 #ifdef INCLUDE_DSL_PM
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_HISTORY
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCounters15MinGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_LineFailureCounters_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
-
-   ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_COUNTERS_15MIN_GET, (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
-         "nElapsedTime=%u bValid=%u nLOF=%u nLOS=%u nLPR=%u nLOM=%u nSosSuccess=%u"DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
-         (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nLOF, (DSL_uint32_t)pData.data.nLOS,
-         (DSL_uint32_t)pData.data.nLPR, (DSL_uint32_t)pData.data.nLOM,
-         (DSL_uint32_t)pData.data.nSosSuccess);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_HISTORY */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_PM */
@@ -3260,45 +3214,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCounters15MinGet(
 #ifdef INCLUDE_DSL_PM
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_HISTORY
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCounters1DayGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_LineFailureCounters_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
-
-   ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_COUNTERS_1DAY_GET, (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
-         "nElapsedTime=%u bValid=%u nLOF=%u nLOS=%u nLPR=%u nLOM=%u nSosSuccess=%u"DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
-         (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nLOF,
-         (DSL_uint32_t)pData.data.nLOS, (DSL_uint32_t)pData.data.nLPR,
-         (DSL_uint32_t)pData.data.nLOM, (DSL_uint32_t)pData.data.nSosSuccess);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_HISTORY */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_PM */
@@ -3307,42 +3222,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCounters1DayGet(
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_HISTORY
 #ifdef INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureHistoryStats15MinGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_HistoryStatsChDir_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
-
-   ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_HISTORY_STATS_15MIN_GET,
-      (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nPrevIvs=%u nPrevInvalidIvs=%u"
-         DSL_CPE_CRLF, DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
-         pData.nDirection, pData.data.nPrevIvs, pData.data.nPrevInvalidIvs);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS*/
 #endif /* INCLUDE_DSL_CPE_PM_HISTORY */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
@@ -3352,42 +3231,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureHistoryStats15MinGet(
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_HISTORY
 #ifdef INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureHistoryStats1DayGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_HistoryStatsChDir_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
-
-   ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_HISTORY_STATS_1DAY_GET,
-      (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nPrevIvs=%u nPrevInvalidIvs=%u"
-         DSL_CPE_CRLF, DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         pData.data.nPrevIvs, pData.data.nPrevInvalidIvs);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS*/
 #endif /* INCLUDE_DSL_CPE_PM_HISTORY */
 #endif /* INCLUDE_DSL_CPE_PM_DATA_LINE_COUNTERS */
@@ -3396,43 +3239,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureHistoryStats1DayGet(
 #ifdef INCLUDE_DSL_PM
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCountersTotalGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_LineFailureCountersTotal_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
-
-   ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_COUNTERS_TOTAL_GET, (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nElapsedTime=%u bValid=%u nLOF=%u nLOS=%u nLPR=%u nLOM=%u "
-         "nSosSuccess=%u"DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         pData.total.nElapsedTime, pData.total.bValid, pData.data.nLOF, pData.data.nLOS, pData.data.nLPR,
-         pData.data.nLOM, pData.data.nSosSuccess);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_PM */
@@ -3440,45 +3246,6 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCountersTotalGet(
 #ifdef INCLUDE_DSL_PM
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
 #ifdef INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineFailureCountersShowtimeGet(
-   DSL_int_t fd,
-   DSL_char_t *pCommands,
-   DSL_CPE_File_t *out)
-{
-   DSL_int_t ret = 0;
-   DSL_PM_LineFailureCounters_t pData;
-
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
-   {
-      return -1;
-   }
-
-   DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
-
-   ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_FAILURE_COUNTERS_SHOWTIME_GET, (int) &pData);
-
-   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
-   {
-      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
-   }
-   else
-   {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
-         "nElapsedTime=%u bValid=%u nLOF=%u nLOS=%u nLPR=%u nLOM=%u nSosSuccess=%u"DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
-         (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nLOF,
-         (DSL_uint32_t)pData.data.nLOS, (DSL_uint32_t)pData.data.nLPR,
-         (DSL_uint32_t)pData.data.nLOM, (DSL_uint32_t)pData.data.nSosSuccess);
-   }
-
-   return 0;
-}
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_PM */
@@ -3579,14 +3346,14 @@ static const DSL_char_t g_sPtsg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint16_t nNumData" DSL_CPE_CRLF
@@ -3724,35 +3491,13 @@ DSL_void_t DSL_CPE_CLI_AccessCommandsRegister(DSL_void_t)
 #ifdef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
    /* Data path related counters */
 #ifdef INCLUDE_DSL_CPE_PM_HISTORY
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfc15mg", "PM_LineFailureCounters15MinGet", DSL_CPE_CLI_PM_LineFailureCounters15MinGet, g_sPMlesc15mg);
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfc1dg", "PM_LineFailureCounters1DayGet", DSL_CPE_CLI_PM_LineFailureCounters1DayGet, g_sPMlesc1dg);
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 
 #ifdef INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfhs15mg", "PM_LineFailureHistoryStats15MinGet", DSL_CPE_CLI_PM_LineFailureHistoryStats15MinGet, g_sPMleshs15mg);
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfhs1dg",  "PM_LineFailureHistoryStats1DayGet", DSL_CPE_CLI_PM_LineFailureHistoryStats1DayGet, g_sPMleshs1dg);
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS*/
 #endif /* INCLUDE_DSL_CPE_PM_HISTORY */
 #ifdef INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfctg", "PM_LineFailureCountersTotalGet", DSL_CPE_CLI_PM_LineFailureCountersTotalGet, g_sPMlesctg);
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_TOTAL_COUNTERS */
 #ifdef INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS
-#ifdef INCLUDE_DEPRECATED
-#ifdef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
-   DSL_CPE_CLI_CMD_ADD_DEPR ("pmlfcsg", "PM_LineFailureCountersShowtimeGet", DSL_CPE_CLI_PM_LineFailureCountersShowtimeGet, g_sPMlescsg);
-#endif /* INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS*/
-#endif /* INCLUDE_DEPRECATED*/
 #endif /* INCLUDE_DSL_CPE_PM_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 

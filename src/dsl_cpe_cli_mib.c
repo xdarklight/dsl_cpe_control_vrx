@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -46,7 +45,7 @@ static const DSL_char_t g_sMibLeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags" DSL_CPE_CRLF
@@ -54,7 +53,7 @@ static const DSL_char_t g_sMibLeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags" DSL_CPE_CRLF
@@ -104,7 +103,7 @@ static const DSL_char_t g_sMibLeeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags" DSL_CPE_CRLF
@@ -115,7 +114,7 @@ static const DSL_char_t g_sMibLeeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags" DSL_CPE_CRLF
@@ -179,7 +178,7 @@ static const DSL_char_t g_sMibAtucpeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -194,7 +193,7 @@ static const DSL_char_t g_sMibAtucpeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -295,7 +294,7 @@ static const DSL_char_t g_sMibAturpeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -310,7 +309,7 @@ static const DSL_char_t g_sMibAturpeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -407,7 +406,7 @@ static const DSL_char_t g_sMibAtucceg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -417,7 +416,7 @@ static const DSL_char_t g_sMibAtucceg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -470,7 +469,7 @@ static const DSL_char_t g_sMibAturceg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -481,7 +480,7 @@ static const DSL_char_t g_sMibAturceg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint8_t flags (hex)" DSL_CPE_CRLF
@@ -538,7 +537,7 @@ static const DSL_char_t g_sMibAturpdeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -566,7 +565,7 @@ static const DSL_char_t g_sMibAturpdeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -666,7 +665,7 @@ static const DSL_char_t g_sMibAtucpdeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -694,7 +693,7 @@ static const DSL_char_t g_sMibAtucpdeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -795,7 +794,7 @@ static const DSL_char_t g_sMibAtucieg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -808,7 +807,7 @@ static const DSL_char_t g_sMibAtucieg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -871,7 +870,7 @@ static const DSL_char_t g_sMibAturieg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -884,7 +883,7 @@ static const DSL_char_t g_sMibAturieg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -950,7 +949,7 @@ static const DSL_char_t g_sMibAtuccpdeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -978,7 +977,7 @@ static const DSL_char_t g_sMibAtuccpdeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1080,7 +1079,7 @@ static const DSL_char_t g_sMibAturcpdeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1108,7 +1107,7 @@ static const DSL_char_t g_sMibAturcpdeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1211,7 +1210,7 @@ static const DSL_char_t g_sMibAtuccieg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -1225,7 +1224,7 @@ static const DSL_char_t g_sMibAtuccieg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1288,7 +1287,7 @@ static const DSL_char_t g_sMibAturcieg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -1302,7 +1301,7 @@ static const DSL_char_t g_sMibAturcieg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1368,7 +1367,7 @@ static const DSL_char_t g_sMibAtucpdeeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1391,7 +1390,7 @@ static const DSL_char_t g_sMibAtucpdeeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1480,7 +1479,7 @@ static const DSL_char_t g_sMibAturpdeeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1495,7 +1494,7 @@ static const DSL_char_t g_sMibAturpdeeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1566,7 +1565,7 @@ static const DSL_char_t g_sMibAtucieeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -1578,7 +1577,7 @@ static const DSL_char_t g_sMibAtucieeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1639,7 +1638,7 @@ static const DSL_char_t g_sMibAturieeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_int_t IntervalNumber" DSL_CPE_CRLF
@@ -1649,7 +1648,7 @@ static const DSL_char_t g_sMibAturieeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1708,7 +1707,7 @@ static const DSL_char_t g_sMibLacpeg[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1732,7 +1731,7 @@ static const DSL_char_t g_sMibLacpeg[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1826,7 +1825,7 @@ static const DSL_char_t g_sMibLacpes[] =
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Input Parameter" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1867,7 +1866,7 @@ static const DSL_char_t g_sMibLacpes[] =
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_uint32_t flags (hex)" DSL_CPE_CRLF
@@ -1917,14 +1916,14 @@ static const DSL_char_t g_sMibTg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- adslAturTrapsFlags_t flags (hex)" DSL_CPE_CRLF
@@ -1978,14 +1977,14 @@ static const DSL_char_t g_sMibEtg[] =
    "Long Form: %s" DSL_CPE_CRLF
    "Short Form: %s" DSL_CPE_CRLF
    DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "Input Parameter" DSL_CPE_CRLF
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
    DSL_CPE_CRLF
 #endif
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- adslAturExtTrapsFlags_t flags (hex)" DSL_CPE_CRLF

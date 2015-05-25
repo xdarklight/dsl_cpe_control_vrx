@@ -16,8 +16,8 @@ Global
 		Debug - SV CPP = Debug - SV CPP
 		Debug - Win32 = Debug - Win32
 		Release - Win32 = Release - Win32
-		Vinax Debug = Vinax Debug
-		Vinax Release = Vinax Release
+		VRX Debug = VRX Debug
+		VRX Release = VRX Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
@@ -34,10 +34,10 @@ Global
 		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Debug - Win32.Build.0 = Debug|Win32
 		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Release - Win32.ActiveCfg = Release|Win32
 		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Release - Win32.Build.0 = Release|Win32
-		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Vinax Debug.ActiveCfg = Vinax Debug|Win32
-		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Vinax Debug.Build.0 = Vinax Debug|Win32
-		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Vinax Release.ActiveCfg = Vinax Release|Win32
-		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.Vinax Release.Build.0 = Vinax Release|Win32
+		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.VRX Debug.ActiveCfg = VRX Debug|Win32
+		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.VRX Debug.Build.0 = VRX Debug|Win32
+		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.VRX Release.ActiveCfg = VRX Release|Win32
+		{F79EAF4F-E01C-4331-9E2E-BEC06153ACF4}.VRX Release.Build.0 = VRX Release|Win32
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Danube Debug.ActiveCfg = Debug - Win32|Win32
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Danube Debug.Build.0 = Debug - Win32|Win32
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Danube Release.ActiveCfg = Debug - Nucleus Plus|Win32
@@ -50,10 +50,10 @@ Global
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Debug - Win32.Build.0 = Debug - Win32|Win32
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Release - Win32.ActiveCfg = Release - Win32|Win32
 		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Release - Win32.Build.0 = Release - Win32|Win32
-		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Vinax Debug.ActiveCfg = Debug - Win32|Win32
-		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Vinax Debug.Build.0 = Debug - Win32|Win32
-		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Vinax Release.ActiveCfg = Debug - Nucleus Plus|Win32
-		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.Vinax Release.Build.0 = Debug - Nucleus Plus|Win32
+		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.VRX Debug.ActiveCfg = Debug - Win32|Win32
+		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.VRX Debug.Build.0 = Debug - Win32|Win32
+		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.VRX Release.ActiveCfg = Debug - Nucleus Plus|Win32
+		{0BE28B50-BAFF-4849-A060-6BD4A5B2C670}.VRX Release.Build.0 = Debug - Nucleus Plus|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

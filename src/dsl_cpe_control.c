@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -29,7 +28,9 @@ Includes
 #endif
 
 #ifdef INCLUDE_DSL_BONDING
-#include "dsl_cpe_bnd.h"
+#if defined (INCLUDE_DSL_CPE_API_VRX)
+#include "dsl_cpe_bnd_vrx.h"
+#endif
 #endif /* INCLUDE_DSL_BONDING*/
 
 #define DSL_CPE_STATIC static
@@ -82,19 +83,24 @@ DSL_char_t *g_sRemoteTcpServerIp = DSL_NULL;
 
 #endif /* INCLUDE_DSL_API_CONSOLE */
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
-DSL_CPE_STATIC  DSL_char_t *sLowLevCfgName = DSL_NULL;
-#endif
-
 #if defined(INCLUDE_DSL_CPE_API_VRX)
-DSL_CPE_STATIC  DSL_int32_t bMultimodeCfg = -1;
-DSL_CPE_STATIC DSL_MultimodeFsmConfigData_t g_MultimodeFsmConfig = {DSL_FW_TYPE_VDSL};
-DSL_CPE_STATIC DSL_ActivationFsmConfigData_t g_ActivationFsmConfig = {DSL_ACT_SEQ_STD, DSL_ACT_MODE_NA};
+DSL_CPE_STATIC  DSL_char_t *sLowLevCfgName = DSL_NULL;
 
-DSL_CPE_STATIC DSL_int32_t g_nTcLayer        = -1;
-DSL_CPE_STATIC DSL_int32_t g_nEfmTcConfigUs  = -1;
-DSL_CPE_STATIC DSL_int32_t g_nEfmTcConfigDs  = -1;
+DSL_CPE_STATIC DSL_MultimodeFsmConfigData_t g_MultimodeFsmConfig =
+                                            {DSL_FW_TYPE_NA};
+
+DSL_CPE_STATIC DSL_ActivationFsmConfigData_t g_ActivationFsmConfig =
+                                            {DSL_ACT_SEQ_STD, DSL_ACT_MODE_NA};
+
+DSL_CPE_STATIC DSL_boolean_t g_RememberFsmConfig =
+#if (DSL_CPE_MAX_DEVICE_NUMBER == 1) && (DSL_CPE_LINES_PER_DEVICE == 2)
+                                            {DSL_FALSE};
+#else
+                                            {DSL_TRUE};
 #endif
+#endif
+
+DSL_CPE_STATIC DSL_SystemInterfaceConfigData_t g_sSysIfCfg[DSL_MODE_LAST];
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
 DSL_CPE_STATIC  const DSL_CPE_EVT_CodeString_t eventString[] =
@@ -113,6 +119,7 @@ DSL_CPE_STATIC  const DSL_CPE_EVT_CodeString_t eventString[] =
    {DSL_EVENT_S_FIRMWARE_ERROR, "DSL_EVENT_S_FIRMWARE_ERROR"},
    {DSL_EVENT_S_INIT_READY, "DSL_EVENT_S_INIT_READY"},
    {DSL_EVENT_S_FE_INVENTORY_AVAILABLE, "DSL_EVENT_S_FE_INVENTORY_AVAILABLE"},
+   {DSL_EVENT_S_FE_TESTPARAMS_AVAILABLE, "DSL_EVENT_S_FE_TESTPARAMS_AVAILABLE"},
    {DSL_EVENT_S_SYSTEM_STATUS, "DSL_EVENT_S_SYSTEM_STATUS"},
    {DSL_EVENT_S_PM_SYNC, "DSL_EVENT_S_PM_SYNC"},
    {DSL_EVENT_S_LINE_TRANSMISSION_STATUS, "DSL_EVENT_S_LINE_TRANSMISSION_STATUS"},
@@ -122,9 +129,6 @@ DSL_CPE_STATIC  const DSL_CPE_EVT_CodeString_t eventString[] =
    {DSL_EVENT_S_AUTOBOOT_STATUS, "DSL_EVENT_S_AUTOBOOT_STATUS"},
    {DSL_EVENT_S_SNMP_MESSAGE_AVAILABLE, "DSL_EVENT_S_SNMP_MESSAGE_AVAILABLE"},
    {DSL_EVENT_S_SYSTEM_INTERFACE_STATUS, "DSL_EVENT_S_SYSTEM_INTERFACE_STATUS"},
-#ifdef INCLUDE_DSL_CPE_API_VRX
-   {DSL_EVENT_S_MULTIMODE_FSM_STATUS, "DSL_EVENT_S_MULTIMODE_FSM_STATUS"},
-#endif
    {DSL_EVENT_LAST, DSL_NULL}
 };
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
@@ -135,6 +139,19 @@ local prototypes
 DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
    DSL_int32_t argc,
    DSL_char_t * argv[]
+);
+
+DSL_CPE_STATIC DSL_Error_t DSL_CPE_SysIfCfgCheck(
+   DSL_int_t nArgs,
+   DSL_CPE_ArgElement_t *pArgList
+);
+
+DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParseSysIfCfg (
+   DSL_char_t * optarg
+);
+
+DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParseCommonDebugLevel (
+   DSL_char_t * optarg
 );
 
 DSL_CPE_STATIC  DSL_void_t DSL_CPE_Help (
@@ -154,21 +171,23 @@ extern DSL_Error_t DSL_CPE_Pipe_StaticResourceUsageGet(DSL_uint32_t *pStatResUsa
 #endif
 
 DSL_char_t *g_sFirmwareName1 = DSL_NULL;
-DSL_FirmwareFeatures_t g_nFwFeatures1 = DSL_FW_FEATURES_CLEANED;
+DSL_FirmwareFeatures_t g_nFwFeatures1 = {DSL_FW_XDSLMODE_CLEANED, DSL_FW_XDSLFEATURE_CLEANED,
+   DSL_FW_XDSLFEATURE_CLEANED};
 
 DSL_char_t *g_sFirmwareName2 = DSL_NULL;
-DSL_FirmwareFeatures_t g_nFwFeatures2 = DSL_FW_FEATURES_CLEANED;
+DSL_FirmwareFeatures_t g_nFwFeatures2 = {DSL_FW_XDSLMODE_CLEANED, DSL_FW_XDSLFEATURE_CLEANED,
+   DSL_FW_XDSLFEATURE_CLEANED};
 
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
 DSL_char_t *g_sRcScript = DSL_NULL;
 DSL_CPE_STATIC  DSL_boolean_t bScriptWarn = DSL_FALSE;
 #endif
 
-DSL_boolean_t g_bWaitBeforeLinkActivation[DSL_CPE_MAX_DEVICE_NUMBER];
-DSL_boolean_t g_bWaitBeforeConfigWrite[DSL_CPE_MAX_DEVICE_NUMBER];
-DSL_boolean_t g_bWaitBeforeRestart[DSL_CPE_MAX_DEVICE_NUMBER];
+DSL_boolean_t g_bWaitBeforeLinkActivation[DSL_CPE_MAX_DSL_ENTITIES];
+DSL_boolean_t g_bWaitBeforeConfigWrite[DSL_CPE_MAX_DSL_ENTITIES];
+DSL_boolean_t g_bWaitBeforeRestart[DSL_CPE_MAX_DSL_ENTITIES];
 
-static DSL_LineStateValue_t g_nPrevLineState[DSL_CPE_MAX_DEVICE_NUMBER];
+static DSL_LineStateValue_t g_nPrevLineState[DSL_CPE_MAX_DSL_ENTITIES];
 
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
 #  ifdef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT
@@ -177,16 +196,16 @@ DSL_char_t *g_sVdslScript = DSL_NULL;
 #  else
 #include "dsl_cpe_autoboot_script_adsl.h"
 DSL_char_t *g_sAdslScript = g_sAdslScript_static;
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 #include "dsl_cpe_autoboot_script_vdsl.h"
 DSL_char_t *g_sVdslScript = g_sVdslScript_static;
 #else
 DSL_char_t *g_sVdslScript = DSL_NULL;
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 #   endif /* INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT*/
-DSL_boolean_t g_bAutoContinueWaitBeforeLinkActivation[DSL_CPE_MAX_DEVICE_NUMBER];
-DSL_boolean_t g_bAutoContinueWaitBeforeConfigWrite[DSL_CPE_MAX_DEVICE_NUMBER];
-DSL_boolean_t g_bAutoContinueWaitBeforeRestart[DSL_CPE_MAX_DEVICE_NUMBER];
+DSL_boolean_t g_bAutoContinueWaitBeforeLinkActivation[DSL_CPE_MAX_DSL_ENTITIES];
+DSL_boolean_t g_bAutoContinueWaitBeforeConfigWrite[DSL_CPE_MAX_DSL_ENTITIES];
+DSL_boolean_t g_bAutoContinueWaitBeforeRestart[DSL_CPE_MAX_DSL_ENTITIES];
 #endif /* INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT*/
 /*
 local variables
@@ -213,8 +232,10 @@ DSL_CPE_STATIC  DSL_int32_t bMsgDump = -1;
 #endif /* defined(RTEMS)*/
 
 #ifndef DSL_CPE_DEBUG_DISABLE
-DSL_CPE_STATIC  DSL_int32_t  bDebugLevel = -1;
-DSL_CPE_STATIC  DSL_uint32_t g_DebugLevel = 0;
+DSL_CPE_STATIC  DSL_int32_t  g_bDebugLevelApp = -1;
+DSL_CPE_STATIC  DSL_uint32_t g_nDebugLevelApp = 0;
+DSL_CPE_STATIC  DSL_int32_t  g_bDebugLevelDrv = -1;
+DSL_CPE_STATIC  DSL_uint32_t g_nDebugLevelDrv = 0;
 #endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
 
 #ifdef DSL_DEBUG_TOOL_INTERFACE
@@ -266,9 +287,6 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/ifx/firmware/ModemHWE.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
-#elif defined(INCLUDE_DSL_CPE_API_VINAX)
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/ifx/firmware/vcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "/opt/ifx/firmware/acpe_hw.bin"
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/ifx/firmware/xcpe_hw.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
@@ -280,9 +298,6 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "modemhwe.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
-#elif defined(INCLUDE_DSL_CPE_API_VINAX)
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "vcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "acpe_hw.bin"
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "xcpe_hw.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
@@ -297,9 +312,6 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "..\\firmware\\modemhwe.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
-#elif defined(INCLUDE_DSL_CPE_API_VINAX)
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "..\\firmware\\vcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "..\\firmware\\acpe_hw.bin"
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "..\\firmware\\xcpe_hw.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
@@ -318,8 +330,6 @@ const DSL_char_t *sDefaultFirmwareName2 = (DSL_char_t *)DSL_CPE_DEFAULT_FIRMWARE
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
    #if defined (INCLUDE_DSL_CPE_API_DANUBE)
       #define DSL_CPE_DEFAULT_RC_SCRIPT "./adslrc.sh"
-   #elif defined(INCLUDE_DSL_CPE_API_VINAX)
-      #define DSL_CPE_DEFAULT_RC_SCRIPT "./vdslrc.sh"
    #else
       #define DSL_CPE_DEFAULT_RC_SCRIPT "./xdslrc.sh"
    #endif
@@ -345,10 +355,10 @@ DSL_CPE_STATIC  struct option long_options[] = {
    {"help      ", 0, 0, 'h'},
    {"version   ", 0, 0, 'v'},
    {"init      ", 1, 0, 'i'},
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
-   #if (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   #if (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
    {"backward  ", 0, 0, 'b'},
-   #endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
+   #endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
    {"low_cfg   ", 1, 0, 'l'},
 #endif
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
@@ -362,7 +372,7 @@ DSL_CPE_STATIC  struct option long_options[] = {
 #ifdef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
    {"auto_scr_1", 1, 0, 'a'},
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    {"auto_scr_2", 1, 0, 'A'},
 #endif
 #endif
@@ -371,9 +381,6 @@ DSL_CPE_STATIC  struct option long_options[] = {
    {"silent    ", 0, 0, 'q'},
 #endif /* USE_DAEMONIZE */
    {"firmware1 ", 1, 0, 'f'},
-#ifdef INCLUDE_DSL_CPE_API_VINAX
-   {"firmware2 ", 1, 0, 'F'},
-#endif /* INCLUDE_DSL_CPE_API_VINAX*/
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    {"opt_off   ", 1, 0, 'o'},
 #endif
@@ -394,8 +401,11 @@ DSL_CPE_STATIC  struct option long_options[] = {
 #endif /* defined(INCLUDE_DSL_CPE_DTI_SUPPORT)*/
 #ifdef INCLUDE_DSL_CPE_API_VRX
    {"multimode ", 1, 0, 'M'},
+#endif
    {"tc-layer  ", 1, 0, 'T'},
+#ifdef INCLUDE_DSL_CPE_API_VRX
    {"sequence  ", 1, 0, 'S'},
+   {"remember  ", 1, 0, 'R'},
 #endif
 #ifndef DSL_DEBUG_DISABLE
    {"debug_drv ", 1, 0, 'g'},
@@ -407,10 +417,10 @@ DSL_CPE_STATIC  struct option long_options[] = {
 /* 1 colon means there is a required parameter */
 /* 2 colons means there is an optional parameter */
 DSL_CPE_STATIC  const DSL_char_t GETOPT_LONG_OPTSTRING[] = "hvi::"
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
-   #if (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   #if (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
    "b"
-   #endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
+   #endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
    "l:"
 #endif
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
@@ -423,18 +433,15 @@ DSL_CPE_STATIC  const DSL_char_t GETOPT_LONG_OPTSTRING[] = "hvi::"
 #ifdef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
    "a:"
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    "A:"
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 #endif
 #endif
 #ifdef USE_DAEMONIZE
    "q"
 #endif
    "f:"
-#ifdef INCLUDE_DSL_CPE_API_VINAX
-   "F:"
-#endif /* INCLUDE_DSL_CPE_API_VINAX*/
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    "o"
 #endif
@@ -454,7 +461,11 @@ DSL_CPE_STATIC  const DSL_char_t GETOPT_LONG_OPTSTRING[] = "hvi::"
    "d::"
 #endif
 #ifdef INCLUDE_DSL_CPE_API_VRX
-   "M:T:S:"
+   "M:"
+#endif
+   "T:"
+#ifdef INCLUDE_DSL_CPE_API_VRX
+   "S:R:"
 #endif
 #ifndef DSL_CPE_DEBUG_DISABLE
    "g::G::"
@@ -462,14 +473,14 @@ DSL_CPE_STATIC  const DSL_char_t GETOPT_LONG_OPTSTRING[] = "hvi::"
    ;
 
 /*lint -save -e786 */ \
-DSL_CPE_STATIC  DSL_char_t description[][90] = {
+DSL_CPE_STATIC  DSL_char_t description[][105] = {
    {"help screen"},
    {"display version"},
    {"init device w/ <xtu> Bits seperated by underscore (e.g. -i05_01_04_00_04_01_00_00)"},
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
-   #if (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   #if (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
    {"CLI backward compatible mode"},
-   #endif /*(DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+   #endif /*(DSL_CPE_MAX_DSL_ENTITIES > 1)*/
    {"low level configuration file"},
 #endif
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
@@ -478,23 +489,20 @@ DSL_CPE_STATIC  DSL_char_t description[][90] = {
    {"configure instance activation handling <enable/disable>[_mask] (e.g. -e1_1)"},
    {"enable message dump"},
 #ifndef DSL_CPE_DEBUG_DISABLE
-   {"configure debug level (0=NO, 1=LOW, 2=NORMAL, 3=HIGH, 4=OFF), e.g. -D 3"},
+   {"config debug level -D<app>{_<drv>} (0=NO, 1=LOW, 2=NORMAL, 3=HIGH, 4=OFF), e.g. -D3"},
 #endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
 #ifdef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
    {"autoboot start script for ADSL (empty by default)"},
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    {"autoboot start script for VDSL (empty by default)"},
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 #endif
 #endif
 #ifdef USE_DAEMONIZE
    "silent mode, no output from background",
 #endif
    {"firmware file, default " DSL_CPE_DEFAULT_FIRMWARE_1},
-#ifdef INCLUDE_DSL_CPE_API_VINAX
-   {"2nd firmware file, default " DSL_CPE_DEFAULT_FIRMWARE_2},
-#endif /* INCLUDE_DSL_CPE_API_VINAX*/
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    {"deactivate footprint optimizations"},
 #endif
@@ -514,13 +522,18 @@ DSL_CPE_STATIC  DSL_char_t description[][90] = {
    {"enable DTI support on default tcp port 9000, listen only on <ipaddr> (optional)"},
 #endif
 #ifdef INCLUDE_DSL_CPE_API_VRX
-   {"set multimode config -M<NextMode>[_<AdslSubPref>] (e.g. -M1_1 or -M1)"},
-   {"set TC-Layer options -T<TcLayer>_<TcConfigUs>_<TcConfigDs> (e.g. -T2_0x3_0x1)"},
-   {"set activation sequence -S<Sequence>_<Mode> (e.g. -M0_0)"},
+   {"set multimode config -M<NextMode> (e.g. -M1)"},
+   {"config TC-Layer -T<TcA>:<TcCfgUsA>:<TcCfDsA>_<TcV>:<TcCfgUsV>:<TcCfDsV> (e.g. -T1:0x0:0x0_2:0x0:0x0)"},
+#else
+   {"config TC-Layer -T<TcA>:<TcCfgUsA>:<TcCfgDsA> (e.g. -T1:0x0:0x0)"},
+#endif
+#ifdef INCLUDE_DSL_CPE_API_VRX
+   {"set activation sequence -S<Sequence>_<Mode> (e.g. -S0_0)"},
+   {"set remember config -R<Remember> (e.g. -R1)"},
 #endif
 #ifndef DSL_CPE_DEBUG_DISABLE
    {"Driver modules debug level -g<Module>_<Level>{_<Module>_<Level>} e.g. -g1:2_14:FF"},
-   {"Application modules debug level -G<Module>_<Level>{_<Module>_<Level>} e.g. -G12:40"},
+   {"Application modules debug level -G<Module>_<Level>{_<Module>_<Level>} e.g. -G1:40"},
 #endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
    {0}
 };
@@ -543,16 +556,20 @@ DSL_CPE_Control_Context_t *DSL_CPE_GetGlobalContext (
 }
 
 #ifndef DSL_CPE_DEBUG_DISABLE
-DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInit(DSL_uint32_t dbg_level)
+DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInitCommon(DSL_uint32_t dbg_level)
 {
    DSL_CCA_debugLevels_t nCcaDbgLvl = DSL_CCA_DBG_NONE;
    DSL_int_t i = 0;
    DSL_boolean_t bSetLvl = DSL_TRUE;
 
-   /* Set common debug level for all application related modules first if
-      defined by '-D' startup option */
+   /* Set common debug level for all application related modules if defined by
+      '-D' startup option */
    switch (dbg_level)
    {
+      case 0:
+         /* Nothing to do */
+         bSetLvl = DSL_FALSE;
+         break;
       case 1:
          nCcaDbgLvl = DSL_CCA_DBG_MSG;
          break;
@@ -565,10 +582,12 @@ DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInit(DSL_uint32_t dbg_level)
       case 4:
          nCcaDbgLvl = DSL_CCA_DBG_NONE;
          break;
-      case 0:
       default:
-         /* Nothing to do */
+         /* Invalid */
          bSetLvl = DSL_FALSE;
+         printf(DSL_CPE_PREFIX
+            "Invalid argument (%d) for '-D' option - will be ignored!"
+            DSL_CPE_CRLF, dbg_level);
          break;
    }
 
@@ -580,8 +599,15 @@ DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInit(DSL_uint32_t dbg_level)
       }
    }
 
-   /* Now set (overwrite) debug module specific application debug levels as
-      defined by '-g' startup option */
+   return;
+}
+
+DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInitModule()
+{
+   DSL_int_t i = 0;
+
+   /* Set debug module specific application debug levels as defined by '-g'
+      startup option */
    for (i = 0; (i < MAX_DBG_MOD_PAIRS) && (g_nDbgAppLevel[i].nDbgModule != 0); ++i)
    {
       DSL_CCA_g_dbgLvl[g_nDbgAppLevel[i].nDbgModule].nDbgLvl =
@@ -615,7 +641,10 @@ void DSL_CPE_Echo (
    {
       str += 4;
    }
-   if (str[0] == ' ') str++;
+   if (str != DSL_NULL)
+   {
+      if (str[0] == ' ') str++;
+   }
 
    DSL_CPE_FPrintf (DSL_CPE_STDOUT, "%s \n", str);
 
@@ -767,7 +796,7 @@ DSL_Error_t DSL_CPE_MoveCharPtr(
 }
 
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 DSL_Error_t DSL_CPE_GetMacAdrFromString(
    DSL_char_t *pString,
    DSL_CPE_MacAddress_t *pMacAdr)
@@ -827,7 +856,7 @@ DSL_Error_t DSL_CPE_GetMacAdrFromString(
 
    return nRet;
 }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 #ifndef DSL_CPE_DEBUG_DISABLE
@@ -857,6 +886,52 @@ DSL_Error_t DSL_CPE_DebugPairExtract(DSL_char_t** argv, DSL_uint_t *module, DSL_
    return DSL_SUCCESS;
 }
 #endif /*#ifndef DSL_CPE_DEBUG_DISABLE*/
+
+DSL_CPE_STATIC DSL_int_t DSL_CPE_ArgsExtract(
+   DSL_char_t **pArg,
+   DSL_char_t *pcSeparators,
+   DSL_int_t nArgListNum,
+   DSL_CPE_ArgElement_t *pArgList)
+{
+   DSL_char_t cString[30] = { 0 };
+   DSL_char_t *pcToken, *pcString;
+   DSL_int_t i = 0, nRet = 0;
+
+   /* Set pointer to beginning of next parameter group */
+   if ((**pArg == '_') && (*(*pArg+1) != '\0')) *pArg = *pArg + 1;
+
+   strncpy (cString, *pArg, sizeof(cString)-1);
+   cString[sizeof(cString)-1]=0;
+   pcString = &cString[0];
+   pcToken = strtok (cString, pcSeparators);
+
+   if (pcToken != DSL_NULL)
+   {
+      nRet++;
+      *pArg = *pArg + (strlen(pcToken) + 1);
+      pArgList[i].nValue =
+         (DSL_int_t)(strtol(pcToken, DSL_NULL, pArgList[i].nBase));
+
+      for ( i = nRet ; nRet < nArgListNum; i++)
+      {
+         /* Get next token */
+         pcToken = strtok(DSL_NULL, pcSeparators);
+         if (pcToken == DSL_NULL)
+         {
+            break;
+         }
+         nRet++;
+         *pArg = *pArg + (strlen(pcToken) + 1);
+         pArgList[i].nValue =
+            (DSL_int_t)(strtol(pcToken, DSL_NULL, pArgList[i].nBase));
+      }
+      /* Take care that pointer is not pointing to string termination '\0'
+         (preparation for extracting the next parameter group). */
+      *pArg = *pArg - 1;
+   }
+
+   return nRet;
+}
 
 /**
    Parse all arguments and enable requested features.
@@ -926,8 +1001,8 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          if (optarg != NULL)
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-               "using %s as an IP address for tcp messages debug server" DSL_CPE_CRLF,
-               optarg));
+               "(-t) using %s as IP address for tcp messages debug server"
+               DSL_CPE_CRLF, optarg));
 
             if (sTcpMessagesSocketAddr)
             {
@@ -956,8 +1031,8 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             else
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-                  "using %s as an IP address for tcp messages debug server" DSL_CPE_CRLF,
-                  sTcpMessagesSocketAddr));
+                  "(-t) using %s (default) as IP address for tcp messages "
+                  "debug server"DSL_CPE_CRLF, sTcpMessagesSocketAddr));
             }
          }
          break;
@@ -969,7 +1044,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          if (optarg != NULL)
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-               "using %s as an IP address for DTI Agent" DSL_CPE_CRLF,
+               "(-d) using %s as IP address for DTI Agent" DSL_CPE_CRLF,
                optarg));
 
             if (sDtiSocketAddr)
@@ -999,8 +1074,8 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             else
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-                  "using %s as an IP address for DTI Agent" DSL_CPE_CRLF,
-                  sDtiSocketAddr));
+                  "(-d) using %s (default) as IP address for DTI Agent"
+                  DSL_CPE_CRLF, sDtiSocketAddr));
             }
          }
          break;
@@ -1043,8 +1118,8 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          }
          break;
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
-      #if (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+      #if (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
       case 'b':
          {
             DSL_CPE_Control_Context_t *pCtrlCtx = DSL_NULL;
@@ -1055,12 +1130,13 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             }
          }
          break;
-      #endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
+      #endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
 
       case 'l':
          if (sLowLevCfgName)
          {
             DSL_CPE_Free(sLowLevCfgName);
+            sLowLevCfgName = DSL_NULL;
          }
          if (optarg)
          {
@@ -1072,7 +1148,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             }
          }
          break;
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
       case 'c':
@@ -1190,17 +1266,24 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             g_nMsgDumpDbgLvl = (DSL_uint8_t)(strtoul (optarg, &pEndPtr, 0));
          }
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "Using message dump (debug level: 0x%02X)" DSL_CPE_CRLF, g_nMsgDumpDbgLvl));
+            "(-m) Using message dump (debug level: 0x%02X)" DSL_CPE_CRLF,
+            g_nMsgDumpDbgLvl));
          break;
 
 #ifndef DSL_CPE_DEBUG_DISABLE
       case 'D':
-         bDebugLevel = 1;
+         DSL_CPE_ArgParseCommonDebugLevel(optarg);
 
-         g_DebugLevel = (DSL_uint32_t)(strtoul (optarg, &pEndPtr, 0));
+         if ((g_bDebugLevelApp == 1) && (g_nDebugLevelApp != 0))
+         {
+            DSL_CPE_DebugInitCommon(g_nDebugLevelApp);
+         }
 
-         DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "Using specified debug level %d" DSL_CPE_CRLF, g_DebugLevel));
+         printf(DSL_CPE_PREFIX
+            "(-D) User defined debug levels: app=");
+         g_bDebugLevelApp ? printf("%d, ", g_nDebugLevelApp):printf("n/a");
+         g_bDebugLevelDrv ? printf("%d, ", g_nDebugLevelDrv):printf("n/a");
+         printf(DSL_CPE_CRLF);
          break;
 #endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
 
@@ -1246,7 +1329,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          if (optarg != NULL)
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-               "using SOAP server - %s" DSL_CPE_CRLF, optarg));
+               "(-s) using SOAP server - %s" DSL_CPE_CRLF, optarg));
 
             sSoapRemoteServer = DSL_CPE_Malloc(strlen (optarg) + 1);
             if (sSoapRemoteServer)
@@ -1272,38 +1355,43 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             {
                /* Get next mode */
                g_MultimodeFsmConfig.nNextMode = strtoul(token, DSL_NULL, 16);
-
-               /* Get next token */
-               token = strtok(DSL_NULL, seps);
-               if (token != DSL_NULL)
-               {
-                  bMultimodeCfg = 1;
-
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_WRN, (DSL_CPE_PREFIX
-                     "multimode option nAdslSubPref ignored (no longer supported)"
-                     DSL_CPE_CRLF));
-
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-                     "multimode option: nNextMode=%d" DSL_CPE_CRLF,
-                     g_MultimodeFsmConfig.nNextMode));
-               }
-               else
-               {
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                   "Invalid multimode options string: %s" DSL_CPE_CRLF, optarg));
-               }
             }
             else
             {
-               /* Get next mode */
-               g_MultimodeFsmConfig.nNextMode = strtoul(optarg, &pEndPtr, 16);
-               bMultimodeCfg = 1;
+               DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+                 "Invalid multimode options string: %s" DSL_CPE_CRLF, optarg));
             }
          }
          else
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
                "No multimode options specified." DSL_CPE_CRLF));
+         }
+         break;
+
+      case 'R':
+         if( optarg != NULL )
+         {
+            strncpy (string, optarg, sizeof(string)-1);
+               string[sizeof(string)-1]=0;
+
+            token = strtok (string, seps);
+
+            if (token != DSL_NULL)
+            {
+               /* Get remember option */
+               g_RememberFsmConfig = (strtoul(token, DSL_NULL, 10)) ? DSL_TRUE : DSL_FALSE;
+            }
+            else
+            {
+               DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+                 "Invalid remember options string: %s" DSL_CPE_CRLF, optarg));
+            }
+         }
+         else
+         {
+            DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+               "No remember options specified." DSL_CPE_CRLF));
          }
          break;
 
@@ -1345,61 +1433,23 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
                "No activation options specified." DSL_CPE_CRLF));
          }
          break;
+#endif /* #ifdef INCLUDE_DSL_CPE_API_VRX */
+
+#undef DSL_CCA_DBG_BLOCK
+#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
 
       case 'T':
          if( optarg != NULL )
          {
-            strncpy (string, optarg, sizeof(string)-1);
-            string[sizeof(string)-1]=0;
-            token = strtok (string, seps);
-
-            if (token != DSL_NULL)
-            {
-               /* Get TC-Layer */
-               g_nTcLayer = strtoul(token, DSL_NULL, 16);
-
-               /* Get next token, event mask */
-               token = strtok(DSL_NULL, seps);
-               if (token != DSL_NULL)
-               {
-                  /* Get config upstream */
-                  g_nEfmTcConfigUs = strtoul(token, DSL_NULL, 16);
-
-                  /* Get next token, event mask */
-                  token = strtok(DSL_NULL, seps);
-                  if (token != DSL_NULL)
-                  {
-                     /* Get config downstream */
-                     g_nEfmTcConfigDs = strtoul(token, DSL_NULL, 16);
-
-                     DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-                        "System inteface options: nTcLayer=%d, nEfmTcConfigUs=%d "
-                        "nEfmTcConfigDs=%d" DSL_CPE_CRLF,
-                        g_nTcLayer, g_nEfmTcConfigUs, g_nEfmTcConfigDs));
-                  }
-                  else
-                  {
-                     DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                        "Invalid system interface downstream option string: %s" DSL_CPE_CRLF, optarg));
-                  }
-               }
-               else
-               {
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                     "Invalid system interface upstream option string: %s" DSL_CPE_CRLF, optarg));
-               }
-            }
+            DSL_CPE_ArgParseSysIfCfg(optarg);
          }
          else
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "No multimode options specified." DSL_CPE_CRLF));
+               "(-T) No SystemInterfaceConfig options specified!" DSL_CPE_CRLF));
          }
          break;
-#undef DSL_CCA_DBG_BLOCK
-#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
 
-#endif /* #ifdef INCLUDE_DSL_CPE_API_VRX */
 #ifndef DSL_CPE_DEBUG_DISABLE
       case 'g':
          if ( optarg != NULL )
@@ -1413,12 +1463,11 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
                   (DSL_uint_t*) &g_nDbgDrvLevel[nDbgModProc % MAX_DBG_MOD_PAIRS].nDbgModule,
                   (DSL_uint_t*) &g_nDbgDrvLevel[nDbgModProc % MAX_DBG_MOD_PAIRS].nDbgLevel) != DSL_SUCCESS )
                {
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+                  printf(DSL_CPE_PREFIX
                      "Error in driver debug module level option, "
                      "%d debug level pair%s parsed successfully." DSL_CPE_CRLF,
-                     nDbgModProc, nDbgModProc == 1 ? "" : "s"));
-
-                     break;
+                     nDbgModProc, nDbgModProc == 1 ? "" : "s");
+                  break;
                }
 
                if ( *pArg != '_' )
@@ -1429,15 +1478,15 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
 
             if (nDbgModProc++ > MAX_DBG_MOD_PAIRS)
             {
-               DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+               printf(DSL_CPE_PREFIX
                   "Too many driver debug modules specified. Only last %d pairs "
-                  "are used!" DSL_CPE_CRLF, MAX_DBG_MOD_PAIRS));
+                  "are used!" DSL_CPE_CRLF, MAX_DBG_MOD_PAIRS);
             }
          }
          else
          {
-            DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                     "No driver modules debug level specified." DSL_CPE_CRLF));
+            printf(DSL_CPE_PREFIX
+               "No driver modules debug level specified." DSL_CPE_CRLF);
          }
          break;
 
@@ -1453,12 +1502,11 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
                nDbgModProc = i % MAX_DBG_MOD_PAIRS;
                if ( DSL_CPE_DebugPairExtract(&pArg, &nDbgModule, &nDbgLvl) != DSL_SUCCESS )
                {
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+                  printf(DSL_CPE_PREFIX
                      "Error in application debug module level option, "
                      "%d debug level pair%s parsed successfully." DSL_CPE_CRLF, i,
-                     i == 1 ? "" : "s"));
-
-                     break;
+                     i == 1 ? "" : "s");
+                  break;
                }
 
                if ((nDbgModule > DSL_CCA_DBG_NO_BLOCK) &&
@@ -1474,14 +1522,14 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
                   }
                   else
                   {
-                     DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                        "Wrong application debug level number: %d." DSL_CPE_CRLF, nDbgLvl));
+                     printf(DSL_CPE_PREFIX
+                        "Wrong application debug level number: %d." DSL_CPE_CRLF, nDbgLvl);
                   }
                }
                else
                {
-                  DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                     "Wrong application debug module number: %d." DSL_CPE_CRLF, nDbgModule));
+                  printf(DSL_CPE_PREFIX
+                     "Wrong application debug module number: %d." DSL_CPE_CRLF, nDbgModule);
                }
 
                if ( *pArg != '_' )
@@ -1492,35 +1540,35 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
 
             if (i++ > MAX_DBG_MOD_PAIRS)
             {
-               DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+               printf(DSL_CPE_PREFIX
                   "Too many application debug modules specified. Only last "
-                  "%d will be accepted." DSL_CPE_CRLF, MAX_DBG_MOD_PAIRS));
+                  "%d will be accepted." DSL_CPE_CRLF, MAX_DBG_MOD_PAIRS);
             }
          }
          else
          {
-            DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-                     "No driver modules debug level specified." DSL_CPE_CRLF));
+            printf(DSL_CPE_PREFIX
+               "No driver modules debug level specified." DSL_CPE_CRLF);
          }
+         DSL_CPE_DebugInitModule();
          break;
-
-   #endif /*#ifndef DSL_CPE_DEBUG_DISABLE*/
+#endif /*#ifndef DSL_CPE_DEBUG_DISABLE*/
          default:
-            DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "Sorry, there is an unrecognized option: %c" DSL_CPE_CRLF, c));
+            printf(DSL_CPE_PREFIX
+               "Sorry, there is an unrecognized option: %c" DSL_CPE_CRLF, c);
             break;
       }
    }
 
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
    if( (g_sAdslScript != DSL_NULL)
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
       || (g_sVdslScript != DSL_NULL)
 #endif
       )
    {
       DSL_uint32_t nDevice = 0;
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          g_bWaitBeforeLinkActivation[nDevice] = DSL_TRUE;
          g_bWaitBeforeConfigWrite[nDevice]    = DSL_TRUE;
@@ -1530,7 +1578,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
    else
    {
       DSL_uint32_t nDevice = 0;
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          g_bWaitBeforeLinkActivation[nDevice] = DSL_FALSE;
          g_bWaitBeforeConfigWrite[nDevice]    = DSL_FALSE;
@@ -1539,6 +1587,166 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
    }
 #endif /* INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT */
 }
+
+#define NUM_SYSIF_ARGS 3
+
+DSL_CPE_STATIC DSL_Error_t DSL_CPE_SysIfCfgCheck (
+   DSL_int_t nArgs,
+   DSL_CPE_ArgElement_t *pArgList )
+{
+   /* Only accept parameters if consistent number of values (three) are given */
+   if (nArgs < NUM_SYSIF_ARGS)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "Invalid number of arguments for -T option - NO config applied."
+         DSL_CPE_CRLF));
+      return DSL_ERROR;
+   }
+
+   /* Check for consistent configuration value (TC-Layer) */
+   if ((pArgList[0].nValue != DSL_TC_ATM) && (pArgList[0].nValue != DSL_TC_EFM)
+       && (pArgList[0].nValue != DSL_TC_AUTO)
+#if defined(INCLUDE_DSL_CPE_API_DANUBE)
+       && (pArgList[0].nValue != DSL_TC_EFM_FORCED)
+#endif
+       )
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "Invalid TC-Layer configuration (%d) for -T option - NO config applied."
+         DSL_CPE_CRLF, pArgList[0].nValue));
+      return DSL_ERROR;
+   }
+
+   return DSL_SUCCESS;
+}
+
+DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParseSysIfCfg (
+   DSL_char_t * optarg )
+{
+   DSL_CPE_ArgElement_t sArgList[NUM_SYSIF_ARGS];
+   DSL_int_t nArgs = 0;
+   DSL_char_t *pArg = optarg;
+   DSL_char_t seps_old[]   = "_:";
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   DSL_char_t seps_new[]   = ":";
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
+   DSL_int_t i = 0;
+
+   memset (&sArgList, 0, (sizeof(DSL_CPE_ArgElement_t)) * NUM_SYSIF_ARGS);
+
+   /* First value: TC-Layer is enum (int) */
+   sArgList[0].nBase = 10;
+   /* Second and third value: Bitfield for EMF TC Config (hex) */
+   sArgList[1].nBase = sArgList[2].nBase = 16;
+
+   nArgs = DSL_CPE_ArgsExtract(&pArg, seps_old, NUM_SYSIF_ARGS, &sArgList[0]);
+
+   if (DSL_CPE_SysIfCfgCheck(nArgs, &sArgList[0]) != DSL_SUCCESS)
+   {
+      return;
+   }
+
+   g_sSysIfCfg[DSL_MODE_ADSL].nTcLayer = sArgList[0].nValue;
+   g_sSysIfCfg[DSL_MODE_ADSL].nEfmTcConfigUs = sArgList[1].nValue;
+   g_sSysIfCfg[DSL_MODE_ADSL].nEfmTcConfigDs = sArgList[2].nValue;
+   /* Fixed value for SystemInterface configuration by now! */
+   g_sSysIfCfg[DSL_MODE_ADSL].nSystemIf = DSL_SYSTEMIF_MII;
+
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   /* VRX could have separate settings for ADSL and VDSL */
+   memset (&sArgList, 0, (sizeof(DSL_CPE_ArgElement_t)) * NUM_SYSIF_ARGS);
+
+   /* First value: TC-Layer is enum (int) */
+   sArgList[0].nBase = 10;
+   /* Second and third value: Bitfield for EMF TC Config (hex) */
+   sArgList[1].nBase = sArgList[2].nBase = 16;
+
+   nArgs = DSL_CPE_ArgsExtract(&pArg, seps_new, NUM_SYSIF_ARGS, &sArgList[0]);
+
+   if (DSL_CPE_SysIfCfgCheck(nArgs, &sArgList[0]) == DSL_SUCCESS)
+   {
+      g_sSysIfCfg[DSL_MODE_VDSL].nTcLayer = sArgList[0].nValue;
+      g_sSysIfCfg[DSL_MODE_VDSL].nEfmTcConfigUs = sArgList[1].nValue;
+      g_sSysIfCfg[DSL_MODE_VDSL].nEfmTcConfigDs = sArgList[2].nValue;
+      /* Fixed value for SystemInterface configuration by now! */
+      g_sSysIfCfg[DSL_MODE_VDSL].nSystemIf = DSL_SYSTEMIF_MII;
+   }
+   else
+   {
+      /* If no valid values are given for VDSL use the valid ADSL ones */
+      memcpy(&g_sSysIfCfg[DSL_MODE_VDSL],
+             &g_sSysIfCfg[DSL_MODE_ADSL],
+             sizeof(DSL_SystemInterfaceConfigData_t));
+
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "Using valid -T options from ADSL also for VDSL."
+         DSL_CPE_CRLF));
+   }
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
+
+   DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+      "(-T) User defined SystemInterfaceConfig:"DSL_CPE_CRLF));
+   for (i = 0; i < DSL_MODE_LAST; i++)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+         "     %s: TC-Layer=%d, nEfmTcConfigUs=%d, nEfmTcConfigDs=%d"
+         DSL_CPE_CRLF, i==0 ? "ADSL":"VDSL", g_sSysIfCfg[i].nTcLayer,
+         g_sSysIfCfg[i].nEfmTcConfigUs, g_sSysIfCfg[i].nEfmTcConfigDs));
+   }
+
+   return;
+}
+
+#ifndef DSL_CPE_DEBUG_DISABLE
+#define NUM_COMMON_DBGLVL_ARGS 2
+
+DSL_CPE_STATIC DSL_void_t DSL_CPE_ArgParseCommonDebugLevel (
+   DSL_char_t * optarg )
+{
+   DSL_CPE_ArgElement_t sArgList[NUM_COMMON_DBGLVL_ARGS];
+   DSL_int_t nArgs = 0;
+   DSL_char_t *pArg = optarg;
+   DSL_char_t seps[]   = "_";
+   DSL_int_t i = 0;
+
+   memset (&sArgList[0], 0, (sizeof(sArgList)) * NUM_COMMON_DBGLVL_ARGS);
+
+   /* First and second value: Common debug level (int) */
+   sArgList[0].nBase = sArgList[1].nBase = 10;
+
+   nArgs = DSL_CPE_ArgsExtract(&pArg, seps, NUM_COMMON_DBGLVL_ARGS, &sArgList[0]);
+
+   for (i = 0; i < nArgs; i++)
+   {
+      /* Check valid range of debug level */
+      if (sArgList[i].nValue < 0 || sArgList[i].nValue > 4)
+      {
+         printf(DSL_CPE_PREFIX
+            "Invalid debug level (%d) within '-D' option - will be ignored!"
+            DSL_CPE_CRLF, sArgList[i].nValue);
+         continue;
+      }
+
+      switch (i)
+      {
+         case 0:
+            g_bDebugLevelApp = 1;
+            g_nDebugLevelApp = sArgList[i].nValue;
+            break;
+         case 1:
+            g_bDebugLevelDrv = 1;
+            g_nDebugLevelDrv = sArgList[i].nValue;
+            break;
+         default:
+            printf(DSL_CPE_PREFIX
+               "Error within parsing of '-D' options!"DSL_CPE_CRLF);
+            break;
+      }
+   }
+
+   return;
+}
+#endif /* DSL_CPE_DEBUG_DISABLE */
 
 /**
 Print usage help.
@@ -1639,7 +1847,7 @@ DSL_Error_t DSL_CPE_SoapFirmwareStore(
          memcpy(pDestFirmware->pData, pSrcFirmware->pData, pSrcFirmware->nSize);
          pDestFirmware->nSize = pSrcFirmware->nSize;
 
-         DSL_CPE_FwFeaturesGet(pFwSoapName, &(pDestFirmware->nFwFeatures));
+         DSL_CPE_FwFeaturesGet(pFwSoapName, &(pDestFirmware->fwFeatures));
       }
       else
       {
@@ -1655,7 +1863,54 @@ DSL_Error_t DSL_CPE_SoapFirmwareStore(
 #endif /* DSL_CPE_SOAP_FW_UPDATE */
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+
+DSL_Error_t DSL_CPE_Fd2DevNum(
+   DSL_int_t fd,
+   DSL_uint32_t *nDevice)
+{
+   DSL_Error_t nRet = DSL_SUCCESS;
+   DSL_CPE_Control_Context_t *pCtx = DSL_NULL;
+   DSL_uint32_t i = 0;
+
+   if ((pCtx = DSL_CPE_GetGlobalContext()) != DSL_NULL)
+   {
+      if (pCtx->bBackwardCompMode)
+      {
+         if (pCtx->nDevNum < 0)
+         {
+            nRet = DSL_ERROR;
+         }
+         else
+         {
+            *nDevice = (DSL_uint32_t) pCtx->nDevNum;
+         }
+      }
+      else
+      {
+         for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
+         {
+            if(pCtx->fd[i] == fd)
+            {
+               *nDevice = i;
+               break;
+            }
+         }
+
+         if (i == DSL_CPE_MAX_DSL_ENTITIES)
+         {
+            nRet = DSL_ERROR;
+         }
+      }
+   }
+   else
+   {
+      nRet = DSL_ERROR;
+   }
+
+   return nRet;
+}
+
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
 DSL_char_t g_nDevNumStr[20];
 
 DSL_char_t *DSL_CPE_Fd2DevStr(DSL_int_t fd)
@@ -1676,7 +1931,7 @@ DSL_char_t *DSL_CPE_Fd2DevStr(DSL_int_t fd)
 
    if (!(pCtx->bBackwardCompMode))
    {
-      for (i = 0; i < DSL_CPE_MAX_DEVICE_NUMBER; i++)
+      for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
       {
          if (fd == pCtx->fd[i])
          {
@@ -1688,7 +1943,7 @@ DSL_char_t *DSL_CPE_Fd2DevStr(DSL_int_t fd)
 
    return pDevSrt;
 }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 
 DSL_boolean_t DSL_CPE_IsFileExists(DSL_char_t *path)
 {
@@ -1715,13 +1970,13 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    DSL_CPE_File_t *out)
 {
    DSL_int_t ret = 0;
-   DSL_int_t fd[DSL_CPE_MAX_DEVICE_NUMBER], i, nDeviceNumber = -1;
+   DSL_int_t fd[DSL_CPE_MAX_DSL_ENTITIES], i, nDeviceNumber = -1;
    DSL_char_t help[] = "-h";
    DSL_boolean_t bHelp = DSL_FALSE;
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    DSL_int_t nDevNum = 0;
    DSL_char_t dummy_arg[10] = "";
-#endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 
    /* Check Context pointer*/
    if (pContext == DSL_NULL)
@@ -1731,7 +1986,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
       return -1;
    }
 
-   if (nDevice >= DSL_CPE_MAX_DEVICE_NUMBER)
+   if (nDevice >= DSL_CPE_MAX_DSL_ENTITIES)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_ERR,
          (DSL_CPE_PREFIX "Invalid device number (%d) specified!" DSL_CPE_CRLF,
@@ -1741,7 +1996,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    }
 
    /* Reset fd*/
-   for (i = 0; i < DSL_CPE_MAX_DEVICE_NUMBER; i++)
+   for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
    {
       fd[i] = -1;
    }
@@ -1751,7 +2006,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    {
       nDeviceNumber = (nDevice == -1) ? pContext->nDevNum : nDevice;
 
-      if (nDeviceNumber >= DSL_CPE_MAX_DEVICE_NUMBER)
+      if (nDeviceNumber >= DSL_CPE_MAX_DSL_ENTITIES)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR,
             (DSL_CPE_PREFIX "Invalid device number (%d) specified!" DSL_CPE_CRLF,
@@ -1767,7 +2022,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    }
    else
    {
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
       if(arg != DSL_NULL)
       {
          arg = DSL_CPE_CLI_WhitespaceRemove(arg);
@@ -1779,15 +2034,21 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
          }
          else
          {
+            if(strstr(cmd, "help") != 0)
+            {
+               DSL_CPE_CLI_HelpPrint (fd[0], arg, out);
+               return 0;
+            }
+
             /* Get device number*/
             DSL_CPE_sscanf (arg, "%d", &nDevNum);
 
             /* Check device number*/
-            if (nDevNum >= DSL_CPE_MAX_DEVICE_NUMBER)
+            if (nDevNum >= DSL_CPE_MAX_DSL_ENTITIES)
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_ERR,
                   (DSL_CPE_PREFIX "Invalid device number (%d) specified, valid range 0...%d!" DSL_CPE_CRLF,
-                  nDevNum, (DSL_CPE_MAX_DEVICE_NUMBER-1)));
+                  nDevNum, (DSL_CPE_MAX_DSL_ENTITIES-1)));
 
                DSL_CPE_FPrintf (out, "nReturn=%d" DSL_CPE_CRLF, -1);
 
@@ -1823,7 +2084,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
          if (nDevNum == -1)
          {
             /* CLI command for all available devices*/
-            for (i = 0; i < DSL_CPE_MAX_DEVICE_NUMBER; i++)
+            for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
             {
                fd[i] = pContext->fd[i];
             }
@@ -1855,7 +2116,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
 #endif
    }
 
-   for (i = 0; i < DSL_CPE_MAX_DEVICE_NUMBER; i++)
+   for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
    {
       if (fd[i] == -1)
          continue;
@@ -1947,9 +2208,6 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
    DSL_uint8_t *pChunkData = DSL_NULL;
 #ifdef DSL_CPE_SOAP_FW_UPDATE
    DSL_boolean_t bSetFw1 = DSL_TRUE;
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   DSL_boolean_t bSetFw2 = DSL_TRUE;
-#endif
 #endif /* DSL_CPE_SOAP_FW_UPDATE*/
 
    memset(&ldFw, 0, sizeof(DSL_AutobootLoadFirmware_t));
@@ -1971,22 +2229,11 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
    {
       ldFw.data.pFirmware = pContext->firmware.pData;
       ldFw.data.nFirmwareSize = pContext->firmware.nSize;
-      ldFw.data.nFirmwareFeatures = pContext->firmware.nFwFeatures;
+      memcpy(&ldFw.data.firmwareFeatures, &pContext->firmware.fwFeatures,
+         sizeof(DSL_FirmwareFeatures_t));
       pcFw = DSL_NULL;
       bSetFw1 = DSL_FALSE;
    }
-
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   if ((pContext->firmware2.pData != DSL_NULL) && (pContext->firmware2.nSize > 0))
-   {
-      ldFw.data.pFirmware2 = pContext->firmware2.pData;
-      ldFw.data.nFirmwareSize2 = pContext->firmware2.nSize;
-      /* FW features are only used for FIRST firmware binary so far.
-         Therefore it shold be not handled here! */
-      pcFw2 = DSL_NULL;
-      bSetFw2 = DSL_FALSE;
-   }
-#endif /* INCLUDE_DSL_CPE_API_VINAX*/
 
 #endif /* DSL_CPE_SOAP_FW_UPDATE */
 
@@ -2006,20 +2253,6 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
          pcFw = g_sFirmwareName1;
       }
    }
-
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-#ifdef DSL_CPE_SOAP_FW_UPDATE
-   if ( (pcFw2 == DSL_NULL) && (bSetFw2 == DSL_TRUE) )
-#else
-   if ( pcFw2 == DSL_NULL )
-#endif /* DSL_CPE_SOAP_FW_UPDATE*/
-   {
-      if ((g_bFirmware2 != -1) || (strlen(g_sFirmwareName2) > 0))
-      {
-         pcFw2 = g_sFirmwareName2;
-      }
-   }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX)*/
 
    do
    {
@@ -2102,7 +2335,7 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
             }
 
             ldFw.data.bChunkDonwloadEnabled = DSL_TRUE;
-            ldFw.data.nFirmwareFeatures = g_nFwFeatures1;
+            memcpy(&ldFw.data.firmwareFeatures, &g_nFwFeatures1, sizeof(DSL_FirmwareFeatures_t));
 
             nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
                DSL_FIO_AUTOBOOT_LOAD_FIRMWARE, (DSL_int_t) &ldFw);
@@ -2131,13 +2364,13 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
             DSL_CPE_Sleep(1);
 
             memset(&pAsg, 0x0, sizeof(DSL_AutobootStatus_t));
-            memset(&pAcs, 0x0, sizeof(DSL_AutobootControl_t));
 
             nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
                DSL_FIO_AUTOBOOT_STATUS_GET, (DSL_int_t) &pAsg);
 
             if (pAsg.data.nStatus == DSL_AUTOBOOT_STATUS_STOPPED)
             {
+               memset(&pAcs, 0x0, sizeof(DSL_AutobootControl_t));
                pAcs.data.nCommand = DSL_AUTOBOOT_CTRL_START;
                nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
                   DSL_FIO_AUTOBOOT_CONTROL_SET, (DSL_int_t) &pAcs);
@@ -2170,9 +2403,7 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG,
             (DSL_CPE_PREFIX "Using normal fw download..." DSL_CPE_CRLF));
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-         if ((nFwReqType == DSL_FW_REQUEST_VDSL) || (nFwReqType == DSL_FW_REQUEST_NA))
-#elif defined(INCLUDE_DSL_CPE_API_DANUBE)
+#if defined(INCLUDE_DSL_CPE_API_DANUBE)
          if ((nFwReqType == DSL_FW_REQUEST_ADSL) || (nFwReqType == DSL_FW_REQUEST_NA))
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
          if ((nFwReqType == DSL_FW_REQUEST_XDSL) || (nFwReqType == DSL_FW_REQUEST_NA))
@@ -2205,37 +2436,6 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
                }
             }
          }
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-         if ((nFwReqType == DSL_FW_REQUEST_ADSL) || (nFwReqType == DSL_FW_REQUEST_NA))
-         {
-            if (pcFw2 != DSL_NULL)
-            {
-               nRet = DSL_CPE_LoadFirmwareFromFile(pcFw2, &ldFw.data.pFirmware2,
-                  &ldFw.data.nFirmwareSize2);
-               if (nRet < DSL_SUCCESS)
-               {
-                  nRet = DSL_ERROR;
-               }
-               else
-               {
-                  if (pcFw2 != g_sFirmwareName2)
-                  {
-                     /* also store the new firmware binary name within global
-                        configuration to be used for next download */
-                     if (ldFw.data.pFirmware2 != DSL_NULL)
-                     {
-                        DSL_CPE_Free(g_sFirmwareName2);
-                        g_sFirmwareName2 = DSL_CPE_Malloc (strlen (pcFw2) + 1);
-                        if (g_sFirmwareName2)
-                        {
-                           strcpy (g_sFirmwareName2, pcFw2);
-                        }
-                     }
-                  }
-               }
-            }
-         }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX)*/
 
          if ( ((ldFw.data.pFirmware  != DSL_NULL) && (ldFw.data.nFirmwareSize)) ||
               ((ldFw.data.pFirmware2 != DSL_NULL) && (ldFw.data.nFirmwareSize2)) )
@@ -2245,7 +2445,7 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
 
             if (pcFw != DSL_NULL)
             {
-               ldFw.data.nFirmwareFeatures = g_nFwFeatures1;
+               memcpy(&ldFw.data.firmwareFeatures, &g_nFwFeatures1, sizeof(DSL_FirmwareFeatures_t));
             }
 
             nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
@@ -2297,25 +2497,15 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
       DSL_CPE_Free(ldFw.data.pFirmware);
    }
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-#ifdef DSL_CPE_SOAP_FW_UPDATE
-   if (ldFw.data.pFirmware2 && bSetFw2)
-#else
-   if (ldFw.data.pFirmware2)
-#endif /* DSL_CPE_SOAP_FW_UPDATE*/
-   {
-      DSL_CPE_Free(ldFw.data.pFirmware2);
-   }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) */
 #endif /* INCLUDE_DSL_DRV_STATIC_LINKED_FIRMWARE*/
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    if (nRet >= DSL_SUCCESS)
    {
       /* Check Low Level configuration*/
       nRet = DSL_CPE_LowLevelConfigurationCheck(fd);
    }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
    return nRet;
 }
@@ -3707,7 +3897,7 @@ DSL_Error_t DSL_CPE_ResourceUsageStatisticsGet(
 }
 #endif /* INCLUDE_DSL_RESOURCE_STATISTICS*/
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 DSL_Error_t DSL_CPE_LowLevelConfigurationCheck(
    DSL_int_t fd)
 {
@@ -3715,7 +3905,7 @@ DSL_Error_t DSL_CPE_LowLevelConfigurationCheck(
    DSL_int_t ret = 0, i = 0;
    DSL_VersionInformation_t verInf;
    DSL_LowLevelConfiguration_t llCfg;
-   DSL_VNX_FwVersion_t FwVersion = {0};
+   DSL_VRX_FwVersion_t FwVersion = {0};
    DSL_char_t seps[] = ".";
    DSL_char_t *token;
    DSL_uint8_t *pVer = (DSL_uint8_t*)&FwVersion;
@@ -3777,33 +3967,6 @@ DSL_Error_t DSL_CPE_LowLevelConfigurationCheck(
    {
       return DSL_ERROR;
    }
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   while(1)
-   {
-      /* Check Hybrid type*/
-      if ((FwVersion.nApplication == 2) && (FwVersion.nFeatureSet < 10))
-      {
-         if (llCfg.data.nHybrid != DSL_DEV_HYBRID_AD1_138_17_CPE_R2)
-         {
-            /* Set default Hybrid type*/
-            llCfg.data.nHybrid = DSL_DEV_HYBRID_AD1_138_17_CPE_R2;
-            nErrCode = DSL_WRN_CHECK_HYBRID_CONFIGURATION;
-            /* Cfg changed*/
-            bCfgChanged = DSL_TRUE;
-
-            DSL_CCA_DEBUG(DSL_CCA_DBG_WRN,
-               (DSL_CPE_PREFIX "WARNING - Setting default Hybrid (FW value = 0x10) type "
-                               "for the FW feature set < 10" DSL_CPE_CRLF));
-
-            break;
-         }
-      }
-
-      /* Future checks if necessary*/
-
-      break;
-   }
-#endif /*#if defined(INCLUDE_DSL_CPE_API_VINAX)*/
    /* Check for the changed LL configuration*/
    if (bCfgChanged)
    {
@@ -3818,7 +3981,7 @@ DSL_Error_t DSL_CPE_LowLevelConfigurationCheck(
 
    return nErrCode;
 }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
 DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_InitReadyHandle(
    DSL_CPE_Control_Context_t *pContext,
@@ -3837,14 +4000,14 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_InitReadyHandle(
          "sEventType=%s" DSL_CPE_CRLF ,
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)));
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
          "sEventType=%s nDevice=%d" DSL_CPE_CRLF ,
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -3877,7 +4040,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_AutobootStatusHandle(
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)),
          pEvent->data.pData->autobootStatus.nStatus, pEvent->data.pData->autobootStatus.nFirmwareRequestType);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -3886,7 +4049,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_AutobootStatusHandle(
          nDevice,
          pEvent->data.pData->autobootStatus.nStatus, pEvent->data.pData->autobootStatus.nFirmwareRequestType);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
@@ -3928,7 +4091,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_AutobootStatusHandle(
       }
    }
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    if (pContext->nFwModeStatus == DSL_FW_STATUS_VDSL)
    {
       if (g_sVdslScript != DSL_NULL)
@@ -3941,7 +4104,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_AutobootStatusHandle(
             "VDSL script not specified" DSL_CPE_CRLF));
       }
    }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
    /* Get autoboot status directly after script execution*/
    memset (&status, 0, sizeof(DSL_AutobootStatus_t));
@@ -3990,7 +4153,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_PmSyncHandle(
          pEvent->data.pData->sync.b15MinElapsed,
          pEvent->data.pData->sync.b1DayElapsed);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4000,7 +4163,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_PmSyncHandle(
          pEvent->data.pData->sync.b15MinElapsed,
          pEvent->data.pData->sync.b1DayElapsed);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4016,6 +4179,9 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
    DSL_LineStateValue_t nLineState = DSL_LINESTATE_NOT_INITIALIZED;
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
    DSL_boolean_t bExec = DSL_FALSE;
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   DSL_char_t  buff[5];
+#endif
 #endif /* INCLUDE_SCRIPT_NOTIFICATION*/
 
    if( pEvent == DSL_NULL || pEvent->data.pData == DSL_NULL )
@@ -4033,7 +4199,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)),
          pEvent->data.pData->lineStateData.nLineState);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4042,7 +4208,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
          nDevice,
          pEvent->data.pData->lineStateData.nLineState);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
@@ -4090,7 +4256,16 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
             bExec = DSL_TRUE;
          }
       }
-
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+      sprintf(buff, "%u", nDevice);
+      if (bExec == DSL_TRUE)
+      {
+         if (DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff) != DSL_SUCCESS)
+         {
+            bExec = DSL_FALSE;
+         }
+      }
+#endif
       if (bExec != DSL_FALSE)
       {
          if (DSL_CPE_SetEnv("DSL_NOTIFICATION_TYPE", "DSL_INTERFACE_STATUS") == DSL_SUCCESS)
@@ -4125,11 +4300,14 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
 {
    DSL_Error_t nErrCode = DSL_SUCCESS;
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    DSL_G997_XTUSystemEnabling_t ioctlG997xtse;
    DSL_uint8_t i = 0, nAtse = 0;
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    DSL_char_t *pXDSLstatus = "ADSL";
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   DSL_char_t buff[5];
+#endif
 #endif /* INCLUDE_SCRIPT_NOTIFICATION*/
 
    if( pEvent == DSL_NULL || pEvent->data.pData == DSL_NULL )
@@ -4137,12 +4315,23 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
       return DSL_ERROR;
    }
 
+#if defined(INCLUDE_DSL_BONDING) && defined(INCLUDE_DSL_CPE_API_VRX)
+   nErrCode = DSL_CPE_BND_SystemInterfaceStatusHandle(
+                  (DSL_CPE_BND_Context_t*)pContext->pBnd, fd, nDevice);
+   if (nErrCode != DSL_SUCCESS)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "Bonding System Interface status handle failed" DSL_CPE_CRLF));
+      return nErrCode;
+   }
+#endif
+
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
    if (g_sRcScript != DSL_NULL)
    {
       if (DSL_CPE_SetEnv("DSL_NOTIFICATION_TYPE", "DSL_STATUS") == DSL_SUCCESS)
       {
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
          memset(&ioctlG997xtse, 0x00, sizeof(DSL_G997_XTUSystemEnabling_t));
 
          if (DSL_CPE_Ioctl(fd, DSL_FIO_G997_XTU_SYSTEM_ENABLING_STATUS_GET,
@@ -4156,7 +4345,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
             if (!nAtse)
                pXDSLstatus = "VDSL";
          }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
          nErrCode = DSL_CPE_SetEnv("DSL_XTU_STATUS", pXDSLstatus);
 
          if (nErrCode == DSL_SUCCESS)
@@ -4204,7 +4393,13 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
                   break;
             }
          }
-
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+         if (nErrCode == DSL_SUCCESS)
+         {
+            sprintf(buff, "%u", nDevice);
+            nErrCode = DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff);
+         }
+#endif
          if (nErrCode == DSL_SUCCESS)
          {
             DSL_CPE_ScriptRun();
@@ -4225,7 +4420,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
          pEvent->data.pData->systemInterfaceStatusData.nEfmTcConfigDs,
          pEvent->data.pData->systemInterfaceStatusData.nSystemIf);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4238,7 +4433,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
          pEvent->data.pData->systemInterfaceStatusData.nEfmTcConfigDs,
          pEvent->data.pData->systemInterfaceStatusData.nSystemIf);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return nErrCode;
@@ -4266,7 +4461,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_DataPathFailuresHandle(
          pEvent->data.nAccessDir == DSL_DOWNSTREAM ? "DSL_DOWNSTREAM" : "DSL_UPSTREAM",
          pEvent->data.pData->dataPathFailuresData.nDataPathFailures);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4277,7 +4472,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_DataPathFailuresHandle(
          pEvent->data.nAccessDir == DSL_DOWNSTREAM ? "DSL_DOWNSTREAM" : "DSL_UPSTREAM",
          pEvent->data.pData->dataPathFailuresData.nDataPathFailures);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4305,7 +4500,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_LineFailuresHandle(
          pEvent->data.nAccessDir == DSL_DOWNSTREAM ? "DSL_DOWNSTREAM" : "DSL_UPSTREAM",
          pEvent->data.pData->lineFailuresData.nLineFailures);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4316,7 +4511,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_LineFailuresHandle(
          pEvent->data.nAccessDir == DSL_DOWNSTREAM ? "DSL_DOWNSTREAM" : "DSL_UPSTREAM",
          pEvent->data.pData->lineFailuresData.nLineFailures);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4331,6 +4526,9 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateHandle(
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
    DSL_char_t sVarName[20];
    DSL_char_t sVarVal[11];
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   DSL_char_t buff[5];
+#endif
 #endif
    if( pEvent == DSL_NULL || pEvent->data.pData == DSL_NULL)
    {
@@ -4344,6 +4542,10 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateHandle(
                          pEvent->data.nAccessDir == DSL_DOWNSTREAM ?
                          "DSL_DATARATE_STATUS_DS" : "DSL_DATARATE_STATUS_US") == DSL_SUCCESS)
       {
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+         sprintf(buff, "%u", nDevice);
+         DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff);
+#endif
          sprintf(sVarName, "DSL_DATARATE_%s_BC%d",
             pEvent->data.nAccessDir == DSL_DOWNSTREAM ? "DS" : "US",
             pEvent->data.nChannel == 0 ? 0 : pEvent->data.nChannel == 1 ? 1 : 0);
@@ -4371,7 +4573,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateHandle(
          pEvent->data.pData->channelStatusData.ActualInterleaveDelay,
          pEvent->data.pData->channelStatusData.ActualImpulseNoiseProtection);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4386,7 +4588,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateHandle(
          pEvent->data.pData->channelStatusData.ActualInterleaveDelay,
          pEvent->data.pData->channelStatusData.ActualImpulseNoiseProtection);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4415,7 +4617,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateShiftThresholdCrossingH
          pEvent->data.pData->dataRateThresholdCrossing.nDataRateThresholdType ==
          DSL_G997_DATARATE_THRESHOLD_DOWNSHIFT ? "DOWN": "UP");
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4428,7 +4630,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateShiftThresholdCrossingH
          pEvent->data.pData->dataRateThresholdCrossing.nDataRateThresholdType ==
          DSL_G997_DATARATE_THRESHOLD_DOWNSHIFT ? "DOWN": "UP");
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4497,6 +4699,21 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_LinitFailureHandle(
       printf(DSL_CPE_PREFIX "Wrong combination of DSL PHY Firmware and hybrid "
          "type used! Please change one of it." DSL_CPE_CRLF);
       break;
+   case LINIT_SUB_PORT_MODE:
+      pSubStatus = "LINIT_SUB_PORT_MODE";
+      break;
+   case LINIT_SUB_S_PP_DRIVER:
+      pSubStatus = "LINIT_SUB_S_PP_DRIVER";
+      break;
+   case LINIT_SUB_S_INTENDED_LOCAL_SHUTDOWN:
+      pSubStatus = "LINIT_SUB_S_INTENDED_LOCAL_SHUTDOWN";
+      break;
+   case LINIT_SUB_TIMEOUT:
+      pSubStatus = "LINIT_SUB_TIMEOUT";
+      break;
+   case LINIT_SUB_FAST_LOS:
+      pSubStatus = "LINIT_SUB_FAST_LOS";
+      break;
    default:
       pSubStatus = "LINIT_SUB_UNKNOWN";
       break;
@@ -4508,7 +4725,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_LinitFailureHandle(
          "sEventType=%s nLineInitStatus=%s nLineInitSubStatus=%s" DSL_CPE_CRLF,
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), pStatus, pSubStatus);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4517,7 +4734,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_LinitFailureHandle(
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice, pStatus,
          pSubStatus);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4529,13 +4746,17 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareRequestHandle(
    DSL_int_t fd,
    DSL_int_t nDevice,
    DSL_EventType_t nEvent,
-   DSL_FirmwareRequestType_t nFwReqType)
+   DSL_FirmwareRequestType_t nFwReqType,
+   DSL_PortMode_t nPortMode)
 {
    DSL_Error_t nRet = DSL_SUCCESS;
+#if !(defined(INCLUDE_DSL_BONDING) && defined(INCLUDE_DSL_CPE_API_VRX) && (DSL_CPE_LINES_PER_DEVICE == 2))
    DSL_uint32_t nFwLoadRetryCnt = 0;
+#endif
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
    DSL_char_t *pFwReqType = "DSL_FW_REQUEST_NA";
+   DSL_char_t *pPortMode = "DSL_PORT_MODE_NA";
 
    switch (nFwReqType)
    {
@@ -4553,22 +4774,36 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareRequestHandle(
          pFwReqType = "DSL_FW_REQUEST_NA";
          break;
    }
+   switch (nPortMode)
+   {
+      case DSL_PORT_MODE_SINGLE:
+         pPortMode = "DSL_PORT_MODE_SINGLE";
+         break;
+      case DSL_PORT_MODE_DUAL:
+         pPortMode = "DSL_PORT_MODE_DUAL";
+         break;
+      default:
+         break;
+   }
 
    if (pContext->bBackwardCompMode)
    {
-      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nFirmwareRequestType=%s"DSL_CPE_CRLF,
-         DSL_CPE_Event_Type2String(&nEvent), pFwReqType);
+      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nFirmwareRequestType=%s nPortMode=%s"DSL_CPE_CRLF,
+         DSL_CPE_Event_Type2String(&nEvent), pFwReqType, pPortMode);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
-      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nDevice=%d nFirmwareRequestType=%s" DSL_CPE_CRLF,
-         DSL_CPE_Event_Type2String(&nEvent), nDevice, pFwReqType);
+      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nDevice=%d nFirmwareRequestType=%s nPortMode=%s" DSL_CPE_CRLF,
+         DSL_CPE_Event_Type2String(&nEvent), nDevice, pFwReqType, pPortMode);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
+#if defined(INCLUDE_DSL_BONDING) && defined(INCLUDE_DSL_CPE_API_VRX) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   nRet = DSL_CPE_BND_SyncDownloadFirmware(pContext->pBnd, nDevice, nFwReqType, nPortMode);
+#else
    /* Try to reload FW several times in case of any fail*/
    for (nFwLoadRetryCnt = 0; nFwLoadRetryCnt < DSL_CPE_MAX_FW_RELOAD_RETRY_COUNT; nFwLoadRetryCnt++)
    {
@@ -4579,6 +4814,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareRequestHandle(
          break;
       }
    }
+#endif
 
    if (nRet != DSL_SUCCESS)
    {
@@ -4604,7 +4840,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareDownloadStatusHandle(
          nFwDwnlStatus.nError,
          nFwDwnlStatus.nFwModeStatus);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nDevice=%d nError=%d nFwType=%d" DSL_CPE_CRLF,
@@ -4613,7 +4849,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareDownloadStatusHandle(
          nFwDwnlStatus.nError,
          nFwDwnlStatus.nFwModeStatus);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
@@ -4671,13 +4907,13 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FeInventoryAvailableHandle(
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s ",
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)));
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText), "sEventType=%s nDevice=%d ",
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 
    DSL_CPE_ArraySPrintF(buf, lineInventory.data.G994VendorID,
       sizeof(lineInventory.data.G994VendorID),
@@ -4724,6 +4960,39 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FeInventoryAvailableHandle(
 }
 #endif /* INCLUDE_DSL_G997_LINE_INVENTORY*/
 
+DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FeTestParamsAvailableHandle(
+   DSL_CPE_Control_Context_t *pContext,
+   DSL_int_t fd,
+   DSL_int_t nDevice,
+   DSL_EventStatus_t *pEvent)
+{
+   DSL_int_t ret = 0;
+
+   if( pEvent == DSL_NULL )
+   {
+      return DSL_ERROR;
+   }
+
+#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
+   if (pContext->bBackwardCompMode)
+   {
+      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
+         "sEventType=%s "DSL_CPE_CRLF,
+         DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)));
+   }
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   else
+   {
+      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
+         "sEventType=%s nDevice=%d "DSL_CPE_CRLF,
+         DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice);
+   }
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
+#endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
+
+   return 0;
+}
+
 DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_LinePowerMgmtStateHandle(
    DSL_CPE_Control_Context_t *pContext,
    DSL_int_t nDevice,
@@ -4765,14 +5034,14 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_LinePowerMgmtStateHandle(
          "sEventType=%s nPowerManagementStatus=%s" DSL_CPE_CRLF,
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), pStatus);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
          "sEventType=%s nDevice=%d nPowerManagementStatus=%s" DSL_CPE_CRLF,
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice, pStatus);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4796,14 +5065,14 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SnmpMessageAvailableHandle(
          "sEventType=%s",
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)));
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
          "sEventType=%s nDevice=%d",
          DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)), nDevice);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4841,7 +5110,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_ChannelThresholdCrossingHandle(
          pEvent->data.pData->channelThresholdCrossing.n15Min,
          pEvent->data.pData->channelThresholdCrossing.n1Day);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4862,7 +5131,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_ChannelThresholdCrossingHandle(
          pEvent->data.pData->channelThresholdCrossing.n15Min,
          pEvent->data.pData->channelThresholdCrossing.n1Day);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4898,7 +5167,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_LineThresholdCrossingHandle(
          pEvent->data.pData->lineThresholdCrossing.n15Min,
          pEvent->data.pData->lineThresholdCrossing.n1Day);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4919,7 +5188,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_LineThresholdCrossingHandle(
          pEvent->data.pData->lineThresholdCrossing.n15Min,
          pEvent->data.pData->lineThresholdCrossing.n1Day);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -4955,7 +5224,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_DataPathThresholdCrossingHandle(
          pEvent->data.pData->dataPathThresholdCrossing.n15Min,
          pEvent->data.pData->dataPathThresholdCrossing.n1Day);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -4976,7 +5245,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_DataPathThresholdCrossingHandle(
          pEvent->data.pData->dataPathThresholdCrossing.n15Min,
          pEvent->data.pData->dataPathThresholdCrossing.n1Day);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -5013,7 +5282,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_ReTxThresholdCrossingHandle(
          pEvent->data.pData->reTxThresholdCrossing.n15Min,
          pEvent->data.pData->reTxThresholdCrossing.n1Day);
    }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    else
    {
       DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
@@ -5034,7 +5303,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_ReTxThresholdCrossingHandle(
          pEvent->data.pData->reTxThresholdCrossing.n15Min,
          pEvent->data.pData->reTxThresholdCrossing.n1Day);
    }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
    return 0;
@@ -5042,90 +5311,6 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_I_ReTxThresholdCrossingHandle(
 #endif /** #if defined(INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS)*/
 
 #endif /** #if defined(INCLUDE_DSL_PM)*/
-
-
-#if defined(INCLUDE_DSL_CPE_API_VRX)
-
-#undef DSL_CCA_DBG_BLOCK
-#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_MULTIMODE
-
-DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_MultimodeFsmStatusHandle(
-   DSL_CPE_Control_Context_t *pContext,
-   DSL_int_t nDevice,
-   DSL_EventStatus_t *pEvent)
-{
-#ifdef INCLUDE_SCRIPT_NOTIFICATION
-   DSL_boolean_t bExec = DSL_FALSE;
-   DSL_char_t *pNextMode = "NA";
-#endif /* INCLUDE_SCRIPT_NOTIFICATION*/
-
-   if( pEvent == DSL_NULL || pEvent->data.pData == DSL_NULL )
-   {
-      return DSL_ERROR;
-   }
-
-#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
-   if (pContext->bBackwardCompMode)
-   {
-      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
-         "sEventType=%s bRebootRequested=%d nNextMode=%d" DSL_CPE_CRLF,
-         DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)),
-         pEvent->data.pData->multimodeFsmStatusData.bRebootRequested,
-         pEvent->data.pData->multimodeFsmStatusData.nNextMode);
-   }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
-   else
-   {
-      DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
-         "sEventType=%s nDevice=%d bRebootRequested=%d nNextMode=%d" DSL_CPE_CRLF,
-         DSL_CPE_Event_Type2String(&(pEvent->data.nEventType)),
-         nDevice,
-         pEvent->data.pData->multimodeFsmStatusData.bRebootRequested,
-         pEvent->data.pData->multimodeFsmStatusData.nNextMode);
-   }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
-#endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
-
-#ifdef INCLUDE_SCRIPT_NOTIFICATION
-   if (g_sRcScript != DSL_NULL) {
-
-      switch(pEvent->data.pData->multimodeFsmStatusData.nNextMode) {
-      case DSL_FW_TYPE_ADSL:
-         pNextMode = "ADSL";
-         break;
-      case DSL_FW_TYPE_VDSL:
-         pNextMode = "VDSL";
-         break;
-      default:
-         break;
-      }
-
-      if (DSL_CPE_SetEnv("DSL_NEXT_MODE", pNextMode) == DSL_SUCCESS)
-      {
-         bExec = DSL_TRUE;
-      }
-
-      DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "Multimode FSM status: DSL_NEXT_MODE = %s bExec = %s" DSL_CPE_CRLF,
-          pNextMode, bExec == DSL_FALSE ? "FALSE" : "TRUE"));
-
-      if (bExec != DSL_FALSE)
-      {
-         if (DSL_CPE_SetEnv("DSL_NOTIFICATION_TYPE", "DSL_MULTIMODE_FSM_STATUS") == DSL_SUCCESS)
-         {
-            DSL_CPE_ScriptRun();
-         }
-      }
-   }
-#endif /* INCLUDE_SCRIPT_NOTIFICATION*/
-
-   return 0;
-}
-
-#undef DSL_CCA_DBG_BLOCK
-#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
-
-#endif /* #if defined(INCLUDE_DSL_CPE_API_VRX)*/
 
 DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
 {
@@ -5186,7 +5371,7 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
       }
       else
       {
-         for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+         for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
          {
             DSL_CPE_FD_SET (pContext->fd[nDevice], &rd_fds);
          }
@@ -5215,7 +5400,7 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
 #endif /* !defined(RTEMS) && !defined(WIN32)*/
 #endif /* INCLUDE_DSL_EVENT_POLLING*/
 
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
 
 #if !defined(INCLUDE_DSL_EVENT_POLLING)
@@ -5225,7 +5410,7 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
          {
             continue;
          }
-#endif /* !defined(INCLUDE_DSL_EVENT_POLLING) */
+#endif /* !defined(RTEMS) && !defined(WIN32)*/
          fd = pContext->fd[nDevice];
 
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX "EVENT from Device=%d..." DSL_CPE_CRLF,
@@ -5299,14 +5484,14 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
                   "sEventType=%s",
                   DSL_CPE_Event_Type2String(&(event.data.nEventType)));
             }
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
             else
             {
                DSL_CPE_snprintf(CLI_EventText, sizeof(CLI_EventText),
                   "sEventType=%s nDevice=%d",
                   DSL_CPE_Event_Type2String(&(event.data.nEventType)), nDevice);
             }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
             memset (&showtimeLogging, 0, sizeof (DSL_ShowtimeLogging_t));
             memset (&showtimeData, 0, sizeof (showtimeData));
@@ -5377,7 +5562,8 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
             DSL_CPE_Event_S_FirmwareRequestHandle(
                pContext, fd, nDevice,
                event.data.nEventType,
-               event.data.pData->fwRequestData.nFirmwareRequestType);
+               event.data.pData->fwRequestData.nFirmwareRequestType,
+               event.data.pData->fwRequestData.nPortMode);
             break;
          case DSL_EVENT_S_FIRMWARE_DOWNLOAD_STATUS:
             DSL_CPE_Event_S_FirmwareDownloadStatusHandle(
@@ -5429,6 +5615,9 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
             DSL_CPE_Event_S_FeInventoryAvailableHandle(pContext, fd, nDevice, &event);
             break;
 #endif /* INCLUDE_DSL_G997_LINE_INVENTORY*/
+         case DSL_EVENT_S_FE_TESTPARAMS_AVAILABLE:
+            DSL_CPE_Event_S_FeTestParamsAvailableHandle(pContext, fd, nDevice, &event);
+            break;
          case DSL_EVENT_S_LINE_POWERMANAGEMENT_STATE:
             DSL_CPE_Event_S_LinePowerMgmtStateHandle(pContext, nDevice, &event);
             break;
@@ -5457,11 +5646,6 @@ DSL_int_t DSL_CPE_EventHandler (DSL_CPE_Thread_Params_t *param)
             break;
          #endif /** #if defined(INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS)*/
 #endif /** #if defined(INCLUDE_DSL_PM)*/
-#ifdef INCLUDE_DSL_CPE_API_VRX
-         case DSL_EVENT_S_MULTIMODE_FSM_STATUS:
-            DSL_CPE_Event_S_MultimodeFsmStatusHandle(pContext, nDevice, &event);
-            break;
-#endif /* #ifdef INCLUDE_DSL_CPE_API_VRX*/
 #ifdef INCLUDE_REAL_TIME_TRACE
          case DSL_EVENT_S_RTT_STATUS:
             /*TBD:*/
@@ -5510,11 +5694,12 @@ DSL_Error_t DSL_CPE_EventHandlerStart (
    return DSL_ERROR;
 }
 
-DSL_Error_t DSL_CPE_WhatStringGet(
+static DSL_Error_t DSL_CPE_WhatStringGet(
    DSL_CPE_Control_Context_t *pContext,
    DSL_char_t *psFirmwareName,
    const DSL_uint32_t nMaxStringLength,
    DSL_char_t *pString,
+   DSL_uint8_t nStringKey,
    DSL_uint8_t nStringNumber)
 {
    DSL_Error_t errorCode = DSL_SUCCESS;
@@ -5632,7 +5817,7 @@ DSL_Error_t DSL_CPE_WhatStringGet(
       {
          if(*ptr == '@' && !bFound)
          {
-            if (ptr[1] == '(' && ptr[2] == '#' && ptr[3] == ')')
+            if (ptr[1] == '(' && ptr[2] == nStringKey && ptr[3] == ')')
             {
                if (nStrCnt == 0)
                {
@@ -5713,12 +5898,14 @@ DSL_Error_t DSL_CPE_WhatStringGet(
    if(i)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG,
-         (DSL_CPE_PREFIX"Firmware WHAT String%d: %s"DSL_CPE_CRLF, nStringNumber, pString));
+         (DSL_CPE_PREFIX"Firmware WHAT String%d (%c): %s"DSL_CPE_CRLF,
+          nStringNumber, nStringKey, pString));
    }
    else
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_WRN,
-         (DSL_CPE_PREFIX"Firmware WHAT String%d: not detected"DSL_CPE_CRLF, nStringNumber));
+         (DSL_CPE_PREFIX"Firmware WHAT String%d (%c): not detected"DSL_CPE_CRLF,
+          nStringNumber, nStringKey));
    }
 
 #ifndef INCLUDE_DSL_DRV_STATIC_LINKED_FIRMWARE
@@ -5738,9 +5925,10 @@ DSL_Error_t DSL_CPE_WhatStringGet(
    return errorCode;
 }
 
-DSL_Error_t DSL_CPE_FwApplicationFromWhatstringGet(
+DSL_Error_t DSL_CPE_FwInfoFromWhatstringGet(
    DSL_char_t *pWhatString,
-   DSL_int_t *pFwApplication)
+   DSL_int_t *pFwApplication,
+   DSL_uint8_t *nPlatformId)
 {
    DSL_Error_t errorCode = DSL_SUCCESS;
    DSL_char_t  *pWhat = DSL_NULL;
@@ -5766,6 +5954,11 @@ DSL_Error_t DSL_CPE_FwApplicationFromWhatstringGet(
       /* expect a hex value */
       nValue = strtoul(pWhat, &pWhat, 16);
 
+      if (i == 0)
+      {
+         *nPlatformId = (DSL_uint8_t) nValue;
+      }
+
       /* step to the next position after a '.' */
       pWhat = strpbrk(pWhat, ".");
       pWhat++;
@@ -5782,17 +5975,52 @@ DSL_Error_t DSL_CPE_FwApplicationFromWhatstringGet(
    return(errorCode);
 }
 
+static DSL_Error_t DSL_CPE_FwFeatureSetFromWhatstringGet(
+   DSL_char_t *pWhatString,
+   DSL_uint32_t *pFwFeatures)
+{
+   DSL_Error_t errorCode = DSL_SUCCESS;
+   DSL_char_t  *pWhat = DSL_NULL;
+   DSL_uint32_t nValue = 0;
+
+   if (!pWhatString || !pFwFeatures)
+   {
+      return DSL_ERROR;
+   }
+
+   /* Set empty FW feature set */
+   *pFwFeatures = 0;
+
+   /* Skip first char */
+   pWhat = pWhatString + 1;
+
+   /* expect a hex value */
+   nValue = strtoul(pWhat, &pWhat, 16);
+
+   *pFwFeatures = nValue;
+
+   DSL_CCA_DEBUG(DSL_CCA_DBG_MSG,
+      (DSL_CPE_PREFIX"Firmware FwFeatures: 0x%x"DSL_CPE_CRLF, *pFwFeatures));
+
+   return(errorCode);
+}
+
 DSL_Error_t DSL_CPE_FwFeaturesGet(
    DSL_char_t *pcFw,
    DSL_FirmwareFeatures_t *pFwFeatures)
 {
    DSL_char_t sWhatString[MAX_WHAT_STRING_LEN] = {0};
+   /* Only one ID is needed because the platform is expected to be the same in
+      case there are multiple firmware what strings included within one firmware
+      binary. */
+   DSL_uint8_t nPlatformId = 0;
    DSL_int_t FwApplication1 = -1;
 #if defined (INCLUDE_DSL_CPE_API_VRX)
    DSL_int_t FwApplication2 = -1;
 #endif
    DSL_CPE_Control_Context_t *pCtrlCtx = DSL_NULL;
    DSL_Error_t errorCode = DSL_SUCCESS;
+   DSL_uint32_t nFeatureSet = 0;
 
    pCtrlCtx = DSL_CPE_GetGlobalContext();
 
@@ -5811,63 +6039,103 @@ DSL_Error_t DSL_CPE_FwFeaturesGet(
    /*
       Initialize return value with empty feature definition. If this value will
       be returned it indicates that NO what string was found within firmware
-      binries */
-   *pFwFeatures = DSL_FW_FEATURES_CLEANED;
+      binaries */
+   memset(pFwFeatures, 0, sizeof(DSL_FirmwareFeatures_t));
 
    /* Get 1st What String*/
-   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, 1);
+   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, '#', 1);
 
    /* Get FW application type*/
-   DSL_CPE_FwApplicationFromWhatstringGet(sWhatString, &FwApplication1);
+   DSL_CPE_FwInfoFromWhatstringGet(sWhatString, &FwApplication1,
+        &nPlatformId);
 
 #if defined (INCLUDE_DSL_CPE_API_VRX)
    memset(sWhatString, 0x0, MAX_WHAT_STRING_LEN);
 
    /* Get 2nd What String*/
-   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, 2);
+   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, '#', 2);
 
    /* Get FW application type*/
-   DSL_CPE_FwApplicationFromWhatstringGet(sWhatString, &FwApplication2);
+   DSL_CPE_FwInfoFromWhatstringGet(sWhatString, &FwApplication2,
+        &nPlatformId);
 #endif /* #if defined (INCLUDE_DSL_CPE_API_VRX)*/
+
+   pFwFeatures->nPlatformId = nPlatformId;
 
    /* Check for Annex A (default) mode*/
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    if ((FwApplication1 == -1) || (FwApplication1 == 1))
 #elif defined (INCLUDE_DSL_CPE_API_VRX)
    if ((FwApplication1 == 1) || (FwApplication2 == 1))
-#else /* VINAX*/
-   if ((FwApplication1 == -1) || (FwApplication1 == 5))
 #endif /* defined (INCLUDE_DSL_CPE_API_DANUBE)*/
    {
-      *pFwFeatures |= DSL_FW_FEATURES_ADSL_A;
+      pFwFeatures->nFirmwareXdslModes |= DSL_FW_XDSLMODE_ADSL_A;
    }
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    else if ((FwApplication1 == 2) || (FwApplication1 == 0))
 #elif defined (INCLUDE_DSL_CPE_API_VRX)
    else if ((FwApplication1 == 0) || (FwApplication2 == 0) ||
             (FwApplication1 == 2) || (FwApplication2 == 2))
-#else /* VINAX*/
-   else if (FwApplication1 == 6)
 #endif /* defined (INCLUDE_DSL_CPE_API_DANUBE)*/
    {
-      *pFwFeatures |= DSL_FW_FEATURES_ADSL_B;
+      pFwFeatures->nFirmwareXdslModes |= DSL_FW_XDSLMODE_ADSL_B;
    }
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX)
+#if defined (INCLUDE_DSL_CPE_API_VRX)
    if ((g_bFirmware1 != -1) || (strlen(g_sFirmwareName1) > 0))
    {
       /* Check for the VDSL FW capability */
       if ((FwApplication1 == 5) || (FwApplication2 == 5) ||
           (FwApplication1 == 6) || (FwApplication2 == 6))
       {
-         *pFwFeatures |= DSL_FW_FEATURES_VDSL2;
+         pFwFeatures->nFirmwareXdslModes |= DSL_FW_XDSLMODE_VDSL2;
+      }
+
+      /* Check for the Vectoring FW capability */
+      if ((FwApplication1 == 7) || (FwApplication2 == 7))
+      {
+         pFwFeatures->nFirmwareXdslModes |= DSL_FW_XDSLMODE_VDSL2_VECTOR;
       }
    }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined (INCLUDE_DSL_CPE_API_VRX)*/
+
+   /* Get first feature set what string */
+   memset(sWhatString, 0x0, MAX_WHAT_STRING_LEN);
+   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, '~', 1);
+
+   /* Get FW feature set */
+   DSL_CPE_FwFeatureSetFromWhatstringGet(sWhatString, &nFeatureSet);
+   if (sWhatString[0] == 'A')
+   {
+      pFwFeatures->nFirmwareAdslFeatures = nFeatureSet;
+   }
+   else if (sWhatString[0] == 'V')
+   {
+      pFwFeatures->nFirmwareVdslFeatures = nFeatureSet;
+   }
+
+#if defined (INCLUDE_DSL_CPE_API_VRX)
+   memset(sWhatString, 0x0, MAX_WHAT_STRING_LEN);
+
+   /* Get 2nd feature set what string */
+   DSL_CPE_WhatStringGet(pCtrlCtx, pcFw, MAX_WHAT_STRING_LEN, sWhatString, '~', 2);
+
+   /* Get FW feature set */
+   DSL_CPE_FwFeatureSetFromWhatstringGet(sWhatString, &nFeatureSet);
+   if (sWhatString[0] == 'A')
+   {
+      pFwFeatures->nFirmwareAdslFeatures = nFeatureSet;
+   }
+   else if (sWhatString[0] == 'V')
+   {
+      pFwFeatures->nFirmwareVdslFeatures = nFeatureSet;
+   }
+#endif /* #if defined (INCLUDE_DSL_CPE_API_VRX)*/
 
    DSL_CCA_DEBUG(DSL_CCA_DBG_MSG,
-      (DSL_CPE_PREFIX"Firmware features (%s): 0x%x"DSL_CPE_CRLF, pcFw,
-      *pFwFeatures));
+      (DSL_CPE_PREFIX"Firmware features (%s): 0x%x, set=[0x%x, 0x%x]"DSL_CPE_CRLF, pcFw,
+      pFwFeatures->nFirmwareXdslModes, pFwFeatures->nFirmwareAdslFeatures,
+      pFwFeatures->nFirmwareVdslFeatures));
 
    return(errorCode);
 }
@@ -5918,25 +6186,23 @@ DSL_int32_t DSL_CPE_DeviceInit (
    DSL_int32_t ret = 0;
    DSL_Init_t init;
    DSL_G997_LineInventoryNeData_t inv;
-   DSL_FirmwareFeatures_t nFwFeatures1 = DSL_FW_FEATURES_CLEANED;
-#if defined(INCLUDE_DSL_CPE_API_VINAX)
-   DSL_FirmwareFeatures_t nFwFeatures2 = DSL_FW_FEATURES_CLEANED;
-#endif
+   DSL_FirmwareFeatures_t fwFeatures1 = {DSL_FW_XDSLMODE_CLEANED, DSL_FW_XDSLFEATURE_CLEANED,
+                                          DSL_FW_XDSLFEATURE_CLEANED};
    DSL_int_t nDevice = 0;
    const DSL_uint8_t G994VendorID[DSL_G997_LI_MAXLEN_VENDOR_ID] = {DSL_G994_VENDOR_ID};
 
    memset (&init, 0x00, sizeof (DSL_Init_t));
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    /** Just for debug purposes. Further all initialization should be done
        in the gInitCfgData table*/
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_DOWNSTREAM].MinDataRate =
       64000;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_UPSTREAM].MinDataRate = 64000;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_DOWNSTREAM].MaxDataRate =
-      140000000;
+      245760000;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_UPSTREAM].MaxDataRate =
-      140000000;
+      245760000;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_DOWNSTREAM].MaxIntDelay = 0;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_UPSTREAM].MaxIntDelay = 0;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_DOWNSTREAM].MinINP = 0;
@@ -5945,9 +6211,6 @@ DSL_int32_t DSL_CPE_DeviceInit (
       DSL_G997_MAX_BER_7;
    gInitCfgData.nDeviceCfg.ChannelConfigData[DSL_UPSTREAM].MaxBER =
       DSL_G997_MAX_BER_7;
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
-
-#if defined(INCLUDE_DSL_CPE_API_VRX)
 
 #undef DSL_CCA_DBG_BLOCK
 #define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_MULTIMODE
@@ -5957,6 +6220,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
       g_ActivationFsmConfig.nActivationSequence;
    gInitCfgData.nDeviceCfg.nActivationCfg.nActivationMode =
       g_ActivationFsmConfig.nActivationMode;
+   gInitCfgData.nDeviceCfg.bRememberCfg = g_RememberFsmConfig;
 
    DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
       "Initial multimode settings: nNextMode=%d" DSL_CPE_CRLF,
@@ -5965,10 +6229,28 @@ DSL_int32_t DSL_CPE_DeviceInit (
 #undef DSL_CCA_DBG_BLOCK
 #define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
 
-#endif
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
+
+   /* Overwrite SystemInterfaceConfig if a valid configuration is given by the
+      user via -T option */
+   if (g_sSysIfCfg[DSL_MODE_ADSL].nTcLayer != DSL_TC_UNKNOWN)
+   {
+      memcpy(&gInitCfgData.nDeviceCfg.sysCIF[DSL_MODE_ADSL],
+             &g_sSysIfCfg[DSL_MODE_ADSL],
+             sizeof(DSL_SystemInterfaceConfigData_t));
+   }
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   if (g_sSysIfCfg[DSL_MODE_VDSL].nTcLayer != DSL_TC_UNKNOWN)
+   {
+      memcpy(&gInitCfgData.nDeviceCfg.sysCIF[DSL_MODE_VDSL],
+             &g_sSysIfCfg[DSL_MODE_VDSL],
+             sizeof(DSL_SystemInterfaceConfigData_t));
+   }
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
    gInitCfgData.nAutobootStartupMode = DSL_AUTOBOOT_CTRL_START;
 
+   /* Initialize device configuration as defined via gInitCfgData table */
    memcpy (&init.data, &gInitCfgData, sizeof (DSL_InitData_t));
 
 #ifndef INCLUDE_FW_REQUEST_SUPPORT
@@ -5986,8 +6268,8 @@ DSL_int32_t DSL_CPE_DeviceInit (
                /* Assign FW binary*/
                init.data.pFirmware = pFirmware1;
                init.data.nFirmwareSize = nFirmwareSize1;
-               DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &nFwFeatures1);
-               init.data.nFirmwareFeatures = nFwFeatures1;
+               DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &fwFeatures1);
+               memcpy(&init.data.nFirmwareFeatures, &fwFeatures1, sizeof(DSL_FirmwareFeatures_t));
             }
          }
       }
@@ -6013,23 +6295,17 @@ DSL_int32_t DSL_CPE_DeviceInit (
    /* Get 1st FW binary Information */
    if ((g_bFirmware1 != -1) || (strlen(g_sFirmwareName1) > 0))
    {
-      DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &nFwFeatures1);
+      DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &fwFeatures1);
    }
-   init.data.nFirmwareFeatures = g_nFwFeatures1 = nFwFeatures1;
-
-#if defined (INCLUDE_DSL_CPE_API_VINAX)
-   /* Get 2nd FW binary Information */
-   if ((g_bFirmware2 != -1) || (strlen(g_sFirmwareName2) > 0))
-   {
-      DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &nFwFeatures2);
-   }
-#endif /* INCLUDE_DSL_CPE_API_VINAX */
+   memcpy(&init.data.nFirmwareFeatures, &fwFeatures1,
+      sizeof(DSL_FirmwareFeatures_t));
+   memcpy(&g_nFwFeatures1, &fwFeatures1, sizeof(DSL_FirmwareFeatures_t));
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    if (gInitCfgData.nDeviceCfg.cfg.nHybrid == DSL_DEV_HYBRID_NA)
    {
       init.data.nDeviceCfg.cfg.nHybrid =
-               nFwFeatures1 == DSL_FW_FEATURES_ADSL_B ?
+               fwFeatures1.nFirmwareXdslModes == DSL_FW_XDSLMODE_ADSL_B ?
                DSL_DEV_HYBRID_ANNEX_B_J : DSL_DEV_HYBRID_ANNEX_A;
    }
 #endif /* #if defined (INCLUDE_DSL_CPE_API_DANUBE)*/
@@ -6046,7 +6322,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
          configuration */
       memset (&init.data.nXtseCfg.XTSE, 0, sizeof(init.data.nXtseCfg.XTSE));
 
-      if (nFwFeatures1 == DSL_FW_FEATURES_CLEANED)
+      if (fwFeatures1.nFirmwareXdslModes == DSL_FW_XDSLMODE_CLEANED)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_WRN,
             (DSL_CPE_PREFIX "No valid WHAT strings detected, setting default "
@@ -6061,28 +6337,23 @@ DSL_int32_t DSL_CPE_DeviceInit (
       else
       {
          /* Check for Annex A (default) mode */
-         if (nFwFeatures1 & DSL_FW_FEATURES_ADSL_A)
+         if (fwFeatures1.nFirmwareXdslModes & DSL_FW_XDSLMODE_ADSL_A)
          {
             init.data.nXtseCfg.XTSE[0] = 0x5;
             init.data.nXtseCfg.XTSE[2] = 0x4;
             init.data.nXtseCfg.XTSE[4] = 0xc;
             init.data.nXtseCfg.XTSE[5] = 0x1;
          }
-         else if (nFwFeatures1 & DSL_FW_FEATURES_ADSL_B)
+         else if (fwFeatures1.nFirmwareXdslModes & DSL_FW_XDSLMODE_ADSL_B)
          {
             init.data.nXtseCfg.XTSE[0] = 0x10;
-            init.data.nXtseCfg.XTSE[2] = 0x10;
-#if defined (INCLUDE_DSL_CPE_API_VRX)
-            init.data.nXtseCfg.XTSE[3] = 0x40;
-#endif /* #if defined (INCLUDE_DSL_CPE_API_VRX)*/
             init.data.nXtseCfg.XTSE[5] = 0x4;
-#if defined (INCLUDE_DSL_CPE_API_VRX)
             init.data.nXtseCfg.XTSE[6] = 0x1;
-#endif /* #if defined (INCLUDE_DSL_CPE_API_VRX)*/
          }
 
          /* Check if the VDSL2 FW was specified */
-         if (nFwFeatures1 & DSL_FW_FEATURES_VDSL2)
+         if ((fwFeatures1.nFirmwareXdslModes & DSL_FW_XDSLMODE_VDSL2) ||
+             (fwFeatures1.nFirmwareXdslModes & DSL_FW_XDSLMODE_VDSL2_VECTOR))
          {
             init.data.nXtseCfg.XTSE[7] = 0x7;
          }
@@ -6090,7 +6361,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
    }
 
    memset(&inv,0x0, sizeof(DSL_G997_LineInventoryNeData_t ));
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    memcpy(&inv.Auxiliary.pData, "12344321", 8);
    inv.Auxiliary.nLength = 8;
 #endif
@@ -6101,7 +6372,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
    init.data.pInventory = &inv;
    /* $$ <-- */
 
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
       init.data.nAutobootConfig.nStateMachineOptions.bWaitBeforeLinkActivation =
          g_bWaitBeforeLinkActivation[nDevice];
@@ -6113,8 +6384,6 @@ DSL_int32_t DSL_CPE_DeviceInit (
          g_bWaitBeforeRestart[nDevice];
 
 #if (DSL_CPE_MAX_DEVICE_NUMBER == 2)
-      /* Temporary workaround for the ADTRAN project (2 devices connected via PCI),
-         to be removed!!!*/
       if (nDevice)
       {
          /*Slave*/
@@ -6122,7 +6391,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
          /* Set active polling mode for the MEI driver*/
          init.data.nDeviceCfg.cfg.nIrqNum   = 0x63;
       }
-#endif /* #if (DSL_CPE_MAX_DEVICE_NUMBER == 2)*/
+#endif /* #if (DSL_CPE_MAX_DSL_ENTITIES == 2)*/
 
       /* Initialize device driver*/
       ret = DSL_CPE_Ioctl (pContext->fd[nDevice], DSL_FIO_INIT, (DSL_int_t) & init);
@@ -6210,7 +6479,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_Termination (void)
    }
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
       /* quit via the CLI */
       DSL_CPE_CLI_CommandExecute (DSL_CPE_GetGlobalContext()->fd[nDevice], buf, DSL_NULL,
@@ -6238,6 +6507,7 @@ DSL_int_t dsl_cpe_daemon (
    DSL_int_t ret = 0;
    DSL_char_t device[128] = "";
    DSL_int_t fd = 0, i = 0, nDevice = 0;
+   DSL_int_t nSysIfCfgSize = 0;
 #ifndef DSL_CPE_DEBUG_DISABLE
    DSL_DBG_ModuleLevel_t nDbgModLvl;
 #endif /* DSL_CPE_DEBUG_DISABLE */
@@ -6270,14 +6540,14 @@ DSL_int_t dsl_cpe_daemon (
    /* Set default Device Number*/
    pCtrlCtx->nDevNum = 0;
 
-#if (DSL_CPE_MAX_DEVICE_NUMBER == 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES == 1)
    pCtrlCtx->bBackwardCompMode = DSL_TRUE;
 #else
    pCtrlCtx->bBackwardCompMode = DSL_FALSE;
-#endif /* (DSL_CPE_MAX_DEVICE_NUMBER == 1)*/
+#endif /* (DSL_CPE_MAX_DSL_ENTITIES == 1)*/
 
    /* Initialize Wait points and Auto continue options*/
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
       g_nPrevLineState[nDevice] = DSL_LINESTATE_NOT_INITIALIZED;
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
@@ -6293,6 +6563,10 @@ DSL_int_t dsl_cpe_daemon (
       g_bWaitBeforeRestart[nDevice]        = DSL_FALSE;
 #endif /* INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT*/
    }
+
+   /* Reset user defined SystemInterfaceConfig settings */
+   nSysIfCfgSize = (sizeof(DSL_SystemInterfaceConfigData_t) * DSL_MODE_LAST);
+   memset(&g_sSysIfCfg[DSL_MODE_ADSL], 0, nSysIfCfgSize);
 
    /* Initialize firmware files with its default values (might be overwritten
       by user arguments in folowing DSL_CPE_ArgParse() function) */
@@ -6320,20 +6594,13 @@ DSL_int_t dsl_cpe_daemon (
       goto DSL_CPE_CONTROL_EXIT;
    }
 
-#ifndef DSL_CPE_DEBUG_DISABLE
-   if (bDebugLevel != -1)
-   {
-      DSL_CPE_DebugInit(g_DebugLevel);
-   }
-#endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
-
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)
    if (pCtrlCtx->bBackwardCompMode)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "Using CLI backward compatible mode" DSL_CPE_CRLF));
+         "(-b) Using CLI backward compatible mode" DSL_CPE_CRLF));
    }
-#endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT) */
+#endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT) */
 
    /* display Control Application help screen*/
    if (bHelp == 1)
@@ -6356,22 +6623,22 @@ DSL_int_t dsl_cpe_daemon (
    if (g_sAdslScript != DSL_NULL)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "Using ADSL autostart script file - %s" DSL_CPE_CRLF, g_sAdslScript));
+         "(-a) Using ADSL autostart script file - %s" DSL_CPE_CRLF, g_sAdslScript));
    }
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    if (g_sVdslScript != DSL_NULL)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "Using VDSL autostart script file - %s" DSL_CPE_CRLF, g_sVdslScript));
+         "(-A) Using VDSL autostart script file - %s" DSL_CPE_CRLF, g_sVdslScript));
    }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
 #endif /* INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT */
 #endif /* INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT */
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
    if (g_sRcScript != DSL_NULL)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "using script notification file - %s" DSL_CPE_CRLF , g_sRcScript));
+         "(-n) using script notification file - %s" DSL_CPE_CRLF , g_sRcScript));
    }
 #endif /* #ifdef INCLUDE_SCRIPT_NOTIFICATION */
 
@@ -6381,20 +6648,20 @@ DSL_int_t dsl_cpe_daemon (
       if (strlen(g_sFirmwareName1) > 0)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "using 1st firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName1));
+            "(-f) using 1st firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName1));
       }
       if (strlen(g_sFirmwareName2) > 0)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "using 2nd firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName2));
+            "(-F) using 2nd firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName2));
       }
    }
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
    if (sLowLevCfgName != DSL_NULL)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "using low level configuration file - %s" DSL_CPE_CRLF,
+         "(-l) using low level configuration file - %s" DSL_CPE_CRLF,
          sLowLevCfgName));
 
       ret = DSL_CPE_GetInitialLowLevelConfig( sLowLevCfgName,
@@ -6402,10 +6669,10 @@ DSL_int_t dsl_cpe_daemon (
       if (ret != DSL_SUCCESS)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_WRN, (DSL_CPE_PREFIX
-            "using default low level configuration" DSL_CPE_CRLF));
+            "(-l) using default low level configuration" DSL_CPE_CRLF));
       }
    }
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
 #ifdef LINUX
 #ifdef USE_DAEMONIZE
@@ -6414,12 +6681,14 @@ DSL_int_t dsl_cpe_daemon (
       if (daemon (1, bNotSilent) != 0)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-            "DSL CPE Control Application cannot daemonize (err=%d)" DSL_CPE_CRLF, errno));
+            "(-c) DSL CPE Control Application cannot daemonize (err=%d)"
+            DSL_CPE_CRLF, errno));
          ret = DSL_ERROR;
          goto DSL_CPE_CONTROL_EXIT;
       }
       DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-         "DSL CPE Control Application running in background now!" DSL_CPE_CRLF));
+         "(-c) DSL CPE Control Application running in background now!"
+         DSL_CPE_CRLF));
    }
 #endif /* USE_DAEMONIZE */
    DSL_CPE_HandlerInstall ();
@@ -6429,14 +6698,14 @@ DSL_int_t dsl_cpe_daemon (
    signal (SIGINT, DSL_CPE_TerminationHandler);
 #endif /* RTEMS*/
 
-   /* Open DSL_CPE_MAX_DEVICE_NUMBER devices*/
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   /* Open DSL_CPE_MAX_DSL_ENTITIES devices*/
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
       sprintf (device, "%s/%d", DSL_CPE_DEVICE_NAME, nDevice);
 #else
       sprintf (device, "%s", DSL_CPE_DEVICE_NAME);
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
       fd = DSL_CPE_Open (device);
       if (fd < 0)
@@ -6456,14 +6725,14 @@ DSL_int_t dsl_cpe_daemon (
 #ifndef DSL_CPE_DEBUG_DISABLE
       /* Set common debug level for all driver related modules first if defined
          by '-D' startup option */
-      if ((bDebugLevel == 1) && (g_DebugLevel != 0))
+      if ((g_bDebugLevelDrv == 1) && (g_nDebugLevelDrv != 0))
       {
          DSL_boolean_t bSetLvl = DSL_TRUE;
 
          /* Set debug level to all available modules. */
          nDbgModLvl.data.nDbgModule = DSL_DBG_NO_BLOCK;
 
-         switch (g_DebugLevel)
+         switch (g_nDebugLevelDrv)
          {
             case 1:
                nDbgModLvl.data.nDbgLevel = DSL_DBGLVL_MSG;
@@ -6481,7 +6750,7 @@ DSL_int_t dsl_cpe_daemon (
                bSetLvl = DSL_FALSE;
                DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
                   "Invalid value (%d) given with '-D' startup otion, skipping "
-                  "configuration!" DSL_CPE_CRLF, g_DebugLevel));
+                  "configuration!" DSL_CPE_CRLF, g_nDebugLevelDrv));
                break;
          }
 
@@ -6493,7 +6762,7 @@ DSL_int_t dsl_cpe_daemon (
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_WRN, (DSL_CPE_PREFIX
                   "Unable to set global driver debug level to 0x%X. nReturn = %d"
-                  DSL_CPE_CRLF, g_DebugLevel, nDbgModLvl.accessCtl.nReturn));
+                  DSL_CPE_CRLF, g_nDebugLevelDrv, nDbgModLvl.accessCtl.nReturn));
             }
          }
       }
@@ -6527,9 +6796,8 @@ DSL_int_t dsl_cpe_daemon (
          "ERROR - DSL CPE Control Application version get failed!" DSL_CPE_CRLF));
    }
 
-   memset(&verInf, 0x0, sizeof(DSL_VersionInformation_t));
-
    /* Get Driver version info*/
+   memset(&verInf, 0x0, sizeof(DSL_VersionInformation_t));
    ret = DSL_CPE_Ioctl (pCtrlCtx->fd[0], DSL_FIO_VERSION_INFORMATION_GET, (int) &verInf);
 
    if ((ret < 0) && (verInf.accessCtl.nReturn < DSL_SUCCESS))
@@ -6616,7 +6884,7 @@ DSL_int_t dsl_cpe_daemon (
 #endif
 
    /* Configure event and resource handling*/
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
       instanceConfig.data.bEventActivation = bEventActivation;
       instanceConfig.data.nResourceActivationMask =
@@ -6639,7 +6907,7 @@ DSL_int_t dsl_cpe_daemon (
       /* start DTI agent with default values */
       if ( DSL_CPE_Dti_Start(
                               pCtrlCtx,
-                              DSL_CPE_MAX_DEVICE_NUMBER,
+                              DSL_CPE_MAX_DSL_ENTITIES,
                               1,
                               DSL_CPE_DTI_DEFAULT_TCP_PORT,
                               sDtiSocketAddr,
@@ -6678,7 +6946,7 @@ DSL_int_t dsl_cpe_daemon (
    {
       /* Unmask (enable) all possible events that are masked (disabled) by
          default after instance event activation. */
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          for (i = DSL_EVENT_S_FIRST; i < DSL_EVENT_S_LAST; i++)
          {
@@ -6704,7 +6972,7 @@ DSL_int_t dsl_cpe_daemon (
 #ifndef DSL_CPE_DEBUG_DISABLE
    if (bMsgDump == 1)
    {
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          nDbgModLvl.data.nDbgModule = DSL_DBG_MESSAGE_DUMP;
          nDbgModLvl.data.nDbgLevel  = (DSL_debugLevels_t)g_nMsgDumpDbgLvl;
@@ -6733,39 +7001,12 @@ DSL_int_t dsl_cpe_daemon (
             "Device initialized succeeded (ret=%d)." DSL_CPE_CRLF, ret));
       }
    }
-#ifdef INCLUDE_DSL_CPE_API_VRX
-
-#undef DSL_CCA_DBG_BLOCK
-#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_MULTIMODE
-
-   else if (bMultimodeCfg == 1) {
-      DSL_MultimodeFsmConfig_t multimodeFsmCfg;
-
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++) {
-
-         multimodeFsmCfg.data.nNextMode = g_MultimodeFsmConfig.nNextMode;
-
-         ret = DSL_CPE_Ioctl(pCtrlCtx->fd[nDevice], DSL_FIO_MULTIMODE_FSM_CONFIG_SET,
-                              (int) &multimodeFsmCfg);
-
-         if ((ret < 0) && (multimodeFsmCfg.accessCtl.nReturn < DSL_SUCCESS)) {
-            DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "ERROR - ioctl DSL_FIO_MULTIMODE_FSM_CONFIG_SET failed, nDevice=%d!"
-               DSL_CPE_CRLF, nDevice));
-         }
-      }
-   }
-
-#undef DSL_CCA_DBG_BLOCK
-#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
-
-#endif /* #ifdef INCLUDE_DSL_CPE_API_VRX*/
 
    if (bInit != 1)
    {
 #ifdef INCLUDE_FW_REQUEST_SUPPORT
 #if defined(INCLUDE_DSL_CPE_API_DANUBE)
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          /* Download ADSL Firmware*/
          ret = DSL_CPE_DownloadFirmware(
@@ -6781,7 +7022,7 @@ DSL_int_t dsl_cpe_daemon (
 #else
       DSL_AutobootControl_t pAcs;
 
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          memset(&pAcs,0x0, sizeof(DSL_AutobootControl_t));
          /* Restat Autoboot handling*/
@@ -6801,7 +7042,7 @@ DSL_int_t dsl_cpe_daemon (
       }
 #endif /* defined(INCLUDE_DSL_CPE_API_DANUBE)*/
 #else
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          /* Download ADSL/VDSL Firmware if available*/
          ret = DSL_CPE_DownloadFirmware(
@@ -6826,7 +7067,7 @@ DSL_int_t dsl_cpe_daemon (
 
    memset(&pDrvResStatData, 0, sizeof(DSL_ResourceUsageStatistics_t));
 
-   for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+   for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
    {
       ret = DSL_CPE_Ioctl (pCtrlCtx->fd[nDevice], DSL_FIO_RESOURCE_USAGE_STATISTICS_GET, (int) &pDrvResStatData);
       if ((ret < 0) && (pDrvResStatData.accessCtl.nReturn < DSL_SUCCESS))
@@ -6836,7 +7077,7 @@ DSL_int_t dsl_cpe_daemon (
       }
       else
       {
-#if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
          printf(DSL_CPE_PREFIX "nDevice=%d drvStaticMemUsage=%d drvDynamicMemUsage=%d"
             DSL_CPE_CRLF,
             nDevice, pDrvResStatData.data.staticMemUsage, pDrvResStatData.data.dynamicMemUsage);
@@ -6844,7 +7085,7 @@ DSL_int_t dsl_cpe_daemon (
          printf(DSL_CPE_PREFIX "drvStaticMemUsage=%d drvDynamicMemUsage=%d "
             DSL_CPE_CRLF,
             pDrvResStatData.data.staticMemUsage, pDrvResStatData.data.dynamicMemUsage);
-#endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
+#endif /* (DSL_CPE_MAX_DSL_ENTITIES > 1)*/
       }
    }
 
@@ -6945,7 +7186,7 @@ DSL_CPE_CONTROL_EXIT:
    {
       /* Mask (disable) all possible events which were enabled at the startup.
          Workaround to solve the SMS00833504 issue.*/
-      for (nDevice = 0; nDevice < DSL_CPE_MAX_DEVICE_NUMBER; nDevice++)
+      for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          for (i = DSL_EVENT_S_FIRST; i < DSL_EVENT_S_LAST; i++)
          {
@@ -6985,7 +7226,7 @@ DSL_CPE_CONTROL_EXIT:
       DSL_CPE_ThreadShutdown (&pCtrlCtx->EventControl, 1000);
    }
 
-   for (i = 0; i < DSL_CPE_MAX_DEVICE_NUMBER; i++)
+   for (i = 0; i < DSL_CPE_MAX_DSL_ENTITIES; i++)
    {
       if(pCtrlCtx->fd[i] >= 0)
       {

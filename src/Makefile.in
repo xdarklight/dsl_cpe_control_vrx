@@ -40,8 +40,8 @@ bin_PROGRAMS = dsl_cpe_control$(EXEEXT)
 @DEVICE_DANUBE_TRUE@am__append_4 = \
 @DEVICE_DANUBE_TRUE@	$(dsl_cpe_control_debug_danube_sources)
 
-@DEVICE_VXX_LAYER_TRUE@am__append_5 = \
-@DEVICE_VXX_LAYER_TRUE@	$(dsl_cpe_control_debug_vxx_sources)
+@DEVICE_VRX_LAYER_TRUE@am__append_5 = \
+@DEVICE_VRX_LAYER_TRUE@	$(dsl_cpe_control_debug_vrx_sources)
 
 @INCLUDE_DSL_BONDING_TRUE@am__append_6 = \
 @INCLUDE_DSL_BONDING_TRUE@	$(dsl_cpe_control_bnd_sources)
@@ -58,13 +58,10 @@ bin_PROGRAMS = dsl_cpe_control$(EXEEXT)
 @DEVICE_DANUBE_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__append_10 = \
 @DEVICE_DANUBE_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@	$(dsl_cpe_control_cli_danube_sources)
 
-@DEVICE_VINAX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__append_11 = \
-@DEVICE_VINAX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@	$(dsl_cpe_control_cli_vinax_sources)
-
-@DEVICE_VRX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__append_12 = \
+@DEVICE_VRX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__append_11 = \
 @DEVICE_VRX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@	$(dsl_cpe_control_cli_vrx_sources)
 
-@DSL_CCA_DBG_MAX_LEVEL_SET_TRUE@am__append_13 = -DDSL_CCA_DBG_MAX_LEVEL=$(DSL_CCA_DBG_MAX_LEVEL_PRE)
+@DSL_CCA_DBG_MAX_LEVEL_SET_TRUE@am__append_12 = -DDSL_CCA_DBG_MAX_LEVEL=$(DSL_CCA_DBG_MAX_LEVEL_PRE)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/dsl_cpe_config.h.in
@@ -80,19 +77,19 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dsl_cpe_control_SOURCES_DIST = dsl_cpe_control.c \
 	dsl_cpe_init_cfg.c dsl_cpe_linux.c dsl_cpe_debug.c \
-	dsl_cpe_dti.c dsl_cpe_debug_danube.c dsl_cpe_debug_vxx.c \
-	dsl_cpe_bnd.c stdsoap2.c dsl_cpe_soap.c dsl_cpe_soap_C.c \
+	dsl_cpe_dti.c dsl_cpe_debug_danube.c dsl_cpe_debug_vrx.c \
+	dsl_cpe_bnd_vrx.c stdsoap2.c dsl_cpe_soap.c dsl_cpe_soap_C.c \
 	dsl_cpe_soap_Client.c dsl_cpe_soap_Server.c dsl_cpe_cli.c \
 	dsl_cpe_cli_pipe.c dsl_cpe_cli_access.c dsl_cpe_cli_console.c \
 	dsl_cpe_cli_access2.c dsl_cpe_cli_autogen.c \
-	dsl_cpe_cli_danube.c dsl_cpe_cli_mib.c dsl_cpe_cli_vinax.c \
-	dsl_cpe_cli_vrx.c
+	dsl_cpe_cli_danube.c dsl_cpe_cli_mib.c dsl_cpe_cli_vrx.c
 @INCLUDE_DSL_CPE_DTI_SUPPORT_TRUE@am__objects_1 = dsl_cpe_control-dsl_cpe_dti.$(OBJEXT)
 am__objects_2 = dsl_cpe_control-dsl_cpe_debug_danube.$(OBJEXT)
 @DEVICE_DANUBE_TRUE@am__objects_3 = $(am__objects_2)
-am__objects_4 = dsl_cpe_control-dsl_cpe_debug_vxx.$(OBJEXT)
-@DEVICE_VXX_LAYER_TRUE@am__objects_5 = $(am__objects_4)
-am__objects_6 = dsl_cpe_control-dsl_cpe_bnd.$(OBJEXT)
+am__objects_4 = dsl_cpe_control-dsl_cpe_debug_vrx.$(OBJEXT)
+@DEVICE_VRX_LAYER_TRUE@am__objects_5 = $(am__objects_4)
+@DEVICE_VRX_TRUE@am__objects_6 =  \
+@DEVICE_VRX_TRUE@	dsl_cpe_control-dsl_cpe_bnd_vrx.$(OBJEXT)
 @INCLUDE_DSL_BONDING_TRUE@am__objects_7 = $(am__objects_6)
 am__objects_8 = dsl_cpe_control-stdsoap2.$(OBJEXT) \
 	dsl_cpe_control-dsl_cpe_soap.$(OBJEXT) \
@@ -111,10 +108,8 @@ am__objects_12 = dsl_cpe_control-dsl_cpe_cli_access2.$(OBJEXT) \
 am__objects_14 = dsl_cpe_control-dsl_cpe_cli_danube.$(OBJEXT) \
 	dsl_cpe_control-dsl_cpe_cli_mib.$(OBJEXT)
 @DEVICE_DANUBE_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__objects_15 = $(am__objects_14)
-am__objects_16 = dsl_cpe_control-dsl_cpe_cli_vinax.$(OBJEXT)
-@DEVICE_VINAX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__objects_17 = $(am__objects_16)
-am__objects_18 = dsl_cpe_control-dsl_cpe_cli_vrx.$(OBJEXT)
-@DEVICE_VRX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__objects_19 = $(am__objects_18)
+am__objects_16 = dsl_cpe_control-dsl_cpe_cli_vrx.$(OBJEXT)
+@DEVICE_VRX_TRUE@@INCLUDE_DSL_CPE_CLI_SUPPORT_TRUE@am__objects_17 = $(am__objects_16)
 am_dsl_cpe_control_OBJECTS =  \
 	dsl_cpe_control-dsl_cpe_control.$(OBJEXT) \
 	dsl_cpe_control-dsl_cpe_init_cfg.$(OBJEXT) \
@@ -122,7 +117,7 @@ am_dsl_cpe_control_OBJECTS =  \
 	dsl_cpe_control-dsl_cpe_debug.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_3) $(am__objects_5) $(am__objects_7) \
 	$(am__objects_9) $(am__objects_11) $(am__objects_13) \
-	$(am__objects_15) $(am__objects_17) $(am__objects_19)
+	$(am__objects_15) $(am__objects_17)
 dsl_cpe_control_OBJECTS = $(am_dsl_cpe_control_OBJECTS)
 am__DEPENDENCIES_1 =
 dsl_cpe_control_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -193,6 +188,7 @@ DSL_DEBUG_TOOL_INTERFACE = @DSL_DEBUG_TOOL_INTERFACE@
 DSL_DEVICE_DRIVER_INCL_PATH = @DSL_DEVICE_DRIVER_INCL_PATH@
 DSL_DEVICE_NAME = @DSL_DEVICE_NAME@
 DSL_DRIVER_INCL_PATH = @DSL_DRIVER_INCL_PATH@
+DSL_VRX_DEVICE_NAME = @DSL_VRX_DEVICE_NAME@
 DTI_INCL_PATH = @DTI_INCL_PATH@
 DTI_LIBRARY_PATH = @DTI_LIBRARY_PATH@
 ECHO_C = @ECHO_C@
@@ -228,7 +224,6 @@ INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS = @INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOL
 INCLUDE_DSL_CPE_PM_HISTORY = @INCLUDE_DSL_CPE_PM_HISTORY@
 INCLUDE_DSL_CPE_PM_LINE_COUNTERS = @INCLUDE_DSL_CPE_PM_LINE_COUNTERS@
 INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS = @INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS@
-INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS = @INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS@
 INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS = @INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS@
 INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS = @INCLUDE_DSL_CPE_PM_OPTIONAL_PARAMETERS@
 INCLUDE_DSL_CPE_PM_RETX_COUNTERS = @INCLUDE_DSL_CPE_PM_RETX_COUNTERS@
@@ -325,8 +320,8 @@ AM_CPPFLAGS = -I@srcdir@ @DSL_DRIVER_INCL_PATH@ @DSL_DEVICE_DRIVER_INCL_PATH@ @I
 dsl_cpe_control_LDADD = -lpthread -lrt $(am__append_1) $(am__append_2) \
 	$(am__append_3)
 bin_SCRIPTS = ../scripts/alias_dsl_cpe.sh ../scripts/dsl_cpe_pipe.sh
-dsl_cpe_control_bnd_sources = \
-   dsl_cpe_bnd.c
+@DEVICE_VRX_TRUE@dsl_cpe_control_bnd_sources = \
+@DEVICE_VRX_TRUE@   dsl_cpe_bnd_vrx.c
 
 dsl_cpe_control_soap_sources = \
 	stdsoap2.c \
@@ -349,17 +344,14 @@ dsl_cpe_control_cli_danube_sources = \
 	dsl_cpe_cli_danube.c \
         dsl_cpe_cli_mib.c
 
-dsl_cpe_control_cli_vinax_sources = \
-	dsl_cpe_cli_vinax.c
-
 dsl_cpe_control_cli_vrx_sources = \
 	dsl_cpe_cli_vrx.c
 
 dsl_cpe_control_debug_danube_sources = \
 	dsl_cpe_debug_danube.c
 
-dsl_cpe_control_debug_vxx_sources = \
-	dsl_cpe_debug_vxx.c
+dsl_cpe_control_debug_vrx_sources = \
+	dsl_cpe_debug_vrx.c
 
 @INCLUDE_DSL_CPE_DTI_SUPPORT_FALSE@dsl_cpe_control_dti_sources = 
 @INCLUDE_DSL_CPE_DTI_SUPPORT_TRUE@dsl_cpe_control_dti_sources = \
@@ -369,7 +361,7 @@ dsl_cpe_control_SOURCES = dsl_cpe_control.c dsl_cpe_init_cfg.c \
 	dsl_cpe_linux.c dsl_cpe_debug.c $(dsl_cpe_control_dti_sources) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12)
+	$(am__append_10) $(am__append_11)
 EXTRA_DIST = \
 	../LICENSE \
 	$(dsl_cpe_control_soap_sources) \
@@ -377,15 +369,14 @@ EXTRA_DIST = \
 	$(dsl_cpe_control_cli_sources) \
         $(dsl_cpe_control_dti_sources) \
 	$(dsl_cpe_control_cli_danube_sources) \
-	$(dsl_cpe_control_cli_vinax_sources) \
 	$(dsl_cpe_control_cli_vrx_sources) \
         $(dsl_cpe_control_debug_danube_sources) \
-        $(dsl_cpe_control_debug_vxx_sources) \
+        $(dsl_cpe_control_debug_vrx_sources) \
 	dsl_cpe_control.h \
 	dsl_cpe_init_cfg.h \
 	dsl_cpe_cli.h \
 	dsl_cpe_dti.h \
-        dsl_cpe_bnd.h \
+        dsl_cpe_bnd_vrx.h \
 	dsl_cpe_cli_console.h \
 	dsl_cpe_simulator.c \
 	dsl_cpe_simulator.h \
@@ -400,7 +391,7 @@ EXTRA_DIST = \
 	dsl_cpe_rtems.h \
 	dsl_cpe_debug.h \
 	dsl_cpe_debug_danube.h \
-	dsl_cpe_debug_vxx.h \
+	dsl_cpe_debug_vrx.h \
 	dsl_cpe_soap_Stub.h \
 	dsl_cpe_soap_H.h \
 	stdsoap2.h \
@@ -417,7 +408,7 @@ EXTRA_DIST = \
 @INCLUDE_DSL_CPE_DTI_SUPPORT_TRUE@dsl_cpe_control_dti_ldflags = @DTI_LIBRARY_PATH@
 dsl_cpe_control_common_cflags = -Wall -Wimplicit -Wreturn-type \
 	-Wunused -Wundef -Wswitch -Wno-format -Wcomment \
-	-Wuninitialized -DLINUX -g -s $(am__append_13)
+	-Wuninitialized -DLINUX -g -s $(am__append_12)
 
 # compile cflags
 dsl_cpe_control_compile_cflags = $(EXTRA_APP_CFLAGS)
@@ -564,7 +555,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_access.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_access2.Po@am__quote@
@@ -573,12 +564,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_danube.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_mib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_pipe.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vrx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_danube.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_dti.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_init_cfg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dsl_cpe_control-dsl_cpe_linux.Po@am__quote@
@@ -686,33 +676,33 @@ dsl_cpe_control-dsl_cpe_debug_danube.obj: dsl_cpe_debug_danube.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_debug_danube.obj `if test -f 'dsl_cpe_debug_danube.c'; then $(CYGPATH_W) 'dsl_cpe_debug_danube.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_debug_danube.c'; fi`
 
-dsl_cpe_control-dsl_cpe_debug_vxx.o: dsl_cpe_debug_vxx.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_debug_vxx.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Tpo -c -o dsl_cpe_control-dsl_cpe_debug_vxx.o `test -f 'dsl_cpe_debug_vxx.c' || echo '$(srcdir)/'`dsl_cpe_debug_vxx.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_debug_vxx.c' object='dsl_cpe_control-dsl_cpe_debug_vxx.o' libtool=no @AMDEPBACKSLASH@
+dsl_cpe_control-dsl_cpe_debug_vrx.o: dsl_cpe_debug_vrx.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_debug_vrx.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Tpo -c -o dsl_cpe_control-dsl_cpe_debug_vrx.o `test -f 'dsl_cpe_debug_vrx.c' || echo '$(srcdir)/'`dsl_cpe_debug_vrx.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_debug_vrx.c' object='dsl_cpe_control-dsl_cpe_debug_vrx.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_debug_vxx.o `test -f 'dsl_cpe_debug_vxx.c' || echo '$(srcdir)/'`dsl_cpe_debug_vxx.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_debug_vrx.o `test -f 'dsl_cpe_debug_vrx.c' || echo '$(srcdir)/'`dsl_cpe_debug_vrx.c
 
-dsl_cpe_control-dsl_cpe_debug_vxx.obj: dsl_cpe_debug_vxx.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_debug_vxx.obj -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Tpo -c -o dsl_cpe_control-dsl_cpe_debug_vxx.obj `if test -f 'dsl_cpe_debug_vxx.c'; then $(CYGPATH_W) 'dsl_cpe_debug_vxx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_debug_vxx.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vxx.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_debug_vxx.c' object='dsl_cpe_control-dsl_cpe_debug_vxx.obj' libtool=no @AMDEPBACKSLASH@
+dsl_cpe_control-dsl_cpe_debug_vrx.obj: dsl_cpe_debug_vrx.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_debug_vrx.obj -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Tpo -c -o dsl_cpe_control-dsl_cpe_debug_vrx.obj `if test -f 'dsl_cpe_debug_vrx.c'; then $(CYGPATH_W) 'dsl_cpe_debug_vrx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_debug_vrx.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_debug_vrx.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_debug_vrx.c' object='dsl_cpe_control-dsl_cpe_debug_vrx.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_debug_vxx.obj `if test -f 'dsl_cpe_debug_vxx.c'; then $(CYGPATH_W) 'dsl_cpe_debug_vxx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_debug_vxx.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_debug_vrx.obj `if test -f 'dsl_cpe_debug_vrx.c'; then $(CYGPATH_W) 'dsl_cpe_debug_vrx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_debug_vrx.c'; fi`
 
-dsl_cpe_control-dsl_cpe_bnd.o: dsl_cpe_bnd.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_bnd.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Tpo -c -o dsl_cpe_control-dsl_cpe_bnd.o `test -f 'dsl_cpe_bnd.c' || echo '$(srcdir)/'`dsl_cpe_bnd.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_bnd.c' object='dsl_cpe_control-dsl_cpe_bnd.o' libtool=no @AMDEPBACKSLASH@
+dsl_cpe_control-dsl_cpe_bnd_vrx.o: dsl_cpe_bnd_vrx.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_bnd_vrx.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Tpo -c -o dsl_cpe_control-dsl_cpe_bnd_vrx.o `test -f 'dsl_cpe_bnd_vrx.c' || echo '$(srcdir)/'`dsl_cpe_bnd_vrx.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_bnd_vrx.c' object='dsl_cpe_control-dsl_cpe_bnd_vrx.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_bnd.o `test -f 'dsl_cpe_bnd.c' || echo '$(srcdir)/'`dsl_cpe_bnd.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_bnd_vrx.o `test -f 'dsl_cpe_bnd_vrx.c' || echo '$(srcdir)/'`dsl_cpe_bnd_vrx.c
 
-dsl_cpe_control-dsl_cpe_bnd.obj: dsl_cpe_bnd.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_bnd.obj -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Tpo -c -o dsl_cpe_control-dsl_cpe_bnd.obj `if test -f 'dsl_cpe_bnd.c'; then $(CYGPATH_W) 'dsl_cpe_bnd.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_bnd.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_bnd.c' object='dsl_cpe_control-dsl_cpe_bnd.obj' libtool=no @AMDEPBACKSLASH@
+dsl_cpe_control-dsl_cpe_bnd_vrx.obj: dsl_cpe_bnd_vrx.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_bnd_vrx.obj -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Tpo -c -o dsl_cpe_control-dsl_cpe_bnd_vrx.obj `if test -f 'dsl_cpe_bnd_vrx.c'; then $(CYGPATH_W) 'dsl_cpe_bnd_vrx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_bnd_vrx.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_bnd_vrx.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_bnd_vrx.c' object='dsl_cpe_control-dsl_cpe_bnd_vrx.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_bnd.obj `if test -f 'dsl_cpe_bnd.c'; then $(CYGPATH_W) 'dsl_cpe_bnd.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_bnd.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_bnd_vrx.obj `if test -f 'dsl_cpe_bnd_vrx.c'; then $(CYGPATH_W) 'dsl_cpe_bnd_vrx.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_bnd_vrx.c'; fi`
 
 dsl_cpe_control-stdsoap2.o: stdsoap2.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-stdsoap2.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-stdsoap2.Tpo -c -o dsl_cpe_control-stdsoap2.o `test -f 'stdsoap2.c' || echo '$(srcdir)/'`stdsoap2.c
@@ -895,20 +885,6 @@ dsl_cpe_control-dsl_cpe_cli_mib.obj: dsl_cpe_cli_mib.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_cli_mib.c' object='dsl_cpe_control-dsl_cpe_cli_mib.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_cli_mib.obj `if test -f 'dsl_cpe_cli_mib.c'; then $(CYGPATH_W) 'dsl_cpe_cli_mib.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_cli_mib.c'; fi`
-
-dsl_cpe_control-dsl_cpe_cli_vinax.o: dsl_cpe_cli_vinax.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_cli_vinax.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Tpo -c -o dsl_cpe_control-dsl_cpe_cli_vinax.o `test -f 'dsl_cpe_cli_vinax.c' || echo '$(srcdir)/'`dsl_cpe_cli_vinax.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_cli_vinax.c' object='dsl_cpe_control-dsl_cpe_cli_vinax.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_cli_vinax.o `test -f 'dsl_cpe_cli_vinax.c' || echo '$(srcdir)/'`dsl_cpe_cli_vinax.c
-
-dsl_cpe_control-dsl_cpe_cli_vinax.obj: dsl_cpe_cli_vinax.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_cli_vinax.obj -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Tpo -c -o dsl_cpe_control-dsl_cpe_cli_vinax.obj `if test -f 'dsl_cpe_cli_vinax.c'; then $(CYGPATH_W) 'dsl_cpe_cli_vinax.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_cli_vinax.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Tpo $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vinax.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dsl_cpe_cli_vinax.c' object='dsl_cpe_control-dsl_cpe_cli_vinax.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -c -o dsl_cpe_control-dsl_cpe_cli_vinax.obj `if test -f 'dsl_cpe_cli_vinax.c'; then $(CYGPATH_W) 'dsl_cpe_cli_vinax.c'; else $(CYGPATH_W) '$(srcdir)/dsl_cpe_cli_vinax.c'; fi`
 
 dsl_cpe_control-dsl_cpe_cli_vrx.o: dsl_cpe_cli_vrx.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dsl_cpe_control_CFLAGS) $(CFLAGS) -MT dsl_cpe_control-dsl_cpe_cli_vrx.o -MD -MP -MF $(DEPDIR)/dsl_cpe_control-dsl_cpe_cli_vrx.Tpo -c -o dsl_cpe_control-dsl_cpe_cli_vrx.o `test -f 'dsl_cpe_cli_vrx.c' || echo '$(srcdir)/'`dsl_cpe_cli_vrx.c

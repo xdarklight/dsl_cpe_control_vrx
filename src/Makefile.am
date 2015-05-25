@@ -30,8 +30,10 @@ endif
 
 bin_SCRIPTS = ../scripts/alias_dsl_cpe.sh ../scripts/dsl_cpe_pipe.sh
 
+if DEVICE_VRX
 dsl_cpe_control_bnd_sources = \
-   dsl_cpe_bnd.c
+   dsl_cpe_bnd_vrx.c
+endif
 
 dsl_cpe_control_soap_sources = \
 	stdsoap2.c \
@@ -54,17 +56,14 @@ dsl_cpe_control_cli_danube_sources = \
 	dsl_cpe_cli_danube.c \
         dsl_cpe_cli_mib.c
 
-dsl_cpe_control_cli_vinax_sources = \
-	dsl_cpe_cli_vinax.c
-
 dsl_cpe_control_cli_vrx_sources = \
 	dsl_cpe_cli_vrx.c
 
 dsl_cpe_control_debug_danube_sources = \
 	dsl_cpe_debug_danube.c
 
-dsl_cpe_control_debug_vxx_sources = \
-	dsl_cpe_debug_vxx.c
+dsl_cpe_control_debug_vrx_sources = \
+	dsl_cpe_debug_vrx.c
 
 if INCLUDE_DSL_CPE_DTI_SUPPORT
 dsl_cpe_control_dti_sources = \
@@ -87,9 +86,9 @@ dsl_cpe_control_SOURCES += \
 	$(dsl_cpe_control_debug_danube_sources)
 endif
 
-if DEVICE_VXX_LAYER
+if DEVICE_VRX_LAYER
 dsl_cpe_control_SOURCES += \
-	$(dsl_cpe_control_debug_vxx_sources)
+	$(dsl_cpe_control_debug_vrx_sources)
 endif
 
 if INCLUDE_DSL_BONDING
@@ -116,11 +115,6 @@ dsl_cpe_control_SOURCES += \
 	$(dsl_cpe_control_cli_danube_sources)
 endif
 
-if DEVICE_VINAX
-dsl_cpe_control_SOURCES += \
-	$(dsl_cpe_control_cli_vinax_sources)
-endif
-
 if DEVICE_VRX
 dsl_cpe_control_SOURCES += \
 	$(dsl_cpe_control_cli_vrx_sources)
@@ -135,15 +129,14 @@ EXTRA_DIST = \
 	$(dsl_cpe_control_cli_sources) \
         $(dsl_cpe_control_dti_sources) \
 	$(dsl_cpe_control_cli_danube_sources) \
-	$(dsl_cpe_control_cli_vinax_sources) \
 	$(dsl_cpe_control_cli_vrx_sources) \
         $(dsl_cpe_control_debug_danube_sources) \
-        $(dsl_cpe_control_debug_vxx_sources) \
+        $(dsl_cpe_control_debug_vrx_sources) \
 	dsl_cpe_control.h \
 	dsl_cpe_init_cfg.h \
 	dsl_cpe_cli.h \
 	dsl_cpe_dti.h \
-        dsl_cpe_bnd.h \
+        dsl_cpe_bnd_vrx.h \
 	dsl_cpe_cli_console.h \
 	dsl_cpe_simulator.c \
 	dsl_cpe_simulator.h \
@@ -158,7 +151,7 @@ EXTRA_DIST = \
 	dsl_cpe_rtems.h \
 	dsl_cpe_debug.h \
 	dsl_cpe_debug_danube.h \
-	dsl_cpe_debug_vxx.h \
+	dsl_cpe_debug_vrx.h \
 	dsl_cpe_soap_Stub.h \
 	dsl_cpe_soap_H.h \
 	stdsoap2.h \

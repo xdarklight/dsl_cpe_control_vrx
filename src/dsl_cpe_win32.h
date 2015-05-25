@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -102,7 +101,7 @@ DSL_uint32_t DSL_CPE_Htonl(DSL_uint32_t hVal);
 
 #if defined(DSL_DEBUG_TOOL_INTERFACE) || defined(INCLUDE_DSL_CPE_DTI_SUPPORT)
 DSL_char_t* DSL_CPE_OwnAddrStringGet(DSL_void_t);
-#endif /* DSL_DEBUG_TOOL_INTERFACE || INCLUDE_DSL_CPE_DTI_SUPPORT */
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
 /**
    Print to a file, pipe, stdout, stderr or memory file.
@@ -120,6 +119,10 @@ extern DSL_Error_t DSL_CPE_PipeCreate(DSL_char_t *pName);
 extern DSL_Error_t DSL_CPE_PipeClose(DSL_CPE_File_t *file);
 extern DSL_CPE_File_t *DSL_CPE_PipeOpen(DSL_char_t *pName, 
    DSL_boolean_t reading, DSL_boolean_t blocking);
+
+DSL_Error_t DSL_CPE_System(const DSL_char_t *sCommand);
+DSL_Error_t DSL_CPE_SetEnv(const DSL_char_t *sName, const DSL_char_t *sValue);
+DSL_void_t DSL_CPE_EnvVarFree(DSL_void_t);
 
 #endif /* WIN32 */
 

@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -261,8 +260,8 @@ void DSL_CMV_Prepare
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    #include "dsl_cpe_debug_danube.h"
-#elif defined (INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX)
-   #include "dsl_cpe_debug_vxx.h"
+#elif defined (INCLUDE_DSL_CPE_API_VRX)
+   #include "dsl_cpe_debug_vrx.h"
 #else
    #error "xDSL chip not specified!"
 #endif

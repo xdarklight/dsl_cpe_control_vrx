@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -36,14 +35,13 @@
 
 #ifdef WIN32
 #include "dsl_cpe_win32.h"
-#endif
+#endif /* WIN32*/
 
 /* Maximum number of FW reload retries in case of a failed FW download*/
 #define DSL_CPE_MAX_FW_RELOAD_RETRY_COUNT   (5)
 
-#if defined(INCLUDE_DSL_ADSL_MIB) && \
-   (defined (INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX))
-   #error "MIB not supported for the Vinax/VRX devices yet!!!"
+#if defined(INCLUDE_DSL_ADSL_MIB) && defined (INCLUDE_DSL_CPE_API_VRX)
+   #error "MIB not supported for the VRX devices yet!!!"
 #endif
 
 extern DSL_char_t *g_sFirmwareName1;
@@ -52,14 +50,21 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures1;
 extern DSL_char_t *g_sFirmwareName2;
 extern DSL_FirmwareFeatures_t g_nFwFeatures2;
 
+/*
+#if defined(DSL_DEBUG_TOOL_INTERFACE) && (!defined(INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT))
+#error "DSL Debug Interface can be used with Linux and file \
+system support enabled only"
+#endif
+*/
+
 #if defined(DSL_DEBUG_TOOL_INTERFACE) && !defined(INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT)
    #error "Debug Tool Interface needs --enable-cmv-scripts option enabled!"
 #endif
 
 /* \todo [RTT] Temporary exclude RTT because of important bugfix is needed first! */
-//#if defined(INCLUDE_REAL_TIME_TRACE)
-//#error Real Time Trace functionality is currently not supported.
-//#endif
+#if defined(INCLUDE_REAL_TIME_TRACE)
+#error Real Time Trace functionality is currently not supported.
+#endif
 
 #if defined(DSL_DEBUG_TOOL_INTERFACE) || defined(INCLUDE_DSL_CPE_DTI_SUPPORT)
 #ifdef LINUX
@@ -69,12 +74,10 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures2;
 #else
    #error "OS type undefined!"
 #endif
-#endif /* DSL_DEBUG_TOOL_INTERFACE || INCLUDE_DSL_CPE_DTI_SUPPORT */
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    #define DSL_CPE_DSL_LOW_DEV "/dev/ifx_mei"
-#elif defined (INCLUDE_DSL_CPE_API_VINAX)
-   #define DSL_CPE_DSL_LOW_DEV "/dev/vinax"
 #elif defined (INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DSL_LOW_DEV "/dev/mei_cpe"
 #else
@@ -84,22 +87,7 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures2;
 /**
    This define specifies the maximum number of device instances
 */
-#if defined (INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX)
-#if !defined(DSL_CPE_MAX_DEVICE_NUMBER)
-#ifndef INCLUDE_DSL_BONDING
-   #define DSL_CPE_MAX_DEVICE_NUMBER 1
-#else
-   #define DSL_CPE_MAX_DEVICE_NUMBER 2
-#endif
-#elif (DSL_CPE_MAX_DEVICE_NUMBER == 0)
-   #error "DSL_CPE_MAX_DEVICE_NUMBER should be greater than 0!!!"
-#else
-   #ifdef INCLUDE_DSL_BONDING
-      #undef DSL_CPE_MAX_DEVICE_NUMBER
-      #define DSL_CPE_MAX_DEVICE_NUMBER   2
-   #endif /* INCLUDE_DSL_BONDING*/
-#endif /* !defined(DSL_CPE_MAX_DEVICE_NUMBER)*/
-#elif defined (INCLUDE_DSL_CPE_API_DANUBE)
+#if defined (INCLUDE_DSL_CPE_API_DANUBE)
 #ifdef DSL_CPE_MAX_DEVICE_NUMBER
    #if (DSL_CPE_MAX_DEVICE_NUMBER > 1) || (DSL_CPE_MAX_DEVICE_NUMBER == 0)
    #error "DSL_CPE_MAX_DEVICE_NUMBER should be 1!!!"
@@ -108,7 +96,7 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures2;
    /* Danube/Amazon-Se/ARX100 low level driver support only single instance */
    #define DSL_CPE_MAX_DEVICE_NUMBER 1
 #endif /* DSL_CPE_MAX_DEVICE_NUMBER*/
-#endif /* defined (INCLUDE_DSL_CPE_API_VINAX) || defined (INCLUDE_DSL_CPE_API_VRX)*/
+#endif /* defined (INCLUDE_DSL_CPE_API_VRX)*/
 
 #if defined(RTEMS)
    #if (DSL_CPE_MAX_DEVICE_NUMBER > 1)
@@ -116,9 +104,33 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures2;
    #endif /* (DSL_CPE_MAX_DEVICE_NUMBER > 1)*/
 #endif /* defined(RTEMS)*/
 
-#if defined (INCLUDE_DSL_CPE_API_VINAX)
-   /* Include DSL CPE API SAR Support*/
-   #define INCLUDE_DSL_CPE_API_SAR_SUPPORT
+#if !defined (DSL_CPE_LINES_PER_DEVICE)
+#  define DSL_CPE_LINES_PER_DEVICE 1
+#else
+#  if (DSL_CPE_LINES_PER_DEVICE == 0)
+#     error "DSL_CPE_LINES_PER_DEVICE should not be 0!!!"
+#  endif
+#endif
+
+#if defined (INCLUDE_DSL_CPE_API_VRX)
+#  if (DSL_CPE_LINES_PER_DEVICE > 2)
+#     error "DSL_CPE_LINES_PER_DEVICE incorrect, please fix!!!"
+#  endif
+#elif defined (INCLUDE_DSL_CPE_API_DANUBE)
+#  if (DSL_CPE_LINES_PER_DEVICE > 1)
+#     error "DSL_CPE_LINES_PER_DEVICE incorrect, please fix!!!"
+#  endif
+#endif
+
+#define DSL_CPE_MAX_DSL_ENTITIES (DSL_CPE_MAX_DEVICE_NUMBER * DSL_CPE_LINES_PER_DEVICE)
+
+#if defined(INCLUDE_DSL_BONDING) && defined (INCLUDE_DSL_CPE_API_VRX)
+#  ifndef INCLUDE_FW_REQUEST_SUPPORT
+#     error "Bonding is only supported with the FW request feature!!!"
+#  endif
+#  ifndef INCLUDE_SCRIPT_NOTIFICATION
+#     error "Bonding is only supported with the Script Notification feature!!!"
+#  endif
 #endif
 
 #include "drv_dsl_cpe_api.h"
@@ -161,16 +173,16 @@ extern DSL_FirmwareFeatures_t g_nFwFeatures2;
    #define DSL_CPE_SOAP_FW_UPDATE
 #endif /* INCLUDE_DSL_CPE_SOAP_SUPPORT */
 
-extern DSL_boolean_t g_bWaitBeforeLinkActivation[DSL_CPE_MAX_DEVICE_NUMBER];
-extern DSL_boolean_t g_bWaitBeforeConfigWrite[DSL_CPE_MAX_DEVICE_NUMBER];
-extern DSL_boolean_t g_bWaitBeforeRestart[DSL_CPE_MAX_DEVICE_NUMBER];
+extern DSL_boolean_t g_bWaitBeforeLinkActivation[DSL_CPE_MAX_DSL_ENTITIES];
+extern DSL_boolean_t g_bWaitBeforeConfigWrite[DSL_CPE_MAX_DSL_ENTITIES];
+extern DSL_boolean_t g_bWaitBeforeRestart[DSL_CPE_MAX_DSL_ENTITIES];
 
 #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT
 extern DSL_char_t *g_sAdslScript;
 extern DSL_char_t *g_sVdslScript;
-extern DSL_boolean_t g_bAutoContinueWaitBeforeLinkActivation[DSL_CPE_MAX_DEVICE_NUMBER];
-extern DSL_boolean_t g_bAutoContinueWaitBeforeConfigWrite[DSL_CPE_MAX_DEVICE_NUMBER];
-extern DSL_boolean_t g_bAutoContinueWaitBeforeRestart[DSL_CPE_MAX_DEVICE_NUMBER];
+extern DSL_boolean_t g_bAutoContinueWaitBeforeLinkActivation[DSL_CPE_MAX_DSL_ENTITIES];
+extern DSL_boolean_t g_bAutoContinueWaitBeforeConfigWrite[DSL_CPE_MAX_DSL_ENTITIES];
+extern DSL_boolean_t g_bAutoContinueWaitBeforeRestart[DSL_CPE_MAX_DSL_ENTITIES];
 #endif
 
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
@@ -243,12 +255,12 @@ typedef struct
 
 #endif /* INCLUDE_DSL_API_CLI_LEGACY */
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 /* Structure to keep the decoded Firmware Verion information
    contained in the 32bit Version number */
 typedef struct
 {
-   /* Vinax Revision 1, 2, ... */
+   /* Revision 1, 2, ... */
    DSL_uint8_t nPlatform;
    /* */
    DSL_uint8_t nFeatureSet;
@@ -260,8 +272,8 @@ typedef struct
    DSL_uint8_t nReleaseStatus;
    /* VDSL1/2, ADSL, ... */
    DSL_uint8_t nApplication;
-} DSL_VNX_FwVersion_t;
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)*/
+} DSL_VRX_FwVersion_t;
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
 #ifdef INCLUDE_DSL_CPE_API_DANUBE
 /* Structure to keep the decoded Firmware Verion information
@@ -335,12 +347,12 @@ typedef struct
    DSL_uint32_t nSize;
    /*
    Includes information about xDSL mode related firmware features */
-   DSL_FirmwareFeatures_t nFwFeatures;
+   DSL_FirmwareFeatures_t fwFeatures;
 } DSL_CPE_Firmware_t;
 
 typedef struct
 {
-   DSL_int_t fd[DSL_CPE_MAX_DEVICE_NUMBER];
+   DSL_int_t fd[DSL_CPE_MAX_DSL_ENTITIES];
    DSL_boolean_t bRun;
    DSL_CPE_ThreadCtrl_t EventControl;
    DSL_boolean_t bEvtRun;
@@ -408,6 +420,17 @@ typedef enum
 } DSL_CPE_ScriptSection_t;
 #endif /* #ifdef INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT*/
 
+/**
+   Structure for parsing startup arguments.
+*/
+typedef struct
+{
+   /** element value (to be returned) */
+   DSL_int_t nValue;
+   /** element base (for strtoul function,
+       e.g. 10 for decimal or 16 for hex values) */
+   DSL_int_t nBase;
+} DSL_CPE_ArgElement_t;
 
 /*
   A structure for event type<->string conversion tables.
@@ -422,7 +445,7 @@ typedef struct
 
 DSL_CPE_Control_Context_t *DSL_CPE_GetGlobalContext(DSL_void_t);
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 DSL_Error_t DSL_CPE_LowLevelConfigurationCheck(
    DSL_int_t fd);
 #endif
@@ -476,6 +499,7 @@ DSL_Error_t DSL_CPE_MoveCharPtr
 
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
 DSL_char_t *DSL_CPE_Fd2DevStr(DSL_int_t fd);
+DSL_Error_t DSL_CPE_Fd2DevNum(DSL_int_t fd, DSL_uint32_t *nDevice);
 
 DSL_boolean_t DSL_CPE_IsFileExists(DSL_char_t *path);
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
@@ -487,7 +511,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    DSL_char_t *arg,
    DSL_CPE_File_t *out);
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 typedef struct
 {
    DSL_uint8_t nAdr[DSL_MAC_ADDRESS_OCTETS];
@@ -498,7 +522,7 @@ DSL_Error_t DSL_CPE_GetMacAdrFromString
    DSL_char_t *pString,
    DSL_CPE_MacAddress_t *pMacAdr
 );
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
 
 /*

@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -14,7 +13,7 @@ Includes
 */
 #include "dsl_cpe_control.h"
 
-#if defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX)
+#if defined(INCLUDE_DSL_CPE_API_VRX)
 
 #include "dsl_cpe_debug.h"
 #include "drv_dsl_cpe_api_ioctl.h"
@@ -140,10 +139,10 @@ DSL_void_t SwapCmvPayl_32vs16(CMV_MESSAGE_ALL_T *pCmvMsg, DSL_int_t startIdx, DS
 }
 
 /* =============================================== */
-/* Vinax/VRx device specific functions                 */
+/* VRX device specific functions                 */
 /* =============================================== */
 
-DSL_int_t DSL_CPE_VXX_LoadFirmwareFromFile(
+DSL_int_t DSL_CPE_VRX_LoadFirmwareFromFile(
    DSL_char_t *psFirmwareName,
    DSL_uint8_t **pFirmware,
    DSL_uint32_t *pnFirmwareSize)
@@ -205,17 +204,17 @@ DSL_int_t DSL_CPE_VXX_LoadFirmwareFromFile(
    return nRet;
 }
 
-static DSL_int_t DSL_CPE_VXX_DeviceStateCheck(
+static DSL_int_t DSL_CPE_VRX_DeviceStateCheck(
    DSL_int_t fd)
 {
-   IOCTL_VXX_reqCfg_t  Vdsl2_requCfg;
+   IOCTL_VRX_reqCfg_t  Vdsl2_requCfg;
 
-   memset(&Vdsl2_requCfg, 0x0, sizeof(IOCTL_VXX_reqCfg_t));
+   memset(&Vdsl2_requCfg, 0x0, sizeof(IOCTL_VRX_reqCfg_t));
 
-   if (ioctl(fd, FIO_VXX_REQ_CONFIG, (DSL_int_t)&Vdsl2_requCfg) != 0)
+   if (ioctl(fd, FIO_VRX_REQ_CONFIG, (DSL_int_t)&Vdsl2_requCfg) != 0)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ioct(FIO_VXX_REQ_CONFIG): ERROR - cannot request config, retCode = %d!"DSL_CPE_CRLF,
+         "ioct(FIO_VRX_REQ_CONFIG): ERROR - cannot request config, retCode = %d!"DSL_CPE_CRLF,
          Vdsl2_requCfg.ictl.retCode));
       return -1;
    }
@@ -223,7 +222,7 @@ static DSL_int_t DSL_CPE_VXX_DeviceStateCheck(
    if (Vdsl2_requCfg.currDrvState != 6)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ioct(FIO_VXX_REQ_CONFIG): ERROR - device not available, state = %d!"DSL_CPE_CRLF,
+         "ioct(FIO_VRX_REQ_CONFIG): ERROR - device not available, state = %d!"DSL_CPE_CRLF,
          Vdsl2_requCfg.currDrvState));
       return -1;
    }
@@ -234,7 +233,7 @@ static DSL_int_t DSL_CPE_VXX_DeviceStateCheck(
 /**
    Builds the response message
 */
-static DSL_int_t DSL_CPE_VXX_ResponseMessage(
+static DSL_int_t DSL_CPE_VRX_ResponseMessage(
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    memset(pCmvMsg, 0x0, CMV_MESSAGE_SIZE);
@@ -253,12 +252,12 @@ static DSL_int_t DSL_CPE_VXX_ResponseMessage(
    the caller that the payload is already correct aligned.
 
 */
-static DSL_int_t DSL_CPE_VXX_MailboxSend(
+static DSL_int_t DSL_CPE_VRX_MailboxSend(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    DSL_int_t  msgSize_16bit, ret;
-   IOCTL_VXX_mboxSend_t DSL_Ioctl_DeviceArg;
+   IOCTL_VRX_mboxSend_t DSL_Ioctl_DeviceArg;
    CMV_MESSAGE_ALL_T CmvMsg_Ack;
 
    DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX "Start - send to mailbox"DSL_CPE_CRLF));
@@ -288,7 +287,7 @@ static DSL_int_t DSL_CPE_VXX_MailboxSend(
    DSL_Ioctl_DeviceArg.ack_msg.pData_16 = (unsigned short *)(&CmvMsg_Ack);
    DSL_Ioctl_DeviceArg.ack_msg.count_16bit = CMV_MESSAGE_SIZE / 2;
 
-   ret = ioctl(fd, FIO_VXX_MBOX_MSG_RAW_SEND, (DSL_int_t)&DSL_Ioctl_DeviceArg);
+   ret = ioctl(fd, FIO_VRX_MBOX_MSG_RAW_SEND, (DSL_int_t)&DSL_Ioctl_DeviceArg);
    if (ret < 0)
    {
 
@@ -296,7 +295,7 @@ static DSL_int_t DSL_CPE_VXX_MailboxSend(
          "ERROR - send to mailbox failed !! - retCode = %d!"DSL_CPE_CRLF,
          DSL_Ioctl_DeviceArg.ictl.retCode));
 
-      DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+      DSL_CPE_VRX_ResponseMessage(pCmvMsg);
       CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
       CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
       CMV_MSGHDR_RESULT_CODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE_TIMEOUT);
@@ -330,13 +329,16 @@ static DSL_int_t DSL_CPE_VXX_MailboxSend(
    return 0;
 }
 
-DSL_int_t DSL_CPE_VXX_Reboot(
+DSL_int_t DSL_CPE_VRX_Reboot(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    DSL_int_t nRet = 0;
    DSL_char_t *pcFw = DSL_NULL, *pcFw2 = DSL_NULL;
    DSL_AutobootLoadFirmware_t ldFw;
+#if (DSL_CPE_LINES_PER_DEVICE > 1)
+   DSL_AutobootControl_t autobootCtrl;
+#endif
 #ifdef INCLUDE_SMS00976338
    DSL_AutobootConfig_t pAcfg;
 #endif /* #ifdef INCLUDE_SMS00976338*/
@@ -345,17 +347,17 @@ DSL_int_t DSL_CPE_VXX_Reboot(
 
    nDevice = CMV_MSGHDR_CODE_PORT_NUMBER_GET(pCmvMsg->cmv);
 
-   if (nDevice >= DSL_CPE_MAX_DEVICE_NUMBER)
+   if (nDevice >= DSL_CPE_MAX_DSL_ENTITIES)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "DSL_CPE_VXX_MsgHandle : unsupported device number (%d)"DSL_CPE_CRLF,
+         "DSL_CPE_VRX_MsgHandle : unsupported device number (%d)"DSL_CPE_CRLF,
          nDevice));
       return -1;
    }
 
    memset(&ldFw, 0, sizeof(DSL_AutobootLoadFirmware_t));
 
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
    if (strlen(g_sFirmwareName1) > 0)
    {
@@ -369,13 +371,13 @@ DSL_int_t DSL_CPE_VXX_Reboot(
 
    if (pcFw != DSL_NULL)
    {
-      nRet = DSL_CPE_VXX_LoadFirmwareFromFile(
+      nRet = DSL_CPE_VRX_LoadFirmwareFromFile(
                 pcFw, &ldFw.data.pFirmware, &ldFw.data.nFirmwareSize);
    }
 
    if (pcFw2 != DSL_NULL)
    {
-      nRet = DSL_CPE_VXX_LoadFirmwareFromFile(
+      nRet = DSL_CPE_VRX_LoadFirmwareFromFile(
                 pcFw2, &ldFw.data.pFirmware2, &ldFw.data.nFirmwareSize2);
    }
 
@@ -431,10 +433,19 @@ DSL_int_t DSL_CPE_VXX_Reboot(
       if ( ((ldFw.data.pFirmware  != DSL_NULL) && (ldFw.data.nFirmwareSize)) ||
            ((ldFw.data.pFirmware2 != DSL_NULL) && (ldFw.data.nFirmwareSize2)) )
       {
+#if (DSL_CPE_LINES_PER_DEVICE < 2)
          ldFw.data.bLastChunk = DSL_TRUE;
 
          nRet = (DSL_Error_t) DSL_CPE_Ioctl(pContext->fd[nDevice],
             DSL_FIO_AUTOBOOT_LOAD_FIRMWARE, (DSL_int_t) &ldFw);
+#else
+         /* Trigger Autoboot restart sequence. FW binary will be requested
+            from the DSL CPE API driver later*/
+         autobootCtrl.data.nCommand = DSL_AUTOBOOT_CTRL_RESTART_FULL;
+
+         nRet = (DSL_Error_t) DSL_CPE_Ioctl (pContext->fd[nDevice],
+            DSL_FIO_AUTOBOOT_CONTROL_SET, (DSL_int_t) &autobootCtrl);
+#endif
 
          if (nRet < 0)
          {
@@ -471,11 +482,11 @@ DSL_int_t DSL_CPE_VXX_Reboot(
    return nRet;
 }
 
-DSL_int_t DSL_CPE_VXX_Halt(
+DSL_int_t DSL_CPE_VRX_Halt(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
    CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
    CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
@@ -484,11 +495,11 @@ DSL_int_t DSL_CPE_VXX_Halt(
    return 0;
 }
 
-DSL_int_t DSL_CPE_VXX_Run(
+DSL_int_t DSL_CPE_VRX_Run(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
    CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
    CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
@@ -500,22 +511,22 @@ DSL_int_t DSL_CPE_VXX_Run(
 /**
    Request information on the Mailbox size
 */
-DSL_int_t DSL_CPE_VXX_MailboxSize(
+DSL_int_t DSL_CPE_VRX_MailboxSize(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    DSL_int_t ret;
    DSL_uint32_t tmp;
-   IOCTL_VXX_reqCfg_t reqCfg;
+   IOCTL_VRX_reqCfg_t reqCfg;
 
    DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
       "Mailbox size query"DSL_CPE_CRLF));
 
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
-   memset(&reqCfg, 0x00, sizeof(IOCTL_VXX_reqCfg_t));
+   memset(&reqCfg, 0x00, sizeof(IOCTL_VRX_reqCfg_t));
 
-   ret = ioctl(fd, FIO_VXX_REQ_CONFIG, (DSL_int_t)&reqCfg);
+   ret = ioctl(fd, FIO_VRX_REQ_CONFIG, (DSL_int_t)&reqCfg);
 
    if (ret != 0)
    {
@@ -554,27 +565,27 @@ DSL_int_t DSL_CPE_VXX_MailboxSize(
 
 /**
    Get directly a 32bits value from the MEI register.
-   --> VOS_Ioctl_Device(..., FIO_VXX_REG_GET, ...)
+   --> VOS_Ioctl_Device(..., FIO_VRX_REG_GET, ...)
 */
-DSL_int_t DSL_CPE_VXX_GetReg(
+DSL_int_t DSL_CPE_VRX_GetReg(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    DSL_int_t ret;
-   IOCTL_VXX_regInOut_t Vdsl2_RegIo;
+   IOCTL_VRX_regInOut_t Vdsl2_RegIo;
 
    Vdsl2_RegIo.addr  = (DSL_uint32_t)P_CMV_MSGHDR_MEI_ADDR_GET(pCmvMsg);
    Vdsl2_RegIo.value = (DSL_uint32_t)0;
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
    DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-      "ioct(FIO_VXX_REG_GET): MEI[0x%X]"DSL_CPE_CRLF, Vdsl2_RegIo.addr));
+      "ioct(FIO_VRX_REG_GET): MEI[0x%X]"DSL_CPE_CRLF, Vdsl2_RegIo.addr));
 
-   ret = ioctl(fd, FIO_VXX_REG_GET, (DSL_int_t)(&Vdsl2_RegIo));
+   ret = ioctl(fd, FIO_VRX_REG_GET, (DSL_int_t)(&Vdsl2_RegIo));
    if (ret != 0)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ERROR - ioct(.., FIO_VXX_REG_GET, ..) - retCode = %d!"DSL_CPE_CRLF, Vdsl2_RegIo.ictl.retCode));
+         "ERROR - ioct(.., FIO_VRX_REG_GET, ..) - retCode = %d!"DSL_CPE_CRLF, Vdsl2_RegIo.ictl.retCode));
 
       CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
       CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
@@ -597,27 +608,27 @@ DSL_int_t DSL_CPE_VXX_GetReg(
 
 /**
    Set directly a 32bit value to the MEI register.
-   --> VOS_Ioctl_Device(..., FIO_VXX_REG_SET, ...)
+   --> VOS_Ioctl_Device(..., FIO_VRX_REG_SET, ...)
 */
-static DSL_int_t DSL_CPE_VXX_SetReg(
+static DSL_int_t DSL_CPE_VRX_SetReg(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
    DSL_int_t ret;
-   IOCTL_VXX_regInOut_t Vdsl2_RegIo;
+   IOCTL_VRX_regInOut_t Vdsl2_RegIo;
 
    Vdsl2_RegIo.addr  = (DSL_uint32_t)P_CMV_MSGHDR_MEI_ADDR_GET(pCmvMsg);
    Vdsl2_RegIo.value = (DSL_uint32_t)(pCmvMsg->cmv).payload.params_16Bit[0];
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
 
-   DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX "ioct(FIO_VXX_REG_SET): MEI[0x%X] = 0x%X"DSL_CPE_CRLF,
+   DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX "ioct(FIO_VRX_REG_SET): MEI[0x%X] = 0x%X"DSL_CPE_CRLF,
       Vdsl2_RegIo.addr, Vdsl2_RegIo.value));
 
-   ret = ioctl(fd, FIO_VXX_REG_SET, (DSL_int_t)&Vdsl2_RegIo);
+   ret = ioctl(fd, FIO_VRX_REG_SET, (DSL_int_t)&Vdsl2_RegIo);
    if (ret != 0)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ERROR - ioct(.., FIO_VXX_REG_SET, ..) - retCode = %d!"DSL_CPE_CRLF, Vdsl2_RegIo.ictl.retCode));
+         "ERROR - ioct(.., FIO_VRX_REG_SET, ..) - retCode = %d!"DSL_CPE_CRLF, Vdsl2_RegIo.ictl.retCode));
 
       CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
       CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
@@ -641,7 +652,7 @@ static DSL_int_t DSL_CPE_VXX_SetReg(
 /**
    check the bitsize to the corresponding address.
 */
-static DSL_int_t DSL_CPE_VXX_BitSizeCheck(
+static DSL_int_t DSL_CPE_VRX_BitSizeCheck(
    DSL_char_t *pStr,
    CMV_MESSAGE_ALL_T *pCmvMsg,
    DSL_uint32_t destAddr)
@@ -682,7 +693,7 @@ static DSL_int_t DSL_CPE_VXX_BitSizeCheck(
 /**
    Read the designed address using the Debug IF
 */
-static DSL_int_t DSL_CPE_VXX_ReadDebug(
+static DSL_int_t DSL_CPE_VRX_ReadDebug(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T *pCmvMsg)
 {
@@ -695,14 +706,14 @@ static DSL_int_t DSL_CPE_VXX_ReadDebug(
    DSL_char_t *pDest, *pTmp;
    /* unsigned short *pDest16; */
 
-   IOCTL_VXX_dbgAccess_t vdsl2_dbg_access;
+   IOCTL_VRX_dbgAccess_t vdsl2_dbg_access;
    CMV_DEBUG_ACCESS_BUFFER_T buffer;
 
    /* swap ? */
    destAddr =  P_CMV_MSGHDR_ADDR_LSW_GET(pCmvMsg)  |
                 ( (P_CMV_MSGHDR_ADDR_MSW_GET(pCmvMsg) << 16) & 0xFFFF0000);
 
-   if ( (DSL_CPE_VXX_BitSizeCheck("Debug Read", pCmvMsg, destAddr) ) != 0)
+   if ( (DSL_CPE_VRX_BitSizeCheck("Debug Read", pCmvMsg, destAddr) ) != 0)
       goto RESPONSE_ERROR;
 
    blkSize_byte = CMV_MSGHDR_LENGTH_GET(pCmvMsg->cmv) << CMV_MSGHDR_BIT_SIZE_GET(pCmvMsg->cmv);
@@ -728,7 +739,7 @@ static DSL_int_t DSL_CPE_VXX_ReadDebug(
       vdsl2_dbg_access.count     = 1;
       vdsl2_dbg_access.pData_32  = (unsigned int*)&tmpData;
       vdsl2_dbg_access.dbgAddr   = destAddr & ~0x00000003;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX "ERROR Debug Read (unasigned cat) - retCode = %d"DSL_CPE_CRLF,
@@ -782,7 +793,7 @@ static DSL_int_t DSL_CPE_VXX_ReadDebug(
       vdsl2_dbg_access.count     = ((DSL_uint32_t)tmpCnt) >> 2;
       vdsl2_dbg_access.pData_32  = (unsigned int *) &buffer;
       vdsl2_dbg_access.dbgAddr   = destAddr;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -840,7 +851,7 @@ static DSL_int_t DSL_CPE_VXX_ReadDebug(
       vdsl2_dbg_access.count     = 1;
       vdsl2_dbg_access.pData_32  = (unsigned int *) &tmpData;
       vdsl2_dbg_access.dbgAddr   = destAddr;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -914,7 +925,7 @@ static DSL_int_t DSL_CPE_VXX_ReadDebug(
    return 0;
 
 RESPONSE_ERROR:
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
    CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
    CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
    CMV_MSGHDR_RESULT_CODE_SET((pCmvMsg->cmv),
@@ -922,7 +933,7 @@ RESPONSE_ERROR:
    return -1;
 }
 
-static DSL_int_t DSL_CPE_VXX_WriteDebug(
+static DSL_int_t DSL_CPE_VRX_WriteDebug(
   DSL_int_t fd,
   CMV_MESSAGE_ALL_T *pCmvMsg)
 {
@@ -931,13 +942,13 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
    DSL_uint32_t tmpData = 0, tmpSrc = 0;
    DSL_char_t *pSrc, *pTmp, *pTmpSrc;
 
-   IOCTL_VXX_dbgAccess_t vdsl2_dbg_access;
+   IOCTL_VRX_dbgAccess_t vdsl2_dbg_access;
    CMV_DEBUG_ACCESS_BUFFER_T buffer;
 
    destAddr = (P_CMV_MSGHDR_ADDR_LSW_GET(pCmvMsg)) |
               (( (P_CMV_MSGHDR_ADDR_MSW_GET(pCmvMsg)) << 16) & 0xFFFF0000);
 
-   if ( (DSL_CPE_VXX_BitSizeCheck("Debug Write", pCmvMsg, destAddr) ) != 0 )
+   if ( (DSL_CPE_VRX_BitSizeCheck("Debug Write", pCmvMsg, destAddr) ) != 0 )
       goto RESPONSE_WR_ERROR;
 
    msgPaylSize_byte = CMV_MSGHDR_PAYLOAD_SIZE_GET(pCmvMsg->cmv) << 1;  /* always 16 bit */
@@ -972,7 +983,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
       vdsl2_dbg_access.count     = 1;
       vdsl2_dbg_access.pData_32  = (unsigned int *)&tmpData;
       vdsl2_dbg_access.dbgAddr   = destAddr & ~0x00000003;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1010,7 +1021,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
       }
 
       /* write back */
-      ret = ioctl(fd, FIO_VXX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1070,7 +1081,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
       vdsl2_dbg_access.count     = tmpCnt >> 2;  /* 32 bit */
       vdsl2_dbg_access.pData_32  = (unsigned int *) &buffer;
       vdsl2_dbg_access.dbgAddr   = destAddr;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1098,7 +1109,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
       vdsl2_dbg_access.count     = 1;
       vdsl2_dbg_access.pData_32  = (unsigned int *) &tmpData;
       vdsl2_dbg_access.dbgAddr   = destAddr;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_READ, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1133,7 +1144,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
       vdsl2_dbg_access.count     = 1;
       vdsl2_dbg_access.pData_32  = (unsigned int *) &tmpData;
       vdsl2_dbg_access.dbgAddr   = destAddr;
-      ret = ioctl(fd, FIO_VXX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
+      ret = ioctl(fd, FIO_VRX_DBG_LS_WRITE, (DSL_int_t)&vdsl2_dbg_access);
       if (ret < 0)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1168,7 +1179,7 @@ static DSL_int_t DSL_CPE_VXX_WriteDebug(
    return 0;
 
 RESPONSE_WR_ERROR:
-   DSL_CPE_VXX_ResponseMessage(pCmvMsg);
+   DSL_CPE_VRX_ResponseMessage(pCmvMsg);
    CMV_MSGHDR_FCT_OPCODE_SET((pCmvMsg->cmv), DCE2H_RESPONSE);
    CMV_MSGHDR_PAYLOAD_SIZE_SET((pCmvMsg->cmv), 0);
    CMV_MSGHDR_RESULT_CODE_SET((pCmvMsg->cmv),
@@ -1179,7 +1190,7 @@ RESPONSE_WR_ERROR:
 
 }
 
-static DSL_int_t DSL_CPE_VXX_TcpMsgSend(
+static DSL_int_t DSL_CPE_VRX_TcpMsgSend(
    DSL_int_t fd,
    CMV_MESSAGE_ALL_T   *pCmvMsg)
 {
@@ -1189,7 +1200,7 @@ static DSL_int_t DSL_CPE_VXX_TcpMsgSend(
    CMVSizeByte = ( CMV_MSGHDR_PAYLOAD_SIZE_GET(pCmvMsg->cmv) + CMV_HEADER_16BIT_SIZE ) * 2;
 
    DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-      "DSL_CPE_VXX_MsgSend - %d bytes"DSL_CPE_CRLF, CMVSizeByte));
+      "DSL_CPE_VRX_MsgSend - %d bytes"DSL_CPE_CRLF, CMVSizeByte));
 
    /* prepare the CMV payload for return
       swap payload at first (still need header information in host order) */
@@ -1221,7 +1232,7 @@ static DSL_int_t DSL_CPE_VXX_TcpMsgSend(
    if ( tmp != ((DSL_int_t)CMVSizeByte))
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ERROR - DSL_CPE_VXX_MsgSend failed !!! (sent = %d, exp = %d)"DSL_CPE_CRLF,
+         "ERROR - DSL_CPE_VRX_MsgSend failed !!! (sent = %d, exp = %d)"DSL_CPE_CRLF,
          tmp, CMVSizeByte));
 
       return -1;
@@ -1230,8 +1241,8 @@ static DSL_int_t DSL_CPE_VXX_TcpMsgSend(
    return 0;
 }
 
-static DSL_int_t DSL_CPE_VXX_MsgHandle(
-   DSL_VXX_TcpDebugInfo_t *pTcpDebugInfo,
+static DSL_int_t DSL_CPE_VRX_MsgHandle(
+   DSL_VRX_TcpDebugInfo_t *pTcpDebugInfo,
    CMV_MESSAGE_ALL_T *pCmvMsgRecv,
    DSL_int_t CMVSizeByte)
 {
@@ -1249,7 +1260,7 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
    if (tmpChannel >= WINHOST_VDSL2_DFE_CHANNELS_AVAILABLE)
    {
       DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "DSL_CPE_VXX_MsgHandle : unsupported channel number (%d)"DSL_CPE_CRLF,
+         "DSL_CPE_VRX_MsgHandle : unsupported channel number (%d)"DSL_CPE_CRLF,
          tmpChannel));
 
       return -1;
@@ -1274,7 +1285,7 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
    mbxCode = CMV_MSGHDR_CODE_MBOX_CODE_GET((pCmvMsg->cmv));
 
    DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-      "DSL_CPE_VXX_MsgHandle : mbxCode = 0x%x, opcode = 0x%x"DSL_CPE_CRLF,
+      "DSL_CPE_VRX_MsgHandle : mbxCode = 0x%x, opcode = 0x%x"DSL_CPE_CRLF,
       mbxCode, opcode));
 
    /* clear the channel number and the two MSBs in the mailbox code */
@@ -1287,10 +1298,10 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
          just forward the CMV through the mailbox
          these messages do not require ME intervention
       */
-      ret = DSL_CPE_VXX_MailboxSend(mei_fd, pCmvMsg);
+      ret = DSL_CPE_VRX_MailboxSend(mei_fd, pCmvMsg);
 
       /* set back channel number */
-      return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+      return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
    }
    else
    {
@@ -1298,23 +1309,23 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
       switch(opcode)
       {
          case H2DCE_DEBUG_HALT:
-            ret = DSL_CPE_VXX_Halt(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_Halt(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_RUN:
-            ret = DSL_CPE_VXX_Run(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_Run(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_REBOOT:
          case H2DCE_DEBUG_DOWNLOAD:
             /* Reboot device*/
-            ret = DSL_CPE_VXX_Reboot(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_Reboot(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_MBOX_PAYLOAD_SIZE_QUERY:
             /* Request information on the Mailbox size*/
-            ret = DSL_CPE_VXX_MailboxSize(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_MailboxSize(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_READ_MEI:
             /* Read directly from and return 32-bit MEI register */
@@ -1324,15 +1335,15 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
                --> The driver uses only the lower word (16 mei register)
                --> swap ????
             */
-            ret = DSL_CPE_VXX_GetReg(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_GetReg(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_WRITE_MEI:
             /* Write directly to 32-bit MEI register             */
 
             /* !!!! */
-            ret = DSL_CPE_VXX_SetReg(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_SetReg(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_READDEBUG:
             /* Read the designed address using Debug IF */
@@ -1341,22 +1352,22 @@ static DSL_int_t DSL_CPE_VXX_MsgHandle(
                Here the driver interface and the value is 32 bit
                SWAP
             */
-            ret = DSL_CPE_VXX_ReadDebug(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_ReadDebug(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          case H2DCE_DEBUG_WRITEDEBUG:
             /* Write the designed address using Debug IF */
 
             /* !!!! */
-            ret = DSL_CPE_VXX_WriteDebug(mei_fd, pCmvMsg);
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
+            ret = DSL_CPE_VRX_WriteDebug(mei_fd, pCmvMsg);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || ret;
 
          default:
             DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "ERROR - DSL_CPE_VXX_MsgHandle: Unknown WH opcode 0x%x"DSL_CPE_CRLF,
+               "ERROR - DSL_CPE_VRX_MsgHandle: Unknown WH opcode 0x%x"DSL_CPE_CRLF,
                opcode));
 
-            return DSL_CPE_VXX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || (-1);
+            return DSL_CPE_VRX_TcpMsgSend(pTcpDebugInfo->socket_fd, pCmvMsg) || (-1);
       }
    }
 }
@@ -1383,7 +1394,7 @@ DSL_Error_t DSL_CPE_DEV_TcpDebugMessageResourceUsageGet(
    {
       if (clientInfo[c].pDevData != DSL_NULL)
       {
-         *pDynamicMemUsage += sizeof(DSL_VXX_TcpDebugInfo_t);
+         *pDynamicMemUsage += sizeof(DSL_VRX_TcpDebugInfo_t);
       }
    }
 
@@ -1399,10 +1410,10 @@ DSL_void_t DSL_CPE_DEV_DeviceDataFree(DSL_void_t *pDevData)
    {
       for (i = 0; i < WINHOST_VDSL2_DFE_CHANNELS_AVAILABLE; i++)
       {
-         if ( ((DSL_VXX_TcpDebugInfo_t*)pDevData)->arrDeviceFd[i] > 0)
+         if ( ((DSL_VRX_TcpDebugInfo_t*)pDevData)->arrDeviceFd[i] > 0)
          {
             /* Close low-level driver*/
-            close(((DSL_VXX_TcpDebugInfo_t*)pDevData)->arrDeviceFd[i]);
+            close(((DSL_VRX_TcpDebugInfo_t*)pDevData)->arrDeviceFd[i]);
          }
       }
 
@@ -1434,8 +1445,8 @@ DSL_int_t DSL_CPE_DEV_DeviceOpen(DSL_char_t *pDevName, DSL_uint32_t dev_num)
       return -1;
    }
 
-   /* Check VINAX/VRX device driver state*/
-   if (DSL_CPE_VXX_DeviceStateCheck(mei_fd) < 0)
+   /* Check VRX device driver state*/
+   if (DSL_CPE_VRX_DeviceStateCheck(mei_fd) < 0)
    {
       DSL_CPE_Close(mei_fd);
       DSL_CCA_DEBUG (DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
@@ -1453,7 +1464,7 @@ DSL_int_t DSL_CPE_DEV_TcpMessageHandle(
    DSL_uint32_t PayloadSize, CMVSizeByte;
    DSL_char_t *pPackage;
    CMV_MESSAGE_ALL_T *pRecvCmvMsg;
-   DSL_VXX_TcpDebugInfo_t *pTcpDebugInfo;
+   DSL_VRX_TcpDebugInfo_t *pTcpDebugInfo;
 
    if (pDevData == DSL_NULL)
    {
@@ -1461,12 +1472,12 @@ DSL_int_t DSL_CPE_DEV_TcpMessageHandle(
       return -1;
    }
 
-   pTcpDebugInfo = (DSL_VXX_TcpDebugInfo_t*)(pDevData->pDevData);
+   pTcpDebugInfo = (DSL_VRX_TcpDebugInfo_t*)(pDevData->pDevData);
 
    if (pTcpDebugInfo == DSL_NULL)
    {
       /* Create device specific data*/
-      pTcpDebugInfo = DSL_CPE_Malloc(sizeof(DSL_VXX_TcpDebugInfo_t));
+      pTcpDebugInfo = DSL_CPE_Malloc(sizeof(DSL_VRX_TcpDebugInfo_t));
       if (pTcpDebugInfo == DSL_NULL)
       {
          DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -1476,7 +1487,7 @@ DSL_int_t DSL_CPE_DEV_TcpMessageHandle(
       }
       pDevData->pDevData = pTcpDebugInfo;
 
-      /* Get VINAX/VRX device specific info*/
+      /* Get VRX device specific info*/
       pTcpDebugInfo->pEndReceive = pTcpDebugInfo->Buffer;
       pTcpDebugInfo->socket_fd   = pDevData->fd;
 
@@ -1584,7 +1595,7 @@ DSL_int_t DSL_CPE_DEV_TcpMessageHandle(
       if (pTcpDebugInfo->pEndReceive >= pPackage + CMVSizeByte)
       {
          /* handle the received message */
-         DSL_CPE_VXX_MsgHandle(pTcpDebugInfo, pRecvCmvMsg, CMVSizeByte);
+         DSL_CPE_VRX_MsgHandle(pTcpDebugInfo, pRecvCmvMsg, CMVSizeByte);
          /* go to the next message in the buffer */
          pPackage += CMVSizeByte;
       }
@@ -1604,4 +1615,4 @@ DSL_int_t DSL_CPE_DEV_TcpMessageHandle(
 
 #endif
 
-#endif /* defined(INCLUDE_DSL_CPE_API_VINAX) || defined(INCLUDE_DSL_CPE_API_VRX) */
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */

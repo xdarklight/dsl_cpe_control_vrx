@@ -25,6 +25,12 @@
 /* Include DSL TCP debug support */
 #undef DSL_DEBUG_TOOL_INTERFACE
 
+/* Add VR10 support */
+#undef DSL_VRX_DEVICE_VR10
+
+/* Add VR9 support */
+#undef DSL_VRX_DEVICE_VR9
+
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
@@ -106,9 +112,6 @@
 /* Add DANUBE support */
 #undef INCLUDE_DSL_CPE_API_DANUBE
 
-/* Add VINAX support */
-#undef INCLUDE_DSL_CPE_API_VINAX
-
 /* Add VRX support */
 #undef INCLUDE_DSL_CPE_API_VRX
 
@@ -165,9 +168,6 @@
 
 /* Include DSL PM line event showtime counters support */
 #undef INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS
-
-/* Include DSL PM line failure counters support */
-#undef INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS
 
 /* Include DSL PM line thresholds support */
 #undef INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS

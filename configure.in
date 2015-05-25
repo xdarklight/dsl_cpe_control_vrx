@@ -1,6 +1,6 @@
 AC_REVISION($Revision: 1.173 $)
 
-AC_INIT([DSL CPE Control application],[4.11.11],[],[dsl_cpe_control])
+AC_INIT([DSL CPE Control application],[4.15.2],[],[dsl_cpe_control])
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE
 
@@ -44,9 +44,8 @@ CONFIGURE_OPTIONS="$ac_configure_args"
 AC_SUBST(CONFIGURE_OPTIONS)
 
 AM_CONDITIONAL(DEVICE_DANUBE, false)
-AM_CONDITIONAL(DEVICE_VINAX, false)
 AM_CONDITIONAL(DEVICE_VRX, false)
-AM_CONDITIONAL(DEVICE_VXX_LAYER, false)
+AM_CONDITIONAL(DEVICE_VRX_LAYER, false)
 
 PREDEFINED_CONF_EXTRA_APP_CFLAGS="-Os"
 
@@ -90,16 +89,16 @@ PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_RETX_COUNTERS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_COUNTERS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS="no"
-PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS="no"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT="yes"
 PREDEFINED_CONF_INCLUDE_DSL_CPE_DTI_SUPPORT="yes"
-PREDEFINED_CONF_INCLUDE_DSL_BONDING="no"
 PREDEFINED_CONF_INCLUDE_PILOT_TONES_STATUS="yes"
 PREDEFINED_CONF_INCLUDE_REAL_TIME_TRACE_SUPPORT="no"
+PREDEFINED_CONF_INCLUDE_DSL_BONDING_SUPPORT="no"
+
 dnl enable DANUBE support
 AC_ARG_ENABLE(danube,
     AC_HELP_STRING(
@@ -114,21 +113,6 @@ AC_ARG_ENABLE(danube,
    ]
 )
 
-dnl enable VINAX support
-AC_ARG_ENABLE(vinax,
-    AC_HELP_STRING(
-        [--enable-vinax],[Add VINAX support.]
-    ),
-    [
-        if test "$enableval" = yes; then
-            AC_DEFINE(INCLUDE_DSL_CPE_API_VINAX,,[Add VINAX support])
-            AM_CONDITIONAL(DEVICE_VINAX, true)
-            AM_CONDITIONAL(DEVICE_VXX_LAYER, true)
-            AC_SUBST([DSL_DEVICE_NAME],[Vinax])
-        fi
-   ]
-)
-
 dnl enable VRX support
 AC_ARG_ENABLE(vrx,
     AC_HELP_STRING(
@@ -138,11 +122,87 @@ AC_ARG_ENABLE(vrx,
         if test "$enableval" = yes; then
             AC_DEFINE(INCLUDE_DSL_CPE_API_VRX,,[Add VRX support])
             AM_CONDITIONAL(DEVICE_VRX, true)
-            AM_CONDITIONAL(DEVICE_VXX_LAYER, true)
+            AM_CONDITIONAL(DEVICE_VRX_LAYER, true)
             AC_SUBST([DSL_DEVICE_NAME],[VRX])
         fi
    ]
 )
+
+# This selects the sub-device for VRX Family (only valid in case of VRX enabled)
+if test -z "${DEVICE_VRX_TRUE}"; then
+dnl Select VRX device type
+AC_ARG_ENABLE(vrx-device,
+    AC_HELP_STRING([--enable-vrx-device=vr9 | vr10],[Select VRX Device]),
+    [
+        echo Set VRX Device = $enableval
+        case $enableval in
+        vr9)
+            AC_DEFINE(DSL_VRX_DEVICE_VR9,,[Add VR9 support])
+            AC_SUBST([DSL_VRX_DEVICE_NAME],[VR9])
+            ;;
+        vr10)
+            AC_DEFINE(DSL_VRX_DEVICE_VR10,,[Add VR10 support])
+            AC_SUBST([DSL_VRX_DEVICE_NAME],[VR10])
+            ;;
+        *) AC_MSG_ERROR([ Select VRX Device, use vr9 | vr10 ]);
+             ;;
+        esac
+    ]
+)
+fi
+
+CONF_MAX_DEVICE_NUMBER=1
+dnl set the number of DSL devices to be supported
+AC_ARG_WITH(max-device,
+    AS_HELP_STRING(
+    [--with-max-device=value],[Maximum DSL devices to support.]
+    ),
+    [
+        if test "$withval" = ""; then
+            AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER, 1, [Maximum DSL devices to support])
+            AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[1])
+        else
+            AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER,$withval, [Maximum DSL devices to support])
+            AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[$withval])
+            CONF_MAX_DEVICE_NUMBER=$withval
+        fi
+    ],
+    [
+        AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER, 1, [Maximum DSL devices to support])
+        AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[1])
+    ]
+)
+
+CONF_LINES_PER_DEVICE=1
+dnl set the number of DSL lines per device to be supported
+AC_ARG_WITH(lines-per-device,
+    AS_HELP_STRING(
+    [--with-lines-per-device=value],[Maximum lines per DSL device to support.]
+    ),
+    [
+        if test "$withval" = ""; then
+            AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE, 1, [Maximum lines per DSL device to support])
+            AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[1])
+        else
+            AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE,$withval, [Maximum lines per DSL device to support])
+            AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[$withval])
+            CONF_LINES_PER_DEVICE=$withval
+        fi
+    ],
+    [
+        AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE, 1, [Maximum lines per DSL device to support])
+        AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[1])
+    ]
+)
+
+if [[ $CONF_MAX_DEVICE_NUMBER -gt 1 -o $CONF_LINES_PER_DEVICE -gt 1 ]]; then
+    AC_DEFINE(INCLUDE_DSL_BONDING,,[Include DSL BONDING support])
+    AM_CONDITIONAL(INCLUDE_DSL_BONDING, true)
+    AC_SUBST([INCLUDE_DSL_BONDING],[yes])
+else
+    AM_CONDITIONAL(INCLUDE_DSL_BONDING, false)
+    AC_SUBST([INCLUDE_DSL_BONDING],[no])
+fi
 
 dnl Select configure model
 AC_ARG_ENABLE(model,
@@ -169,6 +229,7 @@ AC_ARG_ENABLE(model,
             PREDEFINED_CONF_INCLUDE_PILOT_TONES_STATUS="no"
             PREDEFINED_CONF_INCLUDE_DSL_CPE_DTI_SUPPORT="no"
             PREDEFINED_CONF_INCLUDE_DSL_CPE_CLI_SUPPORT="yes"
+            PREDEFINED_CONF_INCLUDE_DSL_BONDING_SUPPORT="no"
             ;;
         footprint )
            AC_SUBST([DSL_CONFIG_MODEL_TYPE],[Footprint])
@@ -196,7 +257,6 @@ AC_ARG_ENABLE(model,
            ;;
         typical )
            AC_SUBST([DSL_CONFIG_MODEL_TYPE],[Typical])
-           PREDEFINED_CONF_DSL_CCA_DBG_MAX_LEVEL_PRE="err"
            PREDEFINED_CONF_INCLUDE_SCRIPT_NOTIFICATION="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_CLI_SUPPORT="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_CMV_SCRIPTS_MATH="yes"
@@ -207,10 +267,8 @@ AC_ARG_ENABLE(model,
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_HISTORY="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_CHANNEL_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_COUNTERS="yes"
-           PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS="yes"
-           PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS="yes"
@@ -227,7 +285,6 @@ AC_ARG_ENABLE(model,
            ;;
         full )
            AC_SUBST([DSL_CONFIG_MODEL_TYPE],[Full])
-           PREDEFINED_CONF_DSL_CCA_DBG_MAX_LEVEL_PRE="wrn"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_SOAP_SUPPORT="yes"
            PREDEFINED_CONF_INCLUDE_SCRIPT_NOTIFICATION="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_CLI_SUPPORT="yes"
@@ -246,18 +303,11 @@ AC_ARG_ENABLE(model,
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS="yes"
-           PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DEVICE_EXCEPTION_CODES="yes"
-
-           # enable device specific options
-           if test -z "${DEVICE_VINAX_TRUE}"; then
-              PREDEFINED_CONF_INCLUDE_DSL_BONDING="yes"
-           fi
-
 
            # enable device specific options
            if test -z "${DEVICE_DANUBE_TRUE}"; then
@@ -293,17 +343,11 @@ AC_ARG_ENABLE(model,
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS="yes"
-           PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_CHANNEL_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_DATA_PATH_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_THRESHOLDS="yes"
            PREDEFINED_CONF_INCLUDE_DEVICE_EXCEPTION_CODES="yes"
-
-           # enable device specific options
-           if test -z "${DEVICE_VINAX_TRUE}"; then
-              PREDEFINED_CONF_INCLUDE_DSL_BONDING="yes"
-           fi
 
            # enable device specific options
            if test -z "${DEVICE_DANUBE_TRUE}"; then
@@ -469,46 +513,6 @@ AC_ARG_ENABLE(ifxos-include,
     [
         echo -e Set the default lib_ifxos include path $DEFAULT_IFXOS_INCLUDE_PATH
         AC_SUBST([IFXOS_INCLUDE_PATH],[$DEFAULT_IFXOS_INCLUDE_PATH])
-    ]
-)
-
-dnl set the number of DSL devices to be supported
-AC_ARG_WITH(max-device,
-    AS_HELP_STRING(
-    [--with-max-device=value],[Maximum DSL devices to support.]
-    ),
-    [
-        if test "$withval" = ""; then
-            AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER, 1, [Maximum DSL devices to support])
-            AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[1])
-        else
-            AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER,$withval, [Maximum DSL devices to support])
-            AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[$withval])
-        fi
-    ],
-    [
-        AC_DEFINE_UNQUOTED(DSL_CPE_MAX_DEVICE_NUMBER, 1, [Maximum DSL devices to support])
-        AC_SUBST([DSL_CPE_MAX_DEVICE_NUMBER],[1])
-    ]
-)
-
-dnl set the number of DSL lines per device to be supported
-AC_ARG_WITH(lines-per-device,
-    AS_HELP_STRING(
-    [--with-lines-per-device=value],[Maximum lines per DSL device to support.]
-    ),
-    [
-        if test "$withval" = ""; then
-            AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE, 1, [Maximum lines per DSL device to support])
-            AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[1])
-        else
-            AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE,$withval, [Maximum lines per DSL device to support])
-            AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[$withval])
-        fi
-    ],
-    [
-        AC_DEFINE_UNQUOTED(DSL_CPE_LINES_PER_DEVICE, 1, [Maximum lines per DSL device to support])
-        AC_SUBST([DSL_CPE_LINES_PER_DEVICE],[1])
     ]
 )
 
@@ -1385,34 +1389,6 @@ AC_ARG_ENABLE(dsl_pm_line_counters,
     ]
 )
 
-### Deprecated! ###
-### Subject to be removed ###
-dnl enable PM line event showtime counters support
-AM_CONDITIONAL(INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS, false)
-AC_ARG_ENABLE(dsl_pm_line_failure_counters,
-    AC_HELP_STRING(
-        [--enable-dsl-pm-line-failure-counters],[Include DSL PM line failure counters support]
-    ),
-    [
-        if test "$enableval" = yes; then
-            AC_DEFINE(INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS,,[Include DSL PM line failure counters support])
-            AM_CONDITIONAL(INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS, true)
-            AC_SUBST([INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS],[yes])
-        else
-            AC_SUBST([INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS],[no])
-        fi
-    ],
-    [
-        if test "$PREDEFINED_CONF_INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS" = yes; then
-            AC_DEFINE(INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS,,[Include DSL PM line failure counters support])
-            AM_CONDITIONAL(INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS, true)
-            AC_SUBST([INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS],[yes])
-        else
-            AC_SUBST([INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS],[no])
-        fi
-    ]
-)
-
 dnl enable PM line event showtime counters support
 AM_CONDITIONAL(INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS, false)
 AC_ARG_ENABLE(dsl_pm_line_event_showtime_counters,
@@ -1947,45 +1923,6 @@ AC_ARG_ENABLE(dti-library,
    ]
 )
 
-dnl enable VDSL BONDING support
-AM_CONDITIONAL(INCLUDE_DSL_BONDING, false)
-AC_ARG_ENABLE(dsl-bonding,
-    AC_HELP_STRING(
-        [--enable-dsl-bonding],[Include DSL BONDING support]
-    ),
-    [
-        if test "$enableval" = yes; then
-            # enable device specific options
-            if test -z "${DEVICE_DANUBE_TRUE}"; then
-               AC_MSG_ERROR([Bonding for Danube is not supported yet!])
-            fi
-
-            if test "$DSL_CPE_MAX_DEVICE_NUMBER" -gt 1; then
-               AC_DEFINE(INCLUDE_DSL_BONDING,,[Include DSL BONDING support])
-               AM_CONDITIONAL(INCLUDE_DSL_BONDING, true)
-               AC_SUBST([INCLUDE_DSL_BONDING],[yes])
-            else
-               AC_SUBST([INCLUDE_DSL_BONDING],[no])
-            fi
-        else
-            AC_SUBST([INCLUDE_DSL_BONDING],[no])
-        fi
-    ],
-    [
-        if test "$PREDEFINED_CONF_INCLUDE_DSL_BONDING" = yes; then
-            if test "$DSL_CPE_MAX_DEVICE_NUMBER" -gt 1; then
-               AC_DEFINE(INCLUDE_DSL_BONDING,,[Include DSL BONDING support])
-               AM_CONDITIONAL(INCLUDE_DSL_BONDING, true)
-               AC_SUBST([INCLUDE_DSL_BONDING],[yes])
-            else
-               AC_SUBST([INCLUDE_DSL_BONDING],[no])
-            fi
-        else
-            AC_SUBST([INCLUDE_DSL_BONDING],[no])
-        fi
-    ]
-)
-
 dnl enable Pilot Tones Status support
 AM_CONDITIONAL(INCLUDE_PILOT_TONES_STATUS, false)
 AC_ARG_ENABLE(pilot-tones-status,
@@ -2072,6 +2009,9 @@ AC_CONFIG_COMMANDS_PRE([
 echo -e "------------------------------------------------------------------------"
 echo -e " Configuration for dsl_cpe_control:"
 echo -e "  DSL device:                       $DSL_DEVICE_NAME"
+if test -z "${DEVICE_VRX_TRUE}"; then
+    echo -e "  DSL VRX device type:              $DSL_VRX_DEVICE_NAME"
+fi
 echo -e "  Configure model type:             $DSL_CONFIG_MODEL_TYPE"
 echo -e "  Source code location:             $srcdir"
 echo -e "  Compiler:                         $CC"
@@ -2079,8 +2019,8 @@ echo -e "  Compiler c-flags:                 $CFLAGS"
 echo -e "  Extra compiler c-flags:           $EXTRA_APP_CFLAGS"
 echo -e "  Host System Type:                 $host"
 echo -e "  Install path:                     $prefix"
-echo -e "  Driver Include Path               $DSL_DRIVER_INCL_PATH"
-echo -e "  Device Driver Include Path        $DSL_DEVICE_DRIVER_INCL_PATH"
+echo -e "  Driver Include Path:              $DSL_DRIVER_INCL_PATH"
+echo -e "  Device Driver Include Path:       $DSL_DEVICE_DRIVER_INCL_PATH"
 echo -e "  Include IFXOS:                    $INCLUDE_DSL_CPE_IFXOS_SUPPORT"
 echo -e "  IFXOS library path:               $IFXOS_LIBRARY_PATH"
 echo -e "  IFXOS include path:               $IFXOS_INCLUDE_PATH"
@@ -2119,7 +2059,7 @@ echo -e "  Include G997 status:              $INCLUDE_DSL_G997_STATUS"
 echo -e "  Include G997 alarm:               $INCLUDE_DSL_G997_ALARM"
 echo -e "  Include DSL Bonding:              $INCLUDE_DSL_BONDING"
 echo -e "  Include Pilot Tones Status:       $INCLUDE_PILOT_TONES_STATUS"
-echo -e "  Include Misc Line Status          $INCLUDE_DSL_CPE_MISC_LINE_STATUS"
+echo -e "  Include Misc Line Status:         $INCLUDE_DSL_CPE_MISC_LINE_STATUS"
 echo -e "  Include DELT:                     $INCLUDE_DSL_DELT"
 echo -e "  Include Filter Detection:         $INCLUDE_DSL_FILTER_DETECTION"
 echo -e "  Include PM:                       $INCLUDE_DSL_PM"
@@ -2142,10 +2082,10 @@ echo -e "  Include PM ReTx threshold:        $INCLUDE_DSL_CPE_PM_RETX_THRESHOLDS
 echo -e "  Include TCP debug support:        $DSL_DEBUG_TOOL_INTERFACE"
 echo -e "  Include real time trace support:  $INCLUDE_REAL_TIME_TRACE"
 echo -e "----------------------- deprectated ! ----------------------------------"
-echo -e "  Include PM line failure:          $INCLUDE_DSL_CPE_PM_LINE_FAILURE_COUNTERS"
-echo -e ""
+echo -e "  currently no such functions"
+echo -e "------------------------------------------------------------------------"
 echo -e " Settings:"
-echo -e "  Configure options:              $CONFIGURE_OPTIONS"
+echo -e "  Configure options:                $CONFIGURE_OPTIONS"
 echo -e "------------------------------------------------------------------------"
 ])
 

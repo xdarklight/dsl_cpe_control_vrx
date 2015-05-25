@@ -1,8 +1,7 @@
 /******************************************************************************
 
-                               Copyright (c) 2011
+                              Copyright (c) 2013
                             Lantiq Deutschland GmbH
-                     Am Campeon 3; 85579 Neubiberg, Germany
 
   For licensing information, see the file 'LICENSE' in the root folder of
   this software module.
@@ -93,8 +92,6 @@ DSL_int_t DSL_SIM_Ioctl( void *pprivate, unsigned int cmd, unsigned int arg )
          DSL_char_t ver[10] = "0.0.0";
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
          DSL_char_t chip[15] = "Lantiq-Danube";
-#elif defined (INCLUDE_DSL_CPE_API_VINAX)
-         DSL_char_t chip[15] = "Lantiq-Vinax";
 #else
          DSL_char_t chip[15] = "Lantiq-Unknown";
 #endif
