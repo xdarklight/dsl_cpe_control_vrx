@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -461,6 +461,7 @@ DSL_Error_t DSL_CPE_DownloadFirmware
 (
    DSL_int_t fd,
    DSL_FirmwareRequestType_t nFwReqType,
+   DSL_PortMode_t nPortMode,
    DSL_char_t *pcFw,
    DSL_char_t *pcFw2
 );
@@ -588,6 +589,24 @@ DSL_Error_t DSL_CPE_ResourceUsageStatisticsGet
 #endif /* INCLUDE_DSL_RESOURCE_STATISTICS*/
 
 #endif /* #ifndef DSL_DOC_GENERATION_EXCLUDE_UNWANTED*/
+
+/**
+   Returns the smaller of the two parameters.
+   Take care to use compatible types!
+
+   \param a first element to compare, [I]
+   \param b second element to compare, [I]
+*/
+#define DSL_MIN(a,b) ((a)<(b)?(a):(b))
+
+/**
+   Returns the biggest of the two parameters.
+   Take care to use compatible types!
+
+   \param a first element to compare, [I]
+   \param b second element to compare, [I]
+*/
+#define DSL_MAX(a,b) ((a)>(b)?(a):(b))
 
 #endif /* _DSL_CPE_CONTROL_H */
 

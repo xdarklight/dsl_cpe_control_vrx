@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -274,7 +274,7 @@ int ifx__DslCpeCliAccess (struct soap *soap_server, char *pCommand, char **pRetu
    }
 
    /* get command name */
-   sscanf(pCommand, "%s", cmd);
+   sscanf(pCommand, "%255s", cmd);
 
    if(strlen(cmd) < strlen(pCommand))
    {

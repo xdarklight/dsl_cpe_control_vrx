@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -42,8 +42,8 @@
 #define DSL_CPE_LL_CFG_SET(HYBRID) {nHybrid: HYBRID}
 
 #define DSL_CPE_SIC_SET(TCLAYER, EFM_TC_CFG_US, EFM_TC_CFG_DS, SICS) \
-   {nTcLayer: TCLAYER, nEfmTcConfigUs: EFM_TC_CFG_US, \
-    nEfmTcConfigDs: EFM_TC_CFG_DS, nSystemIf: SICS}
+   {{nTcLayer: TCLAYER, nEfmTcConfigUs: EFM_TC_CFG_US, \
+    nEfmTcConfigDs: EFM_TC_CFG_DS, nSystemIf: SICS}}
 #endif /* #if defined(INCLUDE_DSL_CPE_API_DANUBE)*/
 
 #if defined(INCLUDE_DSL_CPE_API_VRX)
@@ -61,11 +61,6 @@
     {nTcLayer: TCLAYER_V, nEfmTcConfigUs: EFM_TC_CFG_US_V, \
      nEfmTcConfigDs: EFM_TC_CFG_DS_V, nSystemIf: SICS_V}}
 #endif /* #ifdef INCLUDE_DSL_CPE_API_VRX*/
-
-#define DSL_CPE_MAC_CFG_SET(SPEED, DUPLEX, FLOW, ANEGOT, MAC_OCT_0, MAC_OCT_1, MAC_OCT_2, \
-   MAC_OCT_3, MAC_OCT_4, MAC_OCT_5, MAX_FRAME_SIZE, EXT_ETH_OAM) \
-   {SPEED, DUPLEX, FLOW, ANEGOT, {MAC_OCT_0, MAC_OCT_1, MAC_OCT_2, MAC_OCT_3, MAC_OCT_4, MAC_OCT_5}, \
-   MAX_FRAME_SIZE, EXT_ETH_OAM}
 
 extern DSL_InitData_t gInitCfgData;
 

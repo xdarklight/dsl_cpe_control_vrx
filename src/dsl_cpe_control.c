@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -285,14 +285,15 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
 
 #ifdef LINUX
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/ifx/firmware/ModemHWE.bin"
+   #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/lantiq/firmware/ModemHWE.bin"
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/ifx/firmware/xcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+   #define DSL_CPE_DEFAULT_FIRMWARE_1  "/opt/lantiq/firmware/xcpe_hw.bin"
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  "/opt/lantiq/firmware/xcpe_hw_2p.bin"
 #else
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "firmware0.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "firmware1.bin"
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+#endif
 #endif
 #elif VXWORKS
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
@@ -300,10 +301,11 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "xcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  "xcpe_hw_2p.bin"
 #else
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "firmware0.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "firmware1.bin"
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+#endif
 #endif
 #elif RTEMS
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "cgi_pFileData_modemfw_bin"
@@ -314,10 +316,11 @@ DSL_CPE_STATIC  DSL_Error_t DSL_CPE_Control_Exit (DSL_void_t * pContext);
    #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
    #define DSL_CPE_DEFAULT_FIRMWARE_1  "..\\firmware\\xcpe_hw.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  "..\\firmware\\xcpe_hw_2.bin"
 #else
-   #define DSL_CPE_DEFAULT_FIRMWARE_1  "firmware0.bin"
-   #define DSL_CPE_DEFAULT_FIRMWARE_2  "firmware1.bin"
+   #define DSL_CPE_DEFAULT_FIRMWARE_2  ""
+#endif
 #endif
 #else
    #define DSL_CPE_DEFAULT_FIRMWARE_1  ""
@@ -381,6 +384,9 @@ DSL_CPE_STATIC  struct option long_options[] = {
    {"silent    ", 0, 0, 'q'},
 #endif /* USE_DAEMONIZE */
    {"firmware1 ", 1, 0, 'f'},
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   {"firmware2 ", 1, 0, 'F'},
+#endif
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    {"opt_off   ", 1, 0, 'o'},
 #endif
@@ -442,6 +448,9 @@ DSL_CPE_STATIC  const DSL_char_t GETOPT_LONG_OPTSTRING[] = "hvi::"
    "q"
 #endif
    "f:"
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   "F:"
+#endif
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    "o"
 #endif
@@ -503,6 +512,9 @@ DSL_CPE_STATIC  DSL_char_t description[][105] = {
    "silent mode, no output from background",
 #endif
    {"firmware file, default " DSL_CPE_DEFAULT_FIRMWARE_1},
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   {"2nd firmware file, default " DSL_CPE_DEFAULT_FIRMWARE_2},
+#endif
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    {"deactivate footprint optimizations"},
 #endif
@@ -610,6 +622,11 @@ DSL_CPE_STATIC DSL_void_t DSL_CPE_DebugInitModule()
       startup option */
    for (i = 0; (i < MAX_DBG_MOD_PAIRS) && (g_nDbgAppLevel[i].nDbgModule != 0); ++i)
    {
+      if (g_nDbgAppLevel[i].nDbgModule >= DSL_CCA_DBG_MAX_ENTRIES)
+      {
+         continue;
+      }
+
       DSL_CCA_g_dbgLvl[g_nDbgAppLevel[i].nDbgModule].nDbgLvl =
          g_nDbgAppLevel[i].nDbgLevel;
    }
@@ -1199,6 +1216,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          }
          break;
 
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
       case 'F':
          g_bFirmware2 = 1;
          if (g_sFirmwareName2)
@@ -1215,6 +1233,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             }
          }
          break;
+#endif
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
       case 'o':
@@ -1281,8 +1300,9 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
 
          printf(DSL_CPE_PREFIX
             "(-D) User defined debug levels: app=");
-         g_bDebugLevelApp ? printf("%d, ", g_nDebugLevelApp):printf("n/a");
-         g_bDebugLevelDrv ? printf("%d, ", g_nDebugLevelDrv):printf("n/a");
+         g_bDebugLevelApp ? printf("%d", g_nDebugLevelApp):printf("n/a");
+         printf(", drv=");
+         g_bDebugLevelDrv ? printf("%d", g_nDebugLevelDrv):printf("n/a");
          printf(DSL_CPE_CRLF);
          break;
 #endif /* #ifndef DSL_CPE_DEBUG_DISABLE*/
@@ -1331,6 +1351,10 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
                "(-s) using SOAP server - %s" DSL_CPE_CRLF, optarg));
 
+            if (sSoapRemoteServer)
+            {
+               DSL_CPE_Free(sSoapRemoteServer);
+            }
             sSoapRemoteServer = DSL_CPE_Malloc(strlen (optarg) + 1);
             if (sSoapRemoteServer)
             {
@@ -1709,7 +1733,7 @@ DSL_CPE_STATIC DSL_void_t DSL_CPE_ArgParseCommonDebugLevel (
    DSL_char_t seps[]   = "_";
    DSL_int_t i = 0;
 
-   memset (&sArgList[0], 0, (sizeof(sArgList)) * NUM_COMMON_DBGLVL_ARGS);
+   memset (&sArgList[0], 0, (sizeof(DSL_CPE_ArgElement_t)) * NUM_COMMON_DBGLVL_ARGS);
 
    /* First and second value: Common debug level (int) */
    sArgList[0].nBase = sArgList[1].nBase = 10;
@@ -2193,6 +2217,7 @@ DSL_Error_t DSL_CPE_LoadFirmwareFromFile(
 DSL_Error_t DSL_CPE_DownloadFirmware(
    DSL_int_t fd,
    DSL_FirmwareRequestType_t nFwReqType,
+   DSL_PortMode_t nPortMode,
    DSL_char_t *pcFw,
    DSL_char_t *pcFw2)
 {
@@ -2208,6 +2233,9 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
    DSL_uint8_t *pChunkData = DSL_NULL;
 #ifdef DSL_CPE_SOAP_FW_UPDATE
    DSL_boolean_t bSetFw1 = DSL_TRUE;
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   DSL_boolean_t bSetFw2 = DSL_TRUE;
+#endif
 #endif /* DSL_CPE_SOAP_FW_UPDATE*/
 
    memset(&ldFw, 0, sizeof(DSL_AutobootLoadFirmware_t));
@@ -2225,14 +2253,31 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
       If firmware binaries are given by SOAP interface this will be used in any
       case.
    */
-   if ((pContext->firmware.pData != DSL_NULL) && (pContext->firmware.nSize > 0))
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   if (nPortMode == DSL_PORT_MODE_DUAL)
    {
-      ldFw.data.pFirmware = pContext->firmware.pData;
-      ldFw.data.nFirmwareSize = pContext->firmware.nSize;
-      memcpy(&ldFw.data.firmwareFeatures, &pContext->firmware.fwFeatures,
-         sizeof(DSL_FirmwareFeatures_t));
-      pcFw = DSL_NULL;
-      bSetFw1 = DSL_FALSE;
+      if ((pContext->firmware2.pData != DSL_NULL) && (pContext->firmware2.nSize > 0))
+      {
+         ldFw.data.pFirmware2 = pContext->firmware2.pData;
+         ldFw.data.nFirmwareSize2 = pContext->firmware2.nSize;
+         memcpy(&ldFw.data.firmwareFeatures2, &pContext->firmware2.fwFeatures,
+            sizeof(DSL_FirmwareFeatures_t));
+         pcFw2 = DSL_NULL;
+         bSetFw2 = DSL_FALSE;
+      }
+   }
+   else
+#endif
+   {
+      if ((pContext->firmware.pData != DSL_NULL) && (pContext->firmware.nSize > 0))
+      {
+         ldFw.data.pFirmware = pContext->firmware.pData;
+         ldFw.data.nFirmwareSize = pContext->firmware.nSize;
+         memcpy(&ldFw.data.firmwareFeatures, &pContext->firmware.fwFeatures,
+            sizeof(DSL_FirmwareFeatures_t));
+         pcFw = DSL_NULL;
+         bSetFw1 = DSL_FALSE;
+      }
    }
 
 #endif /* DSL_CPE_SOAP_FW_UPDATE */
@@ -2242,15 +2287,34 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
       firmware is available choose last defined file (or default if startup
       value was not changed).
    */
-#ifdef DSL_CPE_SOAP_FW_UPDATE
-   if ( (pcFw == DSL_NULL) && (bSetFw1 == DSL_TRUE) )
-#else
-   if ( pcFw == DSL_NULL )
-#endif /* DSL_CPE_SOAP_FW_UPDATE*/
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   if (nPortMode == DSL_PORT_MODE_DUAL)
    {
-      if ((g_bFirmware1 != -1) || (strlen(g_sFirmwareName1) > 0))
+#ifdef DSL_CPE_SOAP_FW_UPDATE
+      if ( (pcFw2 == DSL_NULL) && (bSetFw2 == DSL_TRUE) )
+#else
+      if ( pcFw2 == DSL_NULL )
+#endif /* DSL_CPE_SOAP_FW_UPDATE*/
       {
-         pcFw = g_sFirmwareName1;
+         if ((g_bFirmware2 != -1) || (strlen(g_sFirmwareName2) > 0))
+         {
+            pcFw2 = g_sFirmwareName2;
+         }
+      }
+   }
+   else
+#endif
+   {
+#ifdef DSL_CPE_SOAP_FW_UPDATE
+      if ( (pcFw == DSL_NULL) && (bSetFw1 == DSL_TRUE) )
+#else
+      if ( pcFw == DSL_NULL )
+#endif /* DSL_CPE_SOAP_FW_UPDATE*/
+      {
+         if ((g_bFirmware1 != -1) || (strlen(g_sFirmwareName1) > 0))
+         {
+            pcFw = g_sFirmwareName1;
+         }
       }
    }
 
@@ -2336,7 +2400,6 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
 
             ldFw.data.bChunkDonwloadEnabled = DSL_TRUE;
             memcpy(&ldFw.data.firmwareFeatures, &g_nFwFeatures1, sizeof(DSL_FirmwareFeatures_t));
-
             nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
                DSL_FIO_AUTOBOOT_LOAD_FIRMWARE, (DSL_int_t) &ldFw);
 
@@ -2408,6 +2471,38 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
 #elif defined(INCLUDE_DSL_CPE_API_VRX)
          if ((nFwReqType == DSL_FW_REQUEST_XDSL) || (nFwReqType == DSL_FW_REQUEST_NA))
 #endif
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+         if (nPortMode == DSL_PORT_MODE_DUAL)
+         {
+            if (pcFw2 != DSL_NULL)
+            {
+               nRet = DSL_CPE_LoadFirmwareFromFile(pcFw2, &ldFw.data.pFirmware2,
+                  &ldFw.data.nFirmwareSize2);
+               if (nRet < DSL_SUCCESS)
+               {
+                  nRet = DSL_ERROR;
+               }
+               else
+               {
+                  if (pcFw2 != g_sFirmwareName2)
+                  {
+                     /* also store the new firmware binary name within global
+                        configuration to be used for next download */
+                     if (ldFw.data.pFirmware2 != DSL_NULL)
+                     {
+                        DSL_CPE_Free(g_sFirmwareName2);
+                        g_sFirmwareName2 = DSL_CPE_Malloc (strlen (pcFw2) + 1);
+                        if (g_sFirmwareName2)
+                        {
+                           strcpy (g_sFirmwareName2, pcFw2);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         else
+#endif
          {
             if (pcFw != DSL_NULL)
             {
@@ -2443,9 +2538,21 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
             ldFw.data.bLastChunk = DSL_TRUE;
             ldFw.data.bChunkDonwloadEnabled = DSL_FALSE;
 
-            if (pcFw != DSL_NULL)
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+            if (nPortMode == DSL_PORT_MODE_DUAL)
             {
-               memcpy(&ldFw.data.firmwareFeatures, &g_nFwFeatures1, sizeof(DSL_FirmwareFeatures_t));
+               if (pcFw2 != DSL_NULL)
+               {
+                  memcpy(&ldFw.data.firmwareFeatures2, &g_nFwFeatures2, sizeof(DSL_FirmwareFeatures_t));
+               }
+            }
+            else
+#endif
+            {
+               if (pcFw != DSL_NULL)
+               {
+                  memcpy(&ldFw.data.firmwareFeatures, &g_nFwFeatures1, sizeof(DSL_FirmwareFeatures_t));
+               }
             }
 
             nRet = (DSL_Error_t) DSL_CPE_Ioctl(fd,
@@ -2462,7 +2569,11 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
          else
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "Both FW binaries are not specified!" DSL_CPE_CRLF));
+               "Necessary FW binary "
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+               "for requested port mode %d "
+#endif
+               "are not specified!" DSL_CPE_CRLF, nPortMode));
             nRet = DSL_ERROR;
             break;
          }
@@ -2486,17 +2597,35 @@ DSL_Error_t DSL_CPE_DownloadFirmware(
       DSL_CPE_Free(pChunkData);
       pChunkData = DSL_NULL;
       ldFw.data.pFirmware = DSL_NULL;
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+      ldFw.data.pFirmware2 = DSL_NULL;
+#endif
    }
 
-#ifdef DSL_CPE_SOAP_FW_UPDATE
-   if (ldFw.data.pFirmware && bSetFw1)
-#else
-   if (ldFw.data.pFirmware)
-#endif /* DSL_CPE_SOAP_FW_UPDATE*/
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   if (nPortMode == DSL_PORT_MODE_DUAL)
    {
-      DSL_CPE_Free(ldFw.data.pFirmware);
+#ifdef DSL_CPE_SOAP_FW_UPDATE
+      if (ldFw.data.pFirmware2 && bSetFw2)
+#else
+      if (ldFw.data.pFirmware2)
+#endif /* DSL_CPE_SOAP_FW_UPDATE*/
+      {
+         DSL_CPE_Free(ldFw.data.pFirmware2);
+      }
    }
-
+   else
+#endif
+   {
+#ifdef DSL_CPE_SOAP_FW_UPDATE
+      if (ldFw.data.pFirmware && bSetFw1)
+#else
+      if (ldFw.data.pFirmware)
+#endif /* DSL_CPE_SOAP_FW_UPDATE*/
+      {
+         DSL_CPE_Free(ldFw.data.pFirmware);
+      }
+   }
 #endif /* INCLUDE_DSL_DRV_STATIC_LINKED_FIRMWARE*/
 
 #if defined(INCLUDE_DSL_CPE_API_VRX)
@@ -2737,7 +2866,7 @@ DSL_Error_t DSL_CPE_ScriptExecute (
 
       /* if the line is empty or a special "#" symbol detected,
          then go on to the next */
-      if ((sscanf (buf, "%s", str_command) == 0) || (buf[0] == '#'))
+      if ((sscanf (buf, "%127s", str_command) == 0) || (buf[0] == '#'))
       {
          continue;
       }
@@ -2753,7 +2882,7 @@ DSL_Error_t DSL_CPE_ScriptExecute (
 
       while(*pFile__++ != '\n');
 
-      if ((sscanf (buf, "%s", str_command) == 0) || (buf[0] == '#'))
+      if ((sscanf (buf, "%127s", str_command) == 0) || (buf[0] == '#'))
       {
          continue;
       }
@@ -3659,7 +3788,8 @@ DSL_Error_t DSL_CPE_ScriptExecute (
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
          /* Check if a CLI command is given */
          DSL_CPE_CliDeviceCommandExecute (pContext, nDevice, str_command,
-            buf + strlen(str_command) + 1, DSL_CPE_STDOUT);
+            buf + DSL_MIN(strlen(str_command) + 1, sizeof(buf) - 1),
+            DSL_CPE_STDOUT);
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
       }
    }
@@ -4257,7 +4387,7 @@ DSL_CPE_STATIC DSL_int_t DSL_CPE_Event_S_LineStateHandle(
          }
       }
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
-      sprintf(buff, "%u", nDevice);
+      snprintf(buff, sizeof(buff), "%u", nDevice);
       if (bExec == DSL_TRUE)
       {
          if (DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff) != DSL_SUCCESS)
@@ -4396,7 +4526,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
          if (nErrCode == DSL_SUCCESS)
          {
-            sprintf(buff, "%u", nDevice);
+            snprintf(buff, sizeof(buff), "%u", nDevice);
             nErrCode = DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff);
          }
 #endif
@@ -4543,7 +4673,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_ChannelDataRateHandle(
                          "DSL_DATARATE_STATUS_DS" : "DSL_DATARATE_STATUS_US") == DSL_SUCCESS)
       {
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
-         sprintf(buff, "%u", nDevice);
+         snprintf(buff, sizeof(buff), "%u", nDevice);
          DSL_CPE_SetEnv("DSL_LINE_NUMBER", buff);
 #endif
          sprintf(sVarName, "DSL_DATARATE_%s_BC%d",
@@ -4807,7 +4937,7 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_FirmwareRequestHandle(
    /* Try to reload FW several times in case of any fail*/
    for (nFwLoadRetryCnt = 0; nFwLoadRetryCnt < DSL_CPE_MAX_FW_RELOAD_RETRY_COUNT; nFwLoadRetryCnt++)
    {
-      nRet = DSL_CPE_DownloadFirmware(fd, nFwReqType, DSL_NULL, DSL_NULL);
+      nRet = DSL_CPE_DownloadFirmware(fd, nFwReqType, nPortMode, DSL_NULL, DSL_NULL);
 
       if (nRet >= DSL_SUCCESS)
       {
@@ -6188,6 +6318,10 @@ DSL_int32_t DSL_CPE_DeviceInit (
    DSL_G997_LineInventoryNeData_t inv;
    DSL_FirmwareFeatures_t fwFeatures1 = {DSL_FW_XDSLMODE_CLEANED, DSL_FW_XDSLFEATURE_CLEANED,
                                           DSL_FW_XDSLFEATURE_CLEANED};
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   DSL_FirmwareFeatures_t fwFeatures2 = {DSL_FW_XDSLMODE_CLEANED, DSL_FW_XDSLFEATURE_CLEANED,
+                                          DSL_FW_XDSLFEATURE_CLEANED};
+#endif
    DSL_int_t nDevice = 0;
    const DSL_uint8_t G994VendorID[DSL_G997_LI_MAXLEN_VENDOR_ID] = {DSL_G994_VENDOR_ID};
 
@@ -6274,6 +6408,7 @@ DSL_int32_t DSL_CPE_DeviceInit (
          }
       }
 
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
       /* Get Firmware binary 2 */
       if ((g_bFirmware2 != -1) || (strlen(g_sFirmwareName2)))
       {
@@ -6286,9 +6421,12 @@ DSL_int32_t DSL_CPE_DeviceInit (
                /* Assign FW binary*/
                init.data.pFirmware2 = pFirmware2;
                init.data.nFirmwareSize2 = nFirmwareSize2;
+               DSL_CPE_FwFeaturesGet(g_sFirmwareName2, &fwFeatures2);
+               memcpy(&init.data.nFirmwareFeatures2, &fwFeatures2, sizeof(DSL_FirmwareFeatures_t));
             }
          }
       }
+#endif
    }
 #endif /* INCLUDE_FW_REQUEST_SUPPORT */
 
@@ -6300,6 +6438,17 @@ DSL_int32_t DSL_CPE_DeviceInit (
    memcpy(&init.data.nFirmwareFeatures, &fwFeatures1,
       sizeof(DSL_FirmwareFeatures_t));
    memcpy(&g_nFwFeatures1, &fwFeatures1, sizeof(DSL_FirmwareFeatures_t));
+
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   /* Get 2nd FW binary Information */
+   if ((g_bFirmware2 != -1) || (strlen(g_sFirmwareName2) > 0))
+   {
+      DSL_CPE_FwFeaturesGet(g_sFirmwareName2, &fwFeatures2);
+   }
+   memcpy(&init.data.nFirmwareFeatures2, &fwFeatures2,
+      sizeof(DSL_FirmwareFeatures_t));
+   memcpy(&g_nFwFeatures2, &fwFeatures2, sizeof(DSL_FirmwareFeatures_t));
+#endif
 
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)
    if (gInitCfgData.nDeviceCfg.cfg.nHybrid == DSL_DEV_HYBRID_NA)
@@ -6415,8 +6564,8 @@ DSL_int32_t DSL_CPE_DeviceInit (
             if ((g_bFirmware1 != -1) || (strlen(g_sFirmwareName1) > 0))
             {
                ret = DSL_CPE_DownloadFirmware(
-                        pContext->fd[nDevice],
-                        DSL_FW_REQUEST_ADSL, g_sFirmwareName1, DSL_NULL);
+                        pContext->fd[nDevice], DSL_FW_REQUEST_ADSL,
+                        DSL_PORT_MODE_NA, g_sFirmwareName1, DSL_NULL);
             }
          }
       }
@@ -6534,6 +6683,11 @@ DSL_int_t dsl_cpe_daemon (
 #endif /* defined(RTEMS) && defined(INCLUDE_DSL_CPE_CLI_SUPPORT)*/
 
    memset (pCtrlCtx, 0x00, sizeof (DSL_CPE_Control_Context_t));
+   memset(&instanceConfig, 0x0, sizeof(DSL_InstanceControl_t));
+#ifndef DSL_CPE_DEBUG_DISABLE
+   memset(&nDbgModLvl, 0x0, sizeof(DSL_DBG_ModuleLevel_t));
+#endif /* DSL_CPE_DEBUG_DISABLE */
+
    gDSLContext = pCtrlCtx;
    g_nMsgDumpDbgLvl = DSL_DBG_MSG;
 
@@ -6645,12 +6799,12 @@ DSL_int_t dsl_cpe_daemon (
    if (bInit == 1)
    {
       /* Print currently used firmware file(s) */
-      if (strlen(g_sFirmwareName1) > 0)
+      if (g_sFirmwareName1 && (strlen(g_sFirmwareName1) > 0))
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
             "(-f) using 1st firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName1));
       }
-      if (strlen(g_sFirmwareName2) > 0)
+      if (g_sFirmwareName2 && (strlen(g_sFirmwareName2) > 0))
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
             "(-F) using 2nd firmware file - %s" DSL_CPE_CRLF , g_sFirmwareName2));
@@ -7009,8 +7163,8 @@ DSL_int_t dsl_cpe_daemon (
       for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          /* Download ADSL Firmware*/
-         ret = DSL_CPE_DownloadFirmware(
-            pCtrlCtx->fd[nDevice], DSL_FW_REQUEST_ADSL, DSL_NULL, DSL_NULL);
+         ret = DSL_CPE_DownloadFirmware(pCtrlCtx->fd[nDevice],
+            DSL_FW_REQUEST_ADSL, DSL_PORT_MODE_NA, DSL_NULL, DSL_NULL);
             if (ret == DSL_ERR_NOT_INITIALIZED)
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -7045,8 +7199,8 @@ DSL_int_t dsl_cpe_daemon (
       for (nDevice = 0; nDevice < DSL_CPE_MAX_DSL_ENTITIES; nDevice++)
       {
          /* Download ADSL/VDSL Firmware if available*/
-         ret = DSL_CPE_DownloadFirmware(
-            pCtrlCtx->fd[nDevice], DSL_FW_REQUEST_NA, DSL_NULL, DSL_NULL);
+         ret = DSL_CPE_DownloadFirmware(pCtrlCtx->fd[nDevice],
+                  DSL_FW_REQUEST_NA, DSL_PORT_MODE_NA, DSL_NULL, DSL_NULL);
          if (ret == DSL_ERR_NOT_INITIALIZED)
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -7321,6 +7475,9 @@ DSL_CPE_CONTROL_EXIT:
       DSL_CPE_Free (g_sRemoteTcpServerIp);
    }
 #endif /* defined(INCLUDE_TCP_SIMULATOR) && defined(DSL_CPE_SIMULATOR_DRIVER) && defined(WIN32)*/
+
+   /* clear global variable*/
+   gDSLContext = DSL_NULL;
 
    return ret;
 }

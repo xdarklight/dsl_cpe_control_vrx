@@ -1,5 +1,80 @@
 NEXT VERSION
 
+V4.16.2.4 - 2014-03-11
+-
+
+V4.16.2.3 - 2014-02-27
+-
+
+V4.16.2.2 - 2014-02-10
+common:
+- VRX (DSLCPE_SW-770) Klocwork reworks/fixes for UGW-6.1
+
+V4.16.2.1 - 2014-01-20
+-
+
+V4.16.2 - 2014-01-16
+common:
+- (DSLCPE_SW-770) Klocwork reworks/fixes for UGW-6.1.
+  + Correction for latest Klocwork fixes (compilation without debug symbols)
+
+V4.16.1 - 2014-01-15
+CLI:
+- (DSLCPE_SW-776) Request of various CLI parameters is incorrect.
+  + Fixed wrong variable initialization.
+common:
+- (DSLCPE_SW-770) Klocwork reworks/fixes for UGW-6.1.
+  + Fixed build warnings
+
+V4.16.0 - 2014-01-10
+common:
+- Updated copyright header (year 2014)
+
+V4.15.10 - 2013-12-19
+-
+
+V4.15.9 - 2013-12-06
+-
+
+V4.15.8 - 2013-12-05
+common:
+- VRX (DSLCPE_SW-749) Rework Retransmission counter related API functions.
+  + Extended PM_ReTxCounters with nErrorFreeBits, nLeftr.
+  + Extended PM_LineSecCounters with nFECS.
+
+V4.15.7 - 2013-09-18
+-
+
+V4.15.6 - 2013-09-13
+common:
+- (DSLCPE_SW-755) Extensions for G997_RateAdaptationConfigSet handling
+- (DSLCPE_SW-734) Take care that DSL Subsystem is fully functional with
+  Linux kernel 3.8
+  + Extended DTI dependence
+- VRX (DSLCPE_SW-754) Using different DSL FW binaries for dual port
+  and single port mode.
+  + Extended fw download implementation with second firmware handling.
+CLI:
+  + Extended "alf"/"AutobootLoadFirmware" with second firmware
+
+V4.15.5 - 2013-08-22
+Bug fix(es):
+- (DSLCPE_SW-750) Usage of debug option "-D" results in segmentation fault.
+  + Wrong memset data size caused setting NULL pointer, fixed size.
+
+V4.15.4 - 2013-08-16
+common:
+- (DSLCPE_SW-734) Take care that DSL Subsystem is fully functional with
+  Linux kernel 3.8.
+  + Extended source code for Danube to be compilable with linux kernel 3.8
+
+V4.15.3 - 2013-08-09
+common:
+- (DSLCPE_SW-734) Take care that DSL Subsystem is fully functional with
+  Linux kernel 3.8.
+  + Extended source code for VRX to be compilable with linux kernel 3.8
+  + DTI is currently excluded
+
 V4.15.2 - 2013-07-29
 CLI:
 - VRX (DSLCPE_SW-744) SNRpsds w/ and w/o virtual noise including bugfixes for

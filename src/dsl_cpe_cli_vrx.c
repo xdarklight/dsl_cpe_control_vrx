@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -508,6 +508,9 @@ static const DSL_char_t g_sAufg[] =
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t xdsl_firmware[1-256]" DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   "- DSL_char_t xdsl_firmware2[1-256]"DSL_CPE_CRLF
+#endif
    DSL_CPE_CRLF "";
 #else
    "";
@@ -530,6 +533,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootUsedFirmwareGet(
    if(pCtrlCtx == DSL_NULL)
    {
       DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(-1));
+
+      return -1;
    }
 
 #ifdef DSL_CPE_SOAP_FW_UPDATE
@@ -543,10 +548,18 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootUsedFirmwareGet(
    else
    {
 #endif /* DSL_CPE_SOAP_FW_UPDATE */
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+      DSL_CPE_FPrintf (out,
+         DSL_CPE_RET"xdsl_firmware=%s xdsl_firmware2=%s" DSL_CPE_CRLF,
+         DSL_CPE_RET_VAL(ret),
+         g_sFirmwareName1 != DSL_NULL ? g_sFirmwareName1 : "n/a",
+         g_sFirmwareName2 != DSL_NULL ? g_sFirmwareName2 : "n/a");
+#else
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"xdsl_firmware=%s" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(ret),
          g_sFirmwareName1 != DSL_NULL ? g_sFirmwareName1 : "n/a");
+#endif
 #ifdef DSL_CPE_SOAP_FW_UPDATE
    }
 #endif /* DSL_CPE_SOAP_FW_UPDATE */
@@ -564,6 +577,9 @@ static const DSL_char_t g_sAlf[] =
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
    "- DSL_char_t xdsl_firmware[1-256] (Attention: Use absolute firmware path only"DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   "- DSL_char_t xdsl_firmware2[1-256] (Attention: Use absolute firmware path only"DSL_CPE_CRLF
+#endif
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -583,6 +599,10 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
    DSL_int_t ret = 0;
    DSL_char_t sFirmwareName1[256] = { 0 };
    DSL_char_t *pcFw = DSL_NULL;
+   DSL_char_t *pcFw2 = DSL_NULL;
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   DSL_char_t sFirmwareName2[256] = { 0 };
+#endif
 #ifdef INCLUDE_FW_REQUEST_SUPPORT
    DSL_AutobootControl_t autobootCtrl;
 #if (DSL_CPE_LINES_PER_DEVICE < 2)
@@ -590,34 +610,72 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
 #endif /* #if (DSL_CPE_LINES_PER_DEVICE < 2) */
 #endif /* INCLUDE_FW_REQUEST_SUPPORT*/
 
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+#else
    if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
    {
       return -1;
    }
+#endif
 
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   DSL_CPE_sscanf (pCommands, "%s %s", sFirmwareName1, sFirmwareName2);
+#else
    DSL_CPE_sscanf (pCommands, "%s", sFirmwareName1);
+#endif
 
-   /* Get Firmware binary 1 */
+   /* Get first (default) firmware binary. */
    if (strlen(sFirmwareName1) > 0)
    {
-      pcFw = &sFirmwareName1[0];
+      if ( strcmp(sFirmwareName1, ".") != 0 )
+      {
+         pcFw = &sFirmwareName1[0];
+
+         /* Update link to the first (default) FW binary. */
+         if (pcFw)
+         {
+            if (g_sFirmwareName1 != DSL_NULL)
+            {
+               DSL_CPE_Free(g_sFirmwareName1);
+            }
+
+            g_sFirmwareName1 = DSL_CPE_Malloc (strlen (pcFw) + 1);
+            if (g_sFirmwareName1)
+            {
+               strcpy (g_sFirmwareName1, pcFw);
+            }
+            DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &g_nFwFeatures1);
+         }
+      }
    }
 
-   /* Update links to the FW binaries */
-   if (pcFw)
+#if defined(INCLUDE_DSL_BONDING) && (DSL_CPE_LINES_PER_DEVICE == 2)
+   /* Get second (on-chip bonding) firmware binary. */
+   if (strlen(sFirmwareName2) > 0)
    {
-      if (g_sFirmwareName1 != DSL_NULL)
-      {
-         DSL_CPE_Free(g_sFirmwareName1);
-      }
+      pcFw2 = &sFirmwareName2[0];
 
-      g_sFirmwareName1 = DSL_CPE_Malloc (strlen (pcFw) + 1);
-      if (g_sFirmwareName1)
+      /* Update link to the second (on-chip bonding) FW binary. */
+      if (pcFw2)
       {
-         strcpy (g_sFirmwareName1, pcFw);
+         if (g_sFirmwareName2 != DSL_NULL)
+         {
+            DSL_CPE_Free(g_sFirmwareName2);
+         }
+
+         g_sFirmwareName2 = DSL_CPE_Malloc (strlen (pcFw2) + 1);
+         if (g_sFirmwareName2)
+         {
+            strcpy (g_sFirmwareName2, pcFw2);
+         }
+         DSL_CPE_FwFeaturesGet(g_sFirmwareName2, &g_nFwFeatures2);
       }
-      DSL_CPE_FwFeaturesGet(g_sFirmwareName1, &g_nFwFeatures1);
    }
+#endif
 
 #ifdef INCLUDE_FW_REQUEST_SUPPORT
 #if (DSL_CPE_LINES_PER_DEVICE < 2)
@@ -634,7 +692,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
 
    if (AutobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_FW_WAIT)
    {
-      ret = DSL_CPE_DownloadFirmware(fd, AutobootStatus.data.nFirmwareRequestType, pcFw, DSL_NULL);
+      ret = DSL_CPE_DownloadFirmware(fd, AutobootStatus.data.nFirmwareRequestType,
+                                                   DSL_PORT_MODE_NA, pcFw, pcFw2);
 
       DSL_CPE_FPrintf (out, DSL_CPE_RET, DSL_CPE_RET_VAL(ret));
       if (ret < DSL_SUCCESS)
@@ -1328,9 +1387,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_LineStatusPerBandGet(
       return -1;
    }
 
-   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
-
    memset(&pData, 0x0, sizeof(DSL_G997_LineStatusPerBand_t));
+
+   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_G997_LINE_STATUS_PER_BAND_GET, (int) &pData);
 
@@ -2101,6 +2160,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_BND_ConfigSet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_BND_ConfigSet_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.data.bPafEnable);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_BND_CONFIG_SET, (int) &pData);
@@ -2409,6 +2470,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_BND_PortModeSyncSet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_BND_PortModeSync_t));
 
    DSL_CPE_sscanf (pCommands, "%u", &pData.data.nPortMode);
 

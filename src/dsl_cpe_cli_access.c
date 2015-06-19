@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -1192,6 +1192,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_ResourceUsageStatisticsGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_ResourceUsageStatistics_t));
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_RESOURCE_USAGE_STATISTICS_GET, (int) &pData);
 
@@ -2426,6 +2428,11 @@ static const DSL_char_t g_sRaCs[] =
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
+   "- DSL_DslModeSelection_t nDslMode" DSL_CPE_CRLF
+   "   mode adsl = 0" DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   "   mode vdsl = 1" DSL_CPE_CRLF
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
    "   upstream = 0" DSL_CPE_CRLF
    "   downstream = 1" DSL_CPE_CRLF
@@ -2439,6 +2446,11 @@ static const DSL_char_t g_sRaCs[] =
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
+   "- DSL_DslModeSelection_t nDslMode" DSL_CPE_CRLF
+   "   mode adsl = 0" DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   "   mode vdsl = 1" DSL_CPE_CRLF
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
    "   upstream = 0" DSL_CPE_CRLF
    "   downstream = 1" DSL_CPE_CRLF
@@ -2455,14 +2467,15 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_RateAdaptationConfigSet(
    DSL_int_t ret = 0;
    DSL_G997_RateAdaptationConfig_t pData;
 
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 3, DSL_CLI_EQUALS) == DSL_FALSE)
    {
       return -1;
    }
 
    memset(&pData, 0x0, sizeof(DSL_G997_RateAdaptationConfig_t));
 
-   DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.data.RA_MODE);
+   DSL_CPE_sscanf (pCommands, "%u %u %u", &pData.nDslMode,&pData.nDirection,
+      &pData.data.RA_MODE);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_G997_RATE_ADAPTATION_CONFIG_SET, (int) &pData);
 
@@ -2472,8 +2485,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_RateAdaptationConfigSet(
    }
    else
    {
-      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDirection=%hu" DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection);
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDslMode=%u nDirection=%hu" DSL_CPE_CRLF,
+         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDslMode,
+         pData.nDirection);
    }
 
    return 0;
@@ -2489,6 +2503,11 @@ static const DSL_char_t g_sRaCg[] =
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
+   "- DSL_DslModeSelection_t nDslMode" DSL_CPE_CRLF
+   "   mode adsl = 0" DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   "   mode vdsl = 1" DSL_CPE_CRLF
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
    "   upstream = 0" DSL_CPE_CRLF
    "   downstream = 1" DSL_CPE_CRLF
@@ -2498,6 +2517,11 @@ static const DSL_char_t g_sRaCg[] =
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
    "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
 #endif
+   "- DSL_DslModeSelection_t nDslMode" DSL_CPE_CRLF
+   "   mode adsl = 0" DSL_CPE_CRLF
+#if defined(INCLUDE_DSL_CPE_API_VRX)
+   "   mode vdsl = 1" DSL_CPE_CRLF
+#endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    "- DSL_AccessDir_t nDirection" DSL_CPE_CRLF
    "   upstream = 0" DSL_CPE_CRLF
    "   downstream = 1" DSL_CPE_CRLF
@@ -2518,14 +2542,14 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_RateAdaptationConfigGet(
    DSL_int_t ret = 0;
    DSL_G997_RateAdaptationConfig_t pData;
 
-   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 2, DSL_CLI_EQUALS) == DSL_FALSE)
    {
       return -1;
    }
 
    memset(&pData, 0x0, sizeof(DSL_G997_RateAdaptationConfig_t));
 
-   DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
+   DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDslMode, &pData.nDirection);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_G997_RATE_ADAPTATION_CONFIG_GET, (int) &pData);
 
@@ -2535,8 +2559,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_RateAdaptationConfigGet(
    }
    else
    {
-      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDirection=%hu RA_MODE=%u" DSL_CPE_CRLF,
-         DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDslMode=%u nDirection=%hu RA_MODE=%u"
+         DSL_CPE_CRLF, DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDslMode,
          pData.nDirection, pData.data.RA_MODE);
    }
 
@@ -5304,7 +5328,7 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_G997_DeltHLOGGet(
 
       for (i = 0; i < pData->data.deltHlog.nNumData; i++)
       {
-         if (i > DSL_MAX_NSC)
+         if (i >= DSL_MAX_NSC)
          {
             break;
          }
@@ -6034,6 +6058,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_15MinElapsedExtTrigger(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ElapsedExtTrigger_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.data.bOneDayElapsed);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_15MIN_ELAPSED_EXT_TRIGGER, (int) &pData);
@@ -6093,6 +6119,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_BurninModeSet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_BurninMode_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u %u %u", &pData.data.bActivate,
       &pData.data.nMode.nPmTick, &pData.data.nMode.nPm15Min,
       &pData.data.nMode.nPm15MinPerDay);
@@ -6146,6 +6174,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ElapsedTimeReset(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_ElapsedTimeReset_t));
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_ELAPSED_TIME_RESET, (int) &pData);
 
@@ -6283,6 +6313,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_SyncModeSet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_SyncMode_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.data.nMode);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_SYNC_MODE_SET, (int) &pData);
@@ -6340,6 +6372,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_SyncModeGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_SyncMode_t));
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_SYNC_MODE_GET, (int) &pData);
 
@@ -6412,6 +6446,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelCounters15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelCounters_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
@@ -6493,6 +6529,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -6566,6 +6604,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelHistoryStats15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_CHANNEL_HISTORY_STATS_15MIN_GET, (int) &pData);
@@ -6636,6 +6676,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelHistoryStats1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
@@ -6864,6 +6906,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelThresholds15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_CHANNEL_THRESHOLDS_15MIN_GET, (int) &pData);
@@ -6933,6 +6977,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelThresholds15MinSet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u", &pData.nChannel, &pData.nDirection,
       &pData.data.nCodeViolations, &pData.data.nFEC);
@@ -7005,6 +7051,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelThresholds1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_CHANNEL_THRESHOLDS_1DAY_GET, (int) &pData);
@@ -7075,6 +7123,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ChannelThresholds1DaySet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_ChannelThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u", &pData.nChannel, &pData.nDirection,
       &pData.data.nCodeViolations, &pData.data.nFEC);
@@ -7163,6 +7213,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathCounters15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathCounters_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
@@ -7263,6 +7315,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -7345,6 +7399,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathHistoryStats15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_DATA_PATH_HISTORY_STATS_15MIN_GET,
@@ -7416,6 +7472,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathHistoryStats1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
@@ -7692,6 +7750,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_DATA_PATH_THRESHOLDS_15MIN_GET, (int) &pData);
@@ -7782,6 +7842,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds15MinSet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u %u %u %u %u %u %u %u %u", &pData.nChannel,
       &pData.nDirection, &pData.data.nHEC, &pData.data.nTotalCells,
       &pData.data.nUserTotalCells, &pData.data.nIBE,
@@ -7792,6 +7854,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds15MinSet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u %u %u %u %u", &pData.nChannel,
       &pData.nDirection, &pData.data.nHEC, &pData.data.nTotalCells,
@@ -7875,6 +7939,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
@@ -7966,6 +8032,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds1DaySet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u %u %u %u %u %u %u %u %u", &pData.nChannel,
       &pData.nDirection, &pData.data.nHEC, &pData.data.nTotalCells,
       &pData.data.nUserTotalCells, &pData.data.nIBE,
@@ -7976,6 +8044,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathThresholds1DaySet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u %u %u %u %u %u", &pData.nChannel,
       &pData.nDirection, &pData.data.nHEC, &pData.data.nTotalCells,
@@ -8036,6 +8106,8 @@ static const DSL_char_t g_sPMrtc15mg[] =
    "- DSL_uint32_t nElapsedTime" DSL_CPE_CRLF
    "- DSL_boolean_t bValid" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8054,6 +8126,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCounters15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -8068,11 +8142,12 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCounters15MinGet(
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
          "nElapsedTime=%u bValid=%u "
-         "nEftrMin=%u"DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
          (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
          (DSL_uint32_t)pData.interval.bValid,
-         (DSL_uint32_t)pData.data.nEftrMin);
+         (DSL_uint32_t)pData.data.nEftrMin, (DSL_uint32_t)pData.data.nErrorFreeBits,
+         (DSL_uint32_t)pData.data.nLeftr);
    }
 
    return 0;
@@ -8114,6 +8189,8 @@ static const DSL_char_t g_sPMrtc1dg[] =
    "- DSL_uint32_t nElapsedTime" DSL_CPE_CRLF
    "- DSL_boolean_t bValid" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8132,6 +8209,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -8146,11 +8225,12 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCounters1DayGet(
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
          "nElapsedTime=%u bValid=%u "
-         "nEftrMin=%u"DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
          (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
          (DSL_uint32_t)pData.interval.bValid,
-         (DSL_uint32_t)pData.data.nEftrMin);
+         (DSL_uint32_t)pData.data.nEftrMin, (DSL_uint32_t)pData.data.nErrorFreeBits,
+         (DSL_uint32_t)pData.data.nLeftr);
    }
 
    return 0;
@@ -8203,6 +8283,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxHistoryStats15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
 
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
@@ -8273,6 +8355,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxHistoryStats1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_HISTORY_STATS_1DAY_GET,
@@ -8324,6 +8408,8 @@ static const DSL_char_t g_sPMrtctg[] =
    "- DSL_uint32_t nElapsedTime" DSL_CPE_CRLF
    "- DSL_boolean_t bValid" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8342,6 +8428,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCountersTotalGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxCountersTotal_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_COUNTERS_TOTAL_GET, (int) &pData);
@@ -8354,11 +8442,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCountersTotalGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nElapsedTime=%u bValid=%u "
-         "nEftrMin=%u"
-         DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         pData.total.nElapsedTime, pData.total.bValid,
-         pData.data.nEftrMin);
+         (DSL_uint32_t)pData.total.nElapsedTime, (DSL_uint32_t)pData.total.bValid,
+         (DSL_uint32_t)pData.data.nEftrMin, (DSL_uint32_t)pData.data.nErrorFreeBits,
+         (DSL_uint32_t)pData.data.nLeftr);
    }
 
    return 0;
@@ -8400,6 +8488,8 @@ static const DSL_char_t g_sPMrtcsg[] =
    "- DSL_uint32_t nElapsedTime" DSL_CPE_CRLF
    "- DSL_boolean_t bValid" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8418,6 +8508,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCountersShowtimeGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -8432,11 +8524,12 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxCountersShowtimeGet(
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u "
          "nElapsedTime=%u bValid=%u "
-         "nEftrMin=%u"DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
          (DSL_uint32_t)pData.nHistoryInterval, (DSL_uint32_t)pData.interval.nElapsedTime,
          (DSL_uint32_t)pData.interval.bValid,
-         (DSL_uint32_t)pData.data.nEftrMin);
+         (DSL_uint32_t)pData.data.nEftrMin, (DSL_uint32_t)pData.data.nErrorFreeBits,
+         (DSL_uint32_t)pData.data.nLeftr);
    }
 
    return 0;
@@ -8471,6 +8564,8 @@ static const DSL_char_t g_sPMrtt15mg[] =
    "   near end = 0" DSL_CPE_CRLF
    "   far end = 1" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8489,6 +8584,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_THRESHOLDS_15MIN_GET, (int) &pData);
@@ -8501,9 +8598,10 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds15MinGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u "
-         "nEftrMin=%u"DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         pData.data.nEftrMin);
+         pData.data.nEftrMin, pData.data.nErrorFreeBits,
+         pData.data.nLeftr);
    }
 
    return 0;
@@ -8530,6 +8628,8 @@ static const DSL_char_t g_sPMrtt15ms[] =
    "   near end = 0" DSL_CPE_CRLF
    "   far end = 1" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -8557,9 +8657,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds15MinSet(
       return -1;
    }
 
-   DSL_CPE_sscanf (pCommands, "%u %u",
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxThreshold_t));
+
+   DSL_CPE_sscanf (pCommands, "%u %u %u %u",
       &pData.nDirection,
-      &pData.data.nEftrMin);
+      &pData.data.nEftrMin, &pData.data.nErrorFreeBits, &pData.data.nLeftr);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_THRESHOLDS_15MIN_SET, (int) &pData);
 
@@ -8607,6 +8709,8 @@ static const DSL_char_t g_sPMrtt1dg[] =
    "   near end = 0" DSL_CPE_CRLF
    "   far end = 1" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -8625,6 +8729,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_THRESHOLDS_1DAY_GET, (int) &pData);
@@ -8637,9 +8743,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds1DayGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u "
-         "nEftrMin=%u"DSL_CPE_CRLF,
+         "nEftrMin=%u nErrorFreeBits=%u nLeftr=%u"DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection,
-         pData.data.nEftrMin);
+         pData.data.nEftrMin, pData.data.nErrorFreeBits, pData.data.nLeftr);
    }
 
    return 0;
@@ -8666,6 +8772,8 @@ static const DSL_char_t g_sPMrtt1ds[] =
    "   near end = 0" DSL_CPE_CRLF
    "   far end = 1" DSL_CPE_CRLF
    "- DSL_uint32_t nEftrMin" DSL_CPE_CRLF
+   "- DSL_uint32_t nErrorFreeBits" DSL_CPE_CRLF
+   "- DSL_uint32_t nLeftr" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -8693,9 +8801,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_ReTxThresholds1DaySet(
       return -1;
    }
 
-   DSL_CPE_sscanf (pCommands, "%u %u",
+   memset(&pData, 0x0, sizeof(DSL_PM_ReTxThreshold_t));
+
+   DSL_CPE_sscanf (pCommands, "%u %u %u %u",
       &pData.nDirection,
-      &pData.data.nEftrMin);
+      &pData.data.nEftrMin, &pData.data.nErrorFreeBits, &pData.data.nLeftr);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_RETX_THRESHOLDS_1DAY_SET, (int) &pData);
 
@@ -8770,6 +8880,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureCounters15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathFailureCounters_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
@@ -8850,6 +8962,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathFailureCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -8923,6 +9037,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureHistoryStats15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_DATA_PATH_FAILURE_HISTORY_STATS_15MIN_GET,
@@ -8994,6 +9110,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureHistoryStats1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
@@ -9067,6 +9185,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureCountersTotalGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathFailureCountersTotal_t));
 
    DSL_CPE_sscanf (pCommands, "%bu %u", &pData.nChannel, &pData.nDirection);
 
@@ -9144,6 +9264,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_DataPathFailureCountersShowtimeGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_DataPathFailureCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%bu %u %u", &pData.nChannel, &pData.nDirection,
       &pData.nHistoryInterval);
 
@@ -9218,6 +9340,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitCounters15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nHistoryInterval);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_COUNTERS_15MIN_GET, (int) &pData);
@@ -9291,6 +9415,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nHistoryInterval);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_COUNTERS_1DAY_GET, (int) &pData);
@@ -9355,6 +9481,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitHistoryStats15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStats_t));
+
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_HISTORY_STATS_15MIN_GET,
       (int) &pData);
 
@@ -9415,6 +9543,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitHistoryStats1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStats_t));
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_HISTORY_STATS_1DAY_GET,
       (int) &pData);
@@ -9621,6 +9751,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitThresholds15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitThreshold_t));
+
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_THRESHOLDS_15MIN_GET, (int) &pData);
 
    if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
@@ -9683,6 +9815,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitThresholds15MinSet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitThreshold_t));
 
    DSL_CPE_sscanf (pCommands, "%u %u %u %u", &pData.data.nFullInits,
       &pData.data.nFailedFullInits, &pData.data.nShortInits,
@@ -9747,6 +9881,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitThresholds1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitThreshold_t));
+
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_INIT_THRESHOLDS_1DAY_GET, (int) &pData);
 
    if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
@@ -9810,6 +9946,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineInitThresholds1DaySet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineInitThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u %u %u", &pData.data.nFullInits,
       &pData.data.nFailedFullInits, &pData.data.nShortInits,
       &pData.data.nFailedShortInits);
@@ -9869,6 +10007,7 @@ static const DSL_char_t g_sPMlsc15mg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -9887,6 +10026,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCounters15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_COUNTERS_15MIN_GET, (int) &pData);
@@ -9899,11 +10040,13 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCounters15MinGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u nElapsedTime=%u bValid=%u "
-         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
          pData.nDirection, (DSL_uint32_t)pData.nHistoryInterval,
-         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nES,
-         (DSL_uint32_t)pData.data.nSES, (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS, (DSL_uint32_t)pData.data.nLOFS);
+         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid,
+         (DSL_uint32_t)pData.data.nES, (DSL_uint32_t)pData.data.nSES,
+         (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS,
+         (DSL_uint32_t)pData.data.nLOFS, (DSL_uint32_t)pData.data.nFECS);
    }
 
    return 0;
@@ -9949,6 +10092,7 @@ static const DSL_char_t g_sPMlsc1dg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -9967,6 +10111,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_COUNTERS_1DAY_GET, (int) &pData);
@@ -9979,11 +10125,13 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCounters1DayGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u nElapsedTime=%u bValid=%u "
-         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
          pData.nDirection, (DSL_uint32_t)pData.nHistoryInterval,
-         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nES,
-         (DSL_uint32_t)pData.data.nSES, (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS, (DSL_uint32_t)pData.data.nLOFS);
+         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid,
+         (DSL_uint32_t)pData.data.nES, (DSL_uint32_t)pData.data.nSES,
+         (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS,
+         (DSL_uint32_t)pData.data.nLOFS, (DSL_uint32_t)pData.data.nFECS);
    }
 
    return 0;
@@ -10036,6 +10184,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecHistoryStats15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsDir_t));
 
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
@@ -10106,6 +10256,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecHistoryStats1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsDir_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_HISTORY_STATS_1DAY_GET,
@@ -10161,6 +10313,7 @@ static const DSL_char_t g_sPMlsctg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -10193,11 +10346,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCountersTotalGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nElapsedTime=%u bValid=%u nES=%u nSES=%u nLOSS=%u "
-         "nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+         "nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
          pData.nDirection, pData.total.nElapsedTime, pData.total.bValid,
          pData.data.nES, pData.data.nSES, pData.data.nLOSS, pData.data.nUAS,
-         pData.data.nLOFS);
+         pData.data.nLOFS, pData.data.nFECS);
    }
 
    return 0;
@@ -10243,6 +10396,7 @@ static const DSL_char_t g_sPMlscsg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -10275,11 +10429,13 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecCountersShowtimeGet(
    {
       DSL_CPE_FPrintf (out,
          DSL_CPE_RET"nDirection=%u nHistoryInterval=%u nElapsedTime=%u bValid=%u "
-         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+         "nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
          pData.nDirection, (DSL_uint32_t)pData.nHistoryInterval,
-         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid, (DSL_uint32_t)pData.data.nES,
-         (DSL_uint32_t)pData.data.nSES, (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS, (DSL_uint32_t)pData.data.nLOFS);
+         (DSL_uint32_t)pData.interval.nElapsedTime, (DSL_uint32_t)pData.interval.bValid,
+         (DSL_uint32_t)pData.data.nES, (DSL_uint32_t)pData.data.nSES,
+         (DSL_uint32_t)pData.data.nLOSS, (DSL_uint32_t)pData.data.nUAS,
+         (DSL_uint32_t)pData.data.nLOFS, (DSL_uint32_t)pData.data.nFECS);
    }
 
    return 0;
@@ -10318,6 +10474,7 @@ static const DSL_char_t g_sPMlst15mg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -10336,6 +10493,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_THRESHOLDS_15MIN_GET, (int) &pData);
@@ -10346,10 +10505,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds15MinGet(
    }
    else
    {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDirection=%u nES=%u nSES=%u nLOSS=%u"
+         "nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.nDirection, pData.data.nES,
-         pData.data.nSES, pData.data.nLOSS, pData.data.nUAS, pData.data.nLOFS);
+         pData.data.nSES, pData.data.nLOSS, pData.data.nUAS, pData.data.nLOFS,
+         pData.data.nFECS);
    }
 
    return 0;
@@ -10380,6 +10540,7 @@ static const DSL_char_t g_sPMlst15ms[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -10407,8 +10568,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds15MinSet(
       return -1;
    }
 
-   DSL_CPE_sscanf (pCommands, "%u %u %u %u %u %u", &pData.nDirection, &pData.data.nES,
-      &pData.data.nSES, &pData.data.nLOSS, &pData.data.nUAS, &pData.data.nLOFS);
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecThreshold_t));
+
+   DSL_CPE_sscanf (pCommands, "%u %u %u %u %u %u %u", &pData.nDirection, &pData.data.nES,
+      &pData.data.nSES, &pData.data.nLOSS, &pData.data.nUAS, &pData.data.nLOFS,
+      &pData.data.nFECS);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_THRESHOLDS_15MIN_SET, (int) &pData);
 
@@ -10460,6 +10624,7 @@ static const DSL_char_t g_sPMlst1dg[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF "";
 #else
    "";
@@ -10478,6 +10643,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecThreshold_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_THRESHOLDS_1DAY_GET, (int) &pData);
@@ -10488,11 +10655,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds1DayGet(
    }
    else
    {
-      DSL_CPE_FPrintf (out,
-         DSL_CPE_RET"nDirection=%u nES=%u nSES=%u nLOSS=%u nUAS=%u nLOFS=%u" DSL_CPE_CRLF,
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nDirection=%u nES=%u nSES=%u nLOSS=%u"
+         "nUAS=%u nLOFS=%u nFECS=%u" DSL_CPE_CRLF,
          DSL_CPE_RET_VAL(pData.accessCtl.nReturn),
-         pData.nDirection, pData.data.nES,
-         pData.data.nSES, pData.data.nLOSS, pData.data.nUAS, pData.data.nLOFS);
+         pData.nDirection, pData.data.nES, pData.data.nSES, pData.data.nLOSS,
+         pData.data.nUAS, pData.data.nLOFS, pData.data.nFECS);
    }
 
    return 0;
@@ -10523,6 +10690,7 @@ static const DSL_char_t g_sPMlst1ds[] =
    "- DSL_uint32_t nLOSS" DSL_CPE_CRLF
    "- DSL_uint32_t nUAS" DSL_CPE_CRLF
    "- DSL_uint32_t nLOFS" DSL_CPE_CRLF
+   "- DSL_uint32_t nFECS" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -10550,8 +10718,11 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineSecThresholds1DaySet(
       return -1;
    }
 
-   DSL_CPE_sscanf (pCommands, "%u %u %u %u %u %u", &pData.nDirection, &pData.data.nES,
-      &pData.data.nSES, &pData.data.nLOSS, &pData.data.nUAS, &pData.data.nLOFS);
+   memset(&pData, 0x0, sizeof(DSL_PM_LineSecThreshold_t));
+
+   DSL_CPE_sscanf (pCommands, "%u %u %u %u %u %u %u", &pData.nDirection, &pData.data.nES,
+      &pData.data.nSES, &pData.data.nLOSS, &pData.data.nUAS, &pData.data.nLOFS,
+      &pData.data.nFECS);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_SEC_THRESHOLDS_1DAY_SET, (int) &pData);
 
@@ -10627,6 +10798,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeCounters15MinGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_LineEventShowtimeCounters_t));
 
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
 
@@ -10710,6 +10883,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeCounters1DayGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_LineEventShowtimeCounters_t));
+
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_EVENT_SHOWTIME_COUNTERS_1DAY_GET, (int) &pData);
@@ -10782,6 +10957,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeHistoryStats15MinGet(
       return -1;
    }
 
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
+
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
    ret =  DSL_CPE_Ioctl (fd, DSL_FIO_PM_LINE_EVENT_SHOWTIME_HISTORY_STATS_15MIN_GET,
@@ -10852,6 +11029,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeHistoryStats1DayGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_HistoryStatsChDir_t));
 
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
@@ -10926,6 +11105,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeCountersTotalGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_LineEventShowtimeCountersTotal_t));
 
    DSL_CPE_sscanf (pCommands, "%u", &pData.nDirection);
 
@@ -11006,6 +11187,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeCountersShowtimeGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PM_LineEventShowtimeCounters_t));
 
    DSL_CPE_sscanf (pCommands, "%u %u", &pData.nDirection, &pData.nHistoryInterval);
 
@@ -11161,6 +11344,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PilotTonesStatusGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_PilotTonesStatus_t));
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_PILOT_TONES_STATUS_GET, (int) &pData);
 
@@ -11359,6 +11544,8 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_LastExceptionCodesGet(
    {
       return -1;
    }
+
+   memset(&pData, 0x0, sizeof(DSL_LastExceptionCodes_t));
 
    ret = DSL_CPE_Ioctl (fd, DSL_FIO_LAST_EXCEPTION_CODES_GET, (int) &pData);
 

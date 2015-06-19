@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -568,6 +568,10 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    /* Free device data*/
    for (c = 0; c < DSL_FD_SETSIZE; c++)
    {
+      if ((socketaccept = (DSL_Socket_t)clientInfo[c].fd) != -1)
+      {
+         DSL_CPE_SocketClose(socketaccept);
+      }
       if (clientInfo[c].pDevData)
       {
          DSL_CPE_DEV_DeviceDataFree(clientInfo[c].pDevData);
@@ -575,6 +579,8 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    }
 
    DSL_CPE_Free(clientInfo);
+
+   DSL_CPE_SocketClose(sockfd);
 
    return 0;
 }
@@ -948,6 +954,10 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
 
    for (c = 0; c < DSL_FD_SETSIZE; c++)
    {
+      if ((nSocketAccept = (DSL_Socket_t)clientInfo[c].fd) != -1)
+      {
+         DSL_CPE_SocketClose(nSocketAccept);
+      }
       if (clientInfo[c].buf != DSL_NULL)
       {
          DSL_CPE_Free(clientInfo[c].buf);

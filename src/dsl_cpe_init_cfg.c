@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -41,8 +41,6 @@ DSL_InitData_t gInitCfgData =
       0x1E116000, 0x37, -1),
    DSL_CPE_SIC_SET(DSL_TC_ATM, DSL_EMF_TC_CLEANED, DSL_EMF_TC_CLEANED, DSL_SYSTEMIF_MII, \
                    DSL_TC_EFM, DSL_EMF_TC_CLEANED, DSL_EMF_TC_CLEANED, DSL_SYSTEMIF_MII),
-   DSL_CPE_MAC_CFG_SET(DSL_EFM_SPEED_100, DSL_EFM_DUPLEX_FULL, DSL_EFM_FLOWCTRL_ON, DSL_EFM_AUTONEG_OFF, \
-      0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 1536, DSL_FALSE)
    }
 #endif
 #if defined (INCLUDE_DSL_CPE_API_DANUBE)

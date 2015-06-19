@@ -1,6 +1,6 @@
 /******************************************************************************
 
-                              Copyright (c) 2013
+                              Copyright (c) 2014
                             Lantiq Deutschland GmbH
 
   For licensing information, see the file 'LICENSE' in the root folder of
@@ -246,6 +246,7 @@ DSL_Error_t DSL_CPE_BND_AutobootStatusRestartWait(
 DSL_Error_t DSL_CPE_BND_DeviceFirmwareDownload(
                DSL_CPE_BND_Context_t *pBndCtx,
                DSL_FirmwareRequestType_t nFwReqType,
+               DSL_PortMode_t nPortMode,
                DSL_boolean_t bMaster,
                DSL_boolean_t bSlave)
 {
@@ -256,7 +257,7 @@ DSL_Error_t DSL_CPE_BND_DeviceFirmwareDownload(
    {
       /* Download MASTER*/
       nErrorCode = DSL_CPE_DownloadFirmware(pContext->fd[0], nFwReqType,
-                                            DSL_NULL, DSL_NULL);
+                                            nPortMode, DSL_NULL, DSL_NULL);
       if (nErrorCode != DSL_SUCCESS)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -269,7 +270,7 @@ DSL_Error_t DSL_CPE_BND_DeviceFirmwareDownload(
    {
       /* Download MASTER*/
       nErrorCode = DSL_CPE_DownloadFirmware(pContext->fd[1], nFwReqType,
-                                            DSL_NULL, DSL_NULL);
+                                            nPortMode, DSL_NULL, DSL_NULL);
       if (nErrorCode != DSL_SUCCESS)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
@@ -312,7 +313,7 @@ DSL_Error_t DSL_CPE_BND_SyncDownloadFirmware(
          {
             /* Download firmware for MASTER and SLAVE*/
             nErrorCode = DSL_CPE_BND_DeviceFirmwareDownload(
-                           pBndCtx, nFwReqType, DSL_TRUE, DSL_TRUE);
+                           pBndCtx, nFwReqType, nPortMode, DSL_TRUE, DSL_TRUE);
             if (nErrorCode != DSL_SUCCESS)
             {
                return nErrorCode;
@@ -357,7 +358,7 @@ DSL_Error_t DSL_CPE_BND_SyncDownloadFirmware(
 
          /* Download firmware for MASTER and SLAVE*/
          nErrorCode = DSL_CPE_BND_DeviceFirmwareDownload(
-                        pBndCtx, nFwReqType, DSL_TRUE, DSL_TRUE);
+                        pBndCtx, nFwReqType, nPortMode, DSL_TRUE, DSL_TRUE);
          if (nErrorCode != DSL_SUCCESS)
          {
             return nErrorCode;
@@ -406,7 +407,7 @@ DSL_Error_t DSL_CPE_BND_SyncDownloadFirmware(
       {
          /* Download firmware for MASTER*/
          nErrorCode = DSL_CPE_BND_DeviceFirmwareDownload(
-                        pBndCtx, nFwReqType, DSL_TRUE, DSL_FALSE);
+                        pBndCtx, nFwReqType, nPortMode, DSL_TRUE, DSL_FALSE);
          if (nErrorCode != DSL_SUCCESS)
          {
             return nErrorCode;
@@ -538,7 +539,9 @@ DSL_Error_t DSL_CPE_BND_LineStateHandle(
          if ((nErrorCode < 0) || (nAcs.accessCtl.nReturn < DSL_SUCCESS))
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "DSL_FIO_AUTOBOOT_CONTROL_SET ioctl call failed!" DSL_CPE_CRLF));
+               "DSL_FIO_AUTOBOOT_CONTROL_SET ioctl call failed "
+               "(nErrorCode=%d, nAcs.accessCtl.nReturn=%d)!"
+               DSL_CPE_CRLF, nErrorCode, nAcs.accessCtl.nReturn));
 
             return DSL_ERROR;
          }
