@@ -690,7 +690,9 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_AutobootLoadFirmware(
       return 0;
    }
 
-   if (AutobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_FW_WAIT)
+   if ( (AutobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_FW_WAIT) ||
+        (AutobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_STOPPED &&
+         AutobootStatus.data.nFirmwareRequestType != DSL_FW_REQUEST_NA) )
    {
       ret = DSL_CPE_DownloadFirmware(fd, AutobootStatus.data.nFirmwareRequestType,
                                                    DSL_PORT_MODE_NA, pcFw, pcFw2);

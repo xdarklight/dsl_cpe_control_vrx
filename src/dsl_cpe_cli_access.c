@@ -68,6 +68,7 @@ static const DSL_char_t g_sCcaDbgmlg[] =
    "   DSL_CCA_DBG_CONSOLE = 6" DSL_CPE_CRLF
    "   DSL_CCA_DBG_TCPMSG = 7" DSL_CPE_CRLF
    "   DSL_CCA_DBG_MULTIMODE = 8" DSL_CPE_CRLF
+   "   DSL_CCA_DBG_NOTIFICATIONS = 9" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -132,6 +133,7 @@ static const DSL_char_t g_sCcaDbgmls[] =
    "   DSL_CCA_DBG_CONSOLE = 6" DSL_CPE_CRLF
    "   DSL_CCA_DBG_TCPMSG = 7" DSL_CPE_CRLF
    "   DSL_CCA_DBG_MULTIMODE = 8" DSL_CPE_CRLF
+   "   DSL_CCA_DBG_NOTIFICATIONS = 9" DSL_CPE_CRLF
    "- DSL_CCA_debugLevels_t nDbgLevel (hex)" DSL_CPE_CRLF
    "   DSL_CCA_DBG_NONE = 0x00" DSL_CPE_CRLF
    "   DSL_CCA_DBG_PRN = 0x01" DSL_CPE_CRLF
@@ -211,6 +213,7 @@ static const DSL_char_t g_sDBGmlg[] =
    "   DSL_DBG_MESSAGE_DUMP = 12" DSL_CPE_CRLF
    "   DSL_DBG_LOW_LEVEL_DRIVER = 13" DSL_CPE_CRLF
    "   DSL_DBG_MULTIMODE = 14" DSL_CPE_CRLF
+   "   DSL_DBG_NOTIFICATIONS = 15" DSL_CPE_CRLF
    DSL_CPE_CRLF
    "Output Parameter" DSL_CPE_CRLF
    "- DSL_Error_t nReturn" DSL_CPE_CRLF
@@ -286,6 +289,7 @@ static const DSL_char_t g_sDBGmls[] =
    "   DSL_DBG_MESSAGE_DUMP = 12" DSL_CPE_CRLF
    "   DSL_DBG_LOW_LEVEL_DRIVER = 13" DSL_CPE_CRLF
    "   DSL_DBG_MULTIMODE = 14" DSL_CPE_CRLF
+   "   DSL_DBG_NOTIFICATIONS = 15" DSL_CPE_CRLF
    "- DSL_debugLevels_t nDbgLevel (hex)" DSL_CPE_CRLF
    "   DSL_DBG_NONE = 0x00" DSL_CPE_CRLF
    "   DSL_DBG_PRN = 0x01" DSL_CPE_CRLF
@@ -11217,6 +11221,112 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_PM_LineEventShowtimeCountersShowtimeGet(
 #endif /* INCLUDE_DSL_CPE_PM_LINE_EVENT_SHOWTIME_COUNTERS */
 #endif /* INCLUDE_DSL_PM */
 
+#ifdef DSL_DEBUG_TOOL_INTERFACE
+static const DSL_char_t g_sTcpStart[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Input Parameter" DSL_CPE_CRLF
+   "- DSL_char_t sTcpMsgServerIp" DSL_CPE_CRLF
+   "- DSL_uint16_t  nTcpMsgServerPort (optional, default: 2000)" DSL_CPE_CRLF
+   "- DSL_boolean_t bEnableTcpCli (optional, default: enabled)" DSL_CPE_CRLF
+   "   enable = 1" DSL_CPE_CRLF
+   "   disable = 0" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_TCPMessageInterfaceSTART(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = DSL_SUCCESS;
+   DSL_boolean_t bEnableTcpCli = DSL_FALSE;
+   DSL_uint16_t tcpIpPort;
+   DSL_char_t   tcpIpAddr[32];
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 3, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   DSL_CPE_sscanf ( pCommands, "%s %hu %hu",
+                    tcpIpAddr, &tcpIpPort, &bEnableTcpCli);
+
+   if (DSL_CPE_TcpDebugMessageIntfStart(DSL_CPE_GetGlobalContext(),
+                                                   tcpIpPort, tcpIpAddr) < 0)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+        "ERROR - TCP debug messages interface start failed!" DSL_CPE_CRLF));
+
+      ret = DSL_ERROR;
+   }
+#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
+   if (DSL_CPE_TcpDebugCliIntfStart(DSL_CPE_GetGlobalContext(), bEnableTcpCli) < 0)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+        "ERROR - TCP debug CLI interface start failed!" DSL_CPE_CRLF));
+
+      ret = DSL_ERROR;
+   }
+#endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
+
+   DSL_CPE_FPrintf (out, "nReturn=%d", ret);
+
+   return 0;
+}
+
+static const DSL_char_t g_sTcpStop[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_TCPMessageInterfaceSTOP(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = DSL_SUCCESS;
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 0, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
+   if (DSL_CPE_TcpDebugCliIntfStop(DSL_CPE_GetGlobalContext()) < 0)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+        "ERROR - TCP debug CLI interface stop failed!" DSL_CPE_CRLF));
+
+      ret = DSL_ERROR;
+   }
+#endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
+   if (DSL_CPE_TcpDebugMessageIntfStop(DSL_CPE_GetGlobalContext()) < 0)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+         "ERROR - TCP debug messages interface stop failed!" DSL_CPE_CRLF));
+
+      ret = DSL_ERROR;
+   }
+
+   DSL_CPE_FPrintf (out, "nReturn=%d", ret);
+
+   return 0;
+}
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
+
 #if defined(INCLUDE_DSL_CPE_DTI_SUPPORT)
 static const DSL_char_t g_sDtiStart[] =
 #ifndef DSL_CPE_DEBUG_DISABLE
@@ -12694,6 +12804,11 @@ DSL_void_t DSL_CPE_CLI_AccessCommandsRegister(DSL_void_t)
 #endif /* #ifdef INCLUDE_DSL_CPE_PM_LINE_COUNTERS */
 
 #endif /* #ifdef INCLUDE_DSL_PM */
+
+#ifdef DSL_DEBUG_TOOL_INTERFACE
+   DSL_CPE_CLI_CMD_ADD_COMM ("tcpmistart", "TCPMessageInterfaceSTART", DSL_CPE_CLI_TCPMessageInterfaceSTART, g_sTcpStart);
+   DSL_CPE_CLI_CMD_ADD_COMM ("tcpmistop", "TCPMessageInterfaceSTOP", DSL_CPE_CLI_TCPMessageInterfaceSTOP, g_sTcpStop);
+#endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
 #if defined(INCLUDE_DSL_CPE_DTI_SUPPORT)
    DSL_CPE_CLI_CMD_ADD_COMM ("dtistart", "DebugTraceInterfaceSTART", DSL_CPE_CLI_DebugTraceInterfaceSTART, g_sDtiStart);

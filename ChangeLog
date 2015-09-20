@@ -1,17 +1,46 @@
 NEXT VERSION
 
-V4.16.2.4 - 2014-03-11
+V4.16.5.4 - 2014-04-21
+common:
+- VRX (DSLCPE_SW-798) VDSL/ATM mode issue with API 4.16.5-pd1
+  + Extended system interface status handler to trigger current xDSL status via
+    firmware version (application code) insted of current XTSE status
+
+V4.16.5.3 - 2014-04-15
 -
 
-V4.16.2.3 - 2014-02-27
+V4.16.5.2 - 2014-04-01
 -
 
-V4.16.2.2 - 2014-02-10
+V4.16.5.1 - 2014-03-21
+- VRX320 (DSLCPE_SW-790) Changes for QCA platform
+  + added new device VR10_320 handling
+
+V4.16.5 - 2014-03-07
+-
+
+V4.16.4 - 2014-03-05
 common:
 - VRX (DSLCPE_SW-770) Klocwork reworks/fixes for UGW-6.1
+- (DSLSPE_SW-771) Extend debugging functionality and take care that it is
+  working completely
+  + extended ccadbgmls/ccadbgmlsg (+ DSL_CCA_DBG_NOTIFICATIONS)
+  + extended dbgmls/dbgmlsg (+ DSL_DBG_NOTIFICATIONS)
+- (DSLCPE_SW-748) TCP Message interface shall be configurable at runtime
+  + extended TCP debug server implementation (connection close functionality)
+  + fixed WinHost firnware reboot "rb" command handling
+CLI:
+  + added "tcpmistart"/"TCPMessageInterfaceSTART"
+  + added "tcpmistop" /"TCPMessageInterfaceSTOP"
 
-V4.16.2.1 - 2014-01-20
--
+V4.16.3 - 2014-01-29
+common:
+- VRX (DSLCPE_SW-775) Automatically enable Telefonica mode in case of T1.413 is
+  configured at startup
+  + set activation auto sequence for default configuration
+- (DSLCPE_SW-779) Autoboot handling should be not started automatically within
+  API initialization
+  + set default value for DSL_FIO_INIT as DSL_AUTOBOOT_CTRL_STOP
 
 V4.16.2 - 2014-01-16
 common:

@@ -90,7 +90,7 @@ DSL_CPE_STATIC DSL_MultimodeFsmConfigData_t g_MultimodeFsmConfig =
                                             {DSL_FW_TYPE_NA};
 
 DSL_CPE_STATIC DSL_ActivationFsmConfigData_t g_ActivationFsmConfig =
-                                            {DSL_ACT_SEQ_STD, DSL_ACT_MODE_NA};
+                                            {DSL_ACT_SEQ_AUTO, DSL_ACT_MODE_NA};
 
 DSL_CPE_STATIC DSL_boolean_t g_RememberFsmConfig =
 #if (DSL_CPE_MAX_DEVICE_NUMBER == 1) && (DSL_CPE_LINES_PER_DEVICE == 2)
@@ -263,7 +263,7 @@ DSL_CPE_STATIC  DSL_uint8_t g_nMsgDumpDbgLvl;
 
 #ifndef DSL_CPE_DEBUG_DISABLE
 
-#define MAX_DBG_MOD_PAIRS     8
+#define MAX_DBG_MOD_PAIRS     10
 DSL_CPE_STATIC DSL_DBG_ModuleLevelData_t g_nDbgDrvLevel[MAX_DBG_MOD_PAIRS] = {{0,0}};
 DSL_CPE_STATIC DSL_DBG_ModuleLevelData_t g_nDbgAppLevel[MAX_DBG_MOD_PAIRS] = {{0,0}};
 
@@ -344,7 +344,9 @@ DSL_char_t *sSoapRemoteServer = DSL_NULL;
 #endif
 
 #ifdef DSL_DEBUG_TOOL_INTERFACE
-DSL_char_t *sTcpMessagesSocketAddr = DSL_NULL;
+DSL_char_t *g_sTcpMessagesSocketAddr = DSL_NULL;
+DSL_uint16_t g_nTcpMessagesSocketPort = 0;
+DSL_boolean_t g_bEnableTcpCli = DSL_FALSE;
 #endif
 
 #ifdef INCLUDE_DSL_CPE_DTI_SUPPORT
@@ -1021,26 +1023,26 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
                "(-t) using %s as IP address for tcp messages debug server"
                DSL_CPE_CRLF, optarg));
 
-            if (sTcpMessagesSocketAddr)
+            if (g_sTcpMessagesSocketAddr)
             {
-               DSL_CPE_Free(sTcpMessagesSocketAddr);
+               DSL_CPE_Free(g_sTcpMessagesSocketAddr);
             }
 
-            sTcpMessagesSocketAddr = DSL_CPE_Malloc(strlen (optarg) + 1);
-            if (sTcpMessagesSocketAddr)
+            g_sTcpMessagesSocketAddr = DSL_CPE_Malloc(strlen (optarg) + 1);
+            if (g_sTcpMessagesSocketAddr)
             {
-               strcpy (sTcpMessagesSocketAddr, optarg);
+               strcpy (g_sTcpMessagesSocketAddr, optarg);
             }
          }
          else
          {
-            if (sTcpMessagesSocketAddr)
+            if (g_sTcpMessagesSocketAddr)
             {
-               DSL_CPE_Free(sTcpMessagesSocketAddr);
+               DSL_CPE_Free(g_sTcpMessagesSocketAddr);
             }
 
-            sTcpMessagesSocketAddr = DSL_CPE_OwnAddrStringGet();
-            if (sTcpMessagesSocketAddr == DSL_NULL)
+            g_sTcpMessagesSocketAddr = DSL_CPE_OwnAddrStringGet();
+            if (g_sTcpMessagesSocketAddr == DSL_NULL)
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
                   "Own IP address get failed!" DSL_CPE_CRLF));
@@ -1049,9 +1051,12 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
             {
                DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
                   "(-t) using %s (default) as IP address for tcp messages "
-                  "debug server"DSL_CPE_CRLF, sTcpMessagesSocketAddr));
+                  "debug server"DSL_CPE_CRLF, g_sTcpMessagesSocketAddr));
             }
          }
+
+         g_nTcpMessagesSocketPort = DSL_CPE_TCP_MESSAGES_PORT;
+         g_bEnableTcpCli = DSL_CPE_ENABLE_TCP_CLI_DEFAULT;
          break;
 #endif
 
@@ -1572,7 +1577,7 @@ DSL_CPE_STATIC  DSL_void_t DSL_CPE_ArgParse (
          else
          {
             printf(DSL_CPE_PREFIX
-               "No driver modules debug level specified." DSL_CPE_CRLF);
+               "No application modules debug level specified." DSL_CPE_CRLF);
          }
          DSL_CPE_DebugInitModule();
          break;
@@ -2014,7 +2019,7 @@ DSL_int_t DSL_CPE_CliDeviceCommandExecute(
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_ERR,
          (DSL_CPE_PREFIX "Invalid device number (%d) specified!" DSL_CPE_CRLF,
-         nDeviceNumber));
+         nDevice));
 
       return -1;
    }
@@ -3862,6 +3867,10 @@ DSL_Error_t DSL_CPE_ScriptFileParse(
 #endif /* INCLUDE_DSL_CPE_CMV_SCRIPTS_SUPPORT */
 
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
+
+#undef DSL_CCA_DBG_BLOCK
+#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_NOTIFICATIONS
+
 DSL_void_t DSL_CPE_ScriptRun(DSL_void_t)
 {
    if (g_sRcScript != DSL_NULL)
@@ -3881,6 +3890,10 @@ DSL_void_t DSL_CPE_ScriptRun(DSL_void_t)
 
    return;
 }
+
+#undef DSL_CCA_DBG_BLOCK
+#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_APP
+
 #endif /* #ifdef INCLUDE_SCRIPT_NOTIFICATION */
 
 #ifdef INCLUDE_DSL_RESOURCE_STATISTICS
@@ -4431,8 +4444,9 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
    DSL_Error_t nErrCode = DSL_SUCCESS;
 #ifdef INCLUDE_SCRIPT_NOTIFICATION
 #if defined(INCLUDE_DSL_CPE_API_VRX)
-   DSL_G997_XTUSystemEnabling_t ioctlG997xtse;
-   DSL_uint8_t i = 0, nAtse = 0;
+   DSL_VersionInformation_t ioctlVig;
+   DSL_uint8_t nPlatformId = 0;
+   DSL_int_t FwApplication = -1;
 #endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
    DSL_char_t *pXDSLstatus = "ADSL";
 #if (DSL_CPE_MAX_DSL_ENTITIES > 1)
@@ -4462,18 +4476,21 @@ DSL_CPE_STATIC  DSL_int_t DSL_CPE_Event_S_SystemInterfaceStatusHandle(
       if (DSL_CPE_SetEnv("DSL_NOTIFICATION_TYPE", "DSL_STATUS") == DSL_SUCCESS)
       {
 #if defined(INCLUDE_DSL_CPE_API_VRX)
-         memset(&ioctlG997xtse, 0x00, sizeof(DSL_G997_XTUSystemEnabling_t));
-
-         if (DSL_CPE_Ioctl(fd, DSL_FIO_G997_XTU_SYSTEM_ENABLING_STATUS_GET,
-                          (DSL_int_t)&ioctlG997xtse) >= 0)
+         memset(&ioctlVig, 0x00, sizeof(DSL_VersionInformation_t));
+         if (DSL_CPE_Ioctl(fd, DSL_FIO_VERSION_INFORMATION_GET, (DSL_int_t)&ioctlVig) >= 0)
          {
-            for (i = 0; i < (DSL_G997_NUM_XTSE_OCTETS - 1); i++)
-               nAtse |= ioctlG997xtse.data.XTSE[i];
-
-            /* Check for non ADSL application here because currently it is not
-               possible to get VDSL XTSE status information at this point.*/
-            if (!nAtse)
+            DSL_CPE_FwInfoFromWhatstringGet(ioctlVig.data.DSL_ChipSetFWVersion,
+                                            &FwApplication, &nPlatformId);
+            /* Application type (application)
+            The following application types are defined.
+            - 0x01: ADSL Annex A
+            - 0x02: ADSL Annex B
+            - 0x06: VDSL
+            - 0x07: VDSL with G.Vector support */
+            if ((FwApplication != 0x1) && (FwApplication != 0x2))
+            {
                pXDSLstatus = "VDSL";
+            }
          }
 #endif /* defined(INCLUDE_DSL_CPE_API_VRX) */
          nErrCode = DSL_CPE_SetEnv("DSL_XTU_STATUS", pXDSLstatus);
@@ -6382,8 +6399,6 @@ DSL_int32_t DSL_CPE_DeviceInit (
    }
 #endif /* defined(INCLUDE_DSL_CPE_API_VRX)*/
 
-   gInitCfgData.nAutobootStartupMode = DSL_AUTOBOOT_CTRL_START;
-
    /* Initialize device configuration as defined via gInitCfgData table */
    memcpy (&init.data, &gInitCfgData, sizeof (DSL_InitData_t));
 
@@ -7020,10 +7035,21 @@ DSL_int_t dsl_cpe_daemon (
 #ifdef DSL_DEBUG_TOOL_INTERFACE
    if (bTcpMessageIntf == 1)
    {
-      DSL_CPE_TcpDebugMessageIntfStart(pCtrlCtx);
+      if (DSL_CPE_TcpDebugMessageIntfStart(pCtrlCtx,
+                     g_nTcpMessagesSocketPort, g_sTcpMessagesSocketAddr) < 0)
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+           "ERROR - TCP debug messages interface start failed!" DSL_CPE_CRLF));
+      }
 #ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
-      DSL_CPE_TcpDebugCliIntfStart(pCtrlCtx);
+      DSL_CPE_TcpDebugCliIntfStart(pCtrlCtx, g_bEnableTcpCli);
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+           "ERROR - TCP debug CLI interface start failed!" DSL_CPE_CRLF));
+      }
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
+
+      bTcpMessageIntf = 2;
    }
 #endif /* DSL_DEBUG_TOOL_INTERFACE*/
 
@@ -7446,11 +7472,30 @@ DSL_CPE_CONTROL_EXIT:
 #endif
 
 #ifdef DSL_DEBUG_TOOL_INTERFACE
-   if(sTcpMessagesSocketAddr != DSL_NULL)
+   if (bTcpMessageIntf == 2)
    {
-      DSL_CPE_Free (sTcpMessagesSocketAddr);
-      sTcpMessagesSocketAddr = DSL_NULL;
+#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
+      if (DSL_CPE_TcpDebugCliIntfStop(DSL_CPE_GetGlobalContext()) < DSL_SUCCESS)
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+            "ERROR - TCP debug CLI interface stop failed!" DSL_CPE_CRLF));
+      }
+#endif /* INCLUDE_DSL_CPE_CLI_SUPPORT*/
+      if (DSL_CPE_TcpDebugMessageIntfStop(DSL_CPE_GetGlobalContext()) < DSL_SUCCESS)
+      {
+         DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+            "ERROR - TCP debug messages interface stop failed!" DSL_CPE_CRLF));
+      }
    }
+
+   if(g_sTcpMessagesSocketAddr != DSL_NULL)
+   {
+      DSL_CPE_Free (g_sTcpMessagesSocketAddr);
+      g_sTcpMessagesSocketAddr = DSL_NULL;
+   }
+
+   g_nTcpMessagesSocketPort = 0;
+   g_bEnableTcpCli = DSL_FALSE;
 #endif
 
 #ifdef INCLUDE_DSL_CPE_FILESYSTEM_SUPPORT

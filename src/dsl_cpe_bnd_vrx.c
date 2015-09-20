@@ -539,9 +539,7 @@ DSL_Error_t DSL_CPE_BND_LineStateHandle(
          if ((nErrorCode < 0) || (nAcs.accessCtl.nReturn < DSL_SUCCESS))
          {
             DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-               "DSL_FIO_AUTOBOOT_CONTROL_SET ioctl call failed "
-               "(nErrorCode=%d, nAcs.accessCtl.nReturn=%d)!"
-               DSL_CPE_CRLF, nErrorCode, nAcs.accessCtl.nReturn));
+               "DSL_FIO_AUTOBOOT_CONTROL_SET ioctl call failed!" DSL_CPE_CRLF));
 
             return DSL_ERROR;
          }
