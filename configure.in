@@ -1,6 +1,6 @@
 AC_REVISION($Revision: 1.173 $)
 
-AC_INIT([DSL CPE Control application],[4.16.2.4],[],[dsl_cpe_control])
+AC_INIT([DSL CPE Control application],[4.16.5.4],[],[dsl_cpe_control])
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE
 
@@ -132,7 +132,7 @@ AC_ARG_ENABLE(vrx,
 if test -z "${DEVICE_VRX_TRUE}"; then
 dnl Select VRX device type
 AC_ARG_ENABLE(vrx-device,
-    AC_HELP_STRING([--enable-vrx-device=vr9 | vr10],[Select VRX Device]),
+    AC_HELP_STRING([--enable-vrx-device=vr9 | vr10 | vr10_320],[Select VRX Device]),
     [
         echo Set VRX Device = $enableval
         case $enableval in
@@ -144,7 +144,11 @@ AC_ARG_ENABLE(vrx-device,
             AC_DEFINE(DSL_VRX_DEVICE_VR10,,[Add VR10 support])
             AC_SUBST([DSL_VRX_DEVICE_NAME],[VR10])
             ;;
-        *) AC_MSG_ERROR([ Select VRX Device, use vr9 | vr10 ]);
+        vr10_320)
+            AC_DEFINE(DSL_VRX_DEVICE_VR10_320,,[Add VR10_320 support])
+            AC_SUBST([DSL_VRX_DEVICE_NAME],[VR10_320])
+            ;;
+        *) AC_MSG_ERROR([ Select VRX Device, use vr9 | vr10 | vr10_320 ]);
              ;;
         esac
     ]

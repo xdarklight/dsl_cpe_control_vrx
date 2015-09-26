@@ -1241,6 +1241,8 @@ void DSL_CPE_KeypressReset(void)
 
 DSL_CPE_EnvList_t g_EnvList = {0};
 
+#undef DSL_CCA_DBG_BLOCK
+#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_NOTIFICATIONS
 /**
    For a detailed description of the function, its arguments and return value
    please refer to the description in the header file 'dsl_cpe_os.h'
@@ -1267,6 +1269,9 @@ DSL_Error_t DSL_CPE_SetEnv(const DSL_char_t *sName, const DSL_char_t *sValue)
    DSL_CPE_EnvList_t *pEnvList = &g_EnvList, *pEnvListPrev = &g_EnvList;
    const DSL_uint16_t namelen = strlen (sName);
    const DSL_uint16_t vallen  = sValue != DSL_NULL ? strlen (sValue) : 0;
+
+   DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+      "SNH - Set %s to %s" DSL_CPE_CRLF, sName, sValue));
 
    if (namelen == 0)
    {
@@ -1426,6 +1431,9 @@ DSL_Error_t DSL_CPE_System(const DSL_char_t *sCommand)
 
    return nRet == 0 ? DSL_SUCCESS : DSL_ERROR;
 }
+#undef DSL_CCA_DBG_BLOCK
+#define DSL_CCA_DBG_BLOCK DSL_CCA_DBG_OS
+
 #endif /* #ifdef INCLUDE_SCRIPT_NOTIFICATION*/
 
 /**

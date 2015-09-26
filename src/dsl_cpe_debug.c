@@ -23,15 +23,17 @@ Includes
 /* Default initialization for all debug blocks */
 DSL_CCA_debugLevelEntry_t DSL_CCA_g_dbgLvl[DSL_CCA_DBG_MAX_ENTRIES] =
 {
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_NO_BLOCK" },   /* 00 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_APP"      },   /* 01 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_OS"       },   /* 02 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_CLI"      },   /* 03 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_PIPE"     },   /* 04 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_SOAP"     },   /* 05 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_CONSOLE"  },   /* 06 */
-   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_TCPMSG"   },   /* 07 */
-   { DSL_CCA_DBG_NONE,   "not used"             },   /* 08 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_NO_BLOCK"       },   /* 00 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_APP"            },   /* 01 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_OS"             },   /* 02 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_CLI"            },   /* 03 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_PIPE"           },   /* 04 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_SOAP"           },   /* 05 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_CONSOLE"        },   /* 06 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_TCPMSG"         },   /* 07 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_MULTIMODE"      },   /* 08 */
+   { DSL_CCA_DBG_NONE,   "DSL_CCA_DBG_NOTIFICATIONS"  },   /* 09 */
+   { DSL_CCA_DBG_NONE,   "not used"                   },   /* 10 */
 };
 
 #ifndef _lint
@@ -338,11 +340,12 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    /* Socket Address */
    memset((char *) &my_addr, '\0', sizeof(DSL_sockaddr_in_t));
    my_addr.sin_family = AF_INET;
-   my_addr.sin_port   = DSL_CPE_Htons(DSL_CPE_TCP_MESSAGES_PORT); /* Listens at port 2000 */
+   /* Listens at port g_nTcpMessagesSocketPort */
+   my_addr.sin_port   = DSL_CPE_Htons(g_nTcpMessagesSocketPort);
 
-   if (sTcpMessagesSocketAddr)
+   if (g_sTcpMessagesSocketAddr)
    {
-      if (DSL_CPE_StringToAddress(sTcpMessagesSocketAddr, &my_addr.sin_addr) == 0)
+      if (DSL_CPE_StringToAddress(g_sTcpMessagesSocketAddr, &my_addr.sin_addr) == 0)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
             "ERROR - invalid IP address specified" DSL_CPE_CRLF));
@@ -439,19 +442,20 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    if (DSL_CPE_SocketBind(sockfd, &my_addr) == -1)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ERROR - Could not bind to socket!" DSL_CPE_CRLF));
+         "TCP Debug ERROR - Could not bind to socket!" DSL_CPE_CRLF));
    }
    else
    {
       if (listen(sockfd, 1) == -1)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-            "ERROR - Listening Error" DSL_CPE_CRLF));
+            "TCP Debug ERROR - Listening Error" DSL_CPE_CRLF));
       }
       else
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "TCP_IP Socket is Listening" DSL_CPE_CRLF));
+            "TCP Debug socket is listening connection %s:%d" DSL_CPE_CRLF,
+            g_sTcpMessagesSocketAddr, g_nTcpMessagesSocketPort));
 
          c = 0;
 
@@ -478,8 +482,16 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
             memcpy(&tempFds,&readFds,sizeof(DSL_CPE_fd_set_t));
 
             /* Wait for incoming events */
-            /*n=select(width, &tempFds,(fd_set *)NULL, (fd_set *)NULL, &tv);*/
-            n = DSL_CPE_Select(width, &tempFds, &tempFds, (DSL_uint32_t)-1);
+            n = DSL_CPE_Select(width, &tempFds,
+                               &tempFds, DSL_CPE_TCP_LISTEN_SELECT_TIMEOUT);
+
+            if ((n == 0) && (params->bShutDown == 1))
+            {
+               DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+                  "%s thread prepare to shutdown, close conection %s:%d" DSL_CPE_CRLF,
+                  "tcpmsg", g_sTcpMessagesSocketAddr, g_nTcpMessagesSocketPort));
+               break;
+            }
 
             /* Look if messages were received */
             /* New connection */
@@ -574,6 +586,7 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
       }
       if (clientInfo[c].pDevData)
       {
+
          DSL_CPE_DEV_DeviceDataFree(clientInfo[c].pDevData);
       }
    }
@@ -585,12 +598,31 @@ DSL_int_t DSL_CPE_TcpDebugMessageHandle (DSL_CPE_Thread_Params_t *params )
    return 0;
 }
 
+#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
 /*
    Start TCP message debug interface thread
 */
 DSL_Error_t DSL_CPE_TcpDebugMessageIntfStart (
-   DSL_CPE_Control_Context_t * pContext)
+   DSL_CPE_Control_Context_t *pContext,
+   DSL_uint16_t   nTcpListenPort,
+   DSL_char_t     *sTcpServerIp)
 {
+   g_nTcpMessagesSocketPort = nTcpListenPort;
+
+   /* sTcpServerIp == g_sTcpMessagesSocketAddr for startup 't' option case*/
+   /* sTcpServerIp != g_sTcpMessagesSocketAddr for cli tcpmistart case*/
+   if (g_sTcpMessagesSocketAddr != sTcpServerIp)
+   {
+      if (g_sTcpMessagesSocketAddr)
+      {
+         DSL_CPE_Free(g_sTcpMessagesSocketAddr);
+      }
+      g_sTcpMessagesSocketAddr = DSL_CPE_Malloc(strlen (sTcpServerIp) + 1);
+      if (g_sTcpMessagesSocketAddr)
+      {
+         strcpy (g_sTcpMessagesSocketAddr, sTcpServerIp);
+      }
+   }
 
    if (DSL_CPE_ThreadInit (&pContext->nTcpMsgHandler, "tcpmsg", DSL_CPE_TcpDebugMessageHandle,
             DSL_CPE_TCP_MSG_STACKSIZE, DSL_CPE_TCP_MSG_PRIORITY, (DSL_uint32_t) pContext, 0) == 0)
@@ -605,7 +637,29 @@ DSL_Error_t DSL_CPE_TcpDebugMessageIntfStart (
    return DSL_ERROR;
 }
 
-#ifdef INCLUDE_DSL_CPE_CLI_SUPPORT
+DSL_Error_t DSL_CPE_TcpDebugMessageIntfStop(
+   DSL_CPE_Control_Context_t *pContext)
+{
+   if (DSL_CPE_ThreadDelete (&pContext->nTcpMsgHandler,
+                           DSL_CPE_TCP_THREAD_SHUTDOWN_TIMEOUT) == DSL_SUCCESS)
+   {
+      if(g_sTcpMessagesSocketAddr != DSL_NULL)
+      {
+         DSL_CPE_Free (g_sTcpMessagesSocketAddr);
+         g_sTcpMessagesSocketAddr = DSL_NULL;
+      }
+
+      g_nTcpMessagesSocketPort = 0;
+
+      return DSL_SUCCESS;
+   }
+
+   DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+      "ERROR - TCP message debug interface thread shutdown error" DSL_CPE_CRLF));
+
+   return DSL_ERROR;
+}
+
 DSL_int_t DSL_CPE_TcpCliHandle(
    DSL_CPE_Control_Context_t *pCtx,
    DSL_CPE_TcpDebugCliClientInfo_t *pClient,
@@ -719,9 +773,9 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
    myAddr.sin_family = AF_INET;
    myAddr.sin_port = DSL_CPE_Htons(DSL_CPE_TCP_CLI_PORT); /* Listens at port 2001 */
 
-   if (sTcpMessagesSocketAddr)
+   if (g_sTcpMessagesSocketAddr)
    {
-      if (DSL_CPE_StringToAddress(sTcpMessagesSocketAddr, &myAddr.sin_addr) == 0)
+      if (DSL_CPE_StringToAddress(g_sTcpMessagesSocketAddr, &myAddr.sin_addr) == 0)
       {
          DSL_CPE_Free(clientInfo);
 
@@ -808,19 +862,20 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
    if (DSL_CPE_SocketBind(nSockFd, &myAddr) == -1)
    {
       DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-         "ERROR - Could not bind to socket" DSL_CPE_CRLF));
+         "TCP CLI ERROR - Could not bind to socket" DSL_CPE_CRLF));
    }
    else
    {
       if (listen(nSockFd, 1) == -1)
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
-            "ERROR - Listening Error" DSL_CPE_CRLF));
+            "TCP CLI ERROR - Listening Error" DSL_CPE_CRLF));
       }
       else
       {
          DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
-            "TCP_IP Socket for CLI is Listening" DSL_CPE_CRLF));
+            "TCP CLI socket is listening connection %s:%d" DSL_CPE_CRLF,
+            g_sTcpMessagesSocketAddr, DSL_CPE_TCP_CLI_PORT));
 
          c = 0;
 
@@ -834,7 +889,16 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
             memcpy(&tempFds, &readFds, sizeof(DSL_CPE_fd_set_t));
 
             /* Wait for incoming events */
-            n = DSL_CPE_Select(nWidth, &tempFds, &tempFds, (DSL_uint32_t)-1);
+            n = DSL_CPE_Select(nWidth, &tempFds,
+                               &tempFds, DSL_CPE_TCP_LISTEN_SELECT_TIMEOUT);
+
+            if ((n == 0) && (params->bShutDown == 1))
+            {
+               DSL_CCA_DEBUG(DSL_CCA_DBG_MSG, (DSL_CPE_PREFIX
+                  "%s thread prepare to shutdown, close connection %s:%d" DSL_CPE_CRLF,
+                  "tcpcli", g_sTcpMessagesSocketAddr, DSL_CPE_TCP_CLI_PORT));
+               break;
+            }
 
             /* Look if messages were received */
             /* New connection */
@@ -973,8 +1037,18 @@ DSL_int_t DSL_CPE_TcpDebugCliHandle ( DSL_CPE_Thread_Params_t *params )
    Start TCP CLI debug interface thread
 */
 DSL_Error_t DSL_CPE_TcpDebugCliIntfStart (
-   DSL_CPE_Control_Context_t * pContext)
+   DSL_CPE_Control_Context_t * pContext,
+   DSL_boolean_t bEnableTcpCli)
 {
+   g_bEnableTcpCli = bEnableTcpCli;
+   if (!g_bEnableTcpCli)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_WRN, (DSL_CPE_PREFIX
+         "WARNING - TCP CLI debug interface disabled" DSL_CPE_CRLF));
+
+      return DSL_SUCCESS;
+   }
+
    if (DSL_CPE_ThreadInit (&pContext->nTcpCliHandler, "tcpcli", DSL_CPE_TcpDebugCliHandle,
           2*DSL_CPE_TCP_MSG_STACKSIZE, DSL_CPE_TCP_MSG_PRIORITY, (DSL_uint32_t) pContext, 0) == 0)
    {
@@ -984,6 +1058,30 @@ DSL_Error_t DSL_CPE_TcpDebugCliIntfStart (
 
    DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
       "ERROR - TCP CLI debug interface thread start error" DSL_CPE_CRLF));
+
+   return DSL_ERROR;
+}
+
+DSL_Error_t DSL_CPE_TcpDebugCliIntfStop (
+   DSL_CPE_Control_Context_t * pContext)
+{
+   if (!g_bEnableTcpCli)
+   {
+      DSL_CCA_DEBUG(DSL_CCA_DBG_WRN, (DSL_CPE_PREFIX
+         "WARNING - TCP CLI debug interface disabled" DSL_CPE_CRLF));
+
+      return DSL_SUCCESS;
+   }
+
+   if (DSL_CPE_ThreadDelete (&pContext->nTcpCliHandler,
+                           DSL_CPE_TCP_THREAD_SHUTDOWN_TIMEOUT) == DSL_SUCCESS)
+   {
+      g_bEnableTcpCli = DSL_FALSE;
+      return DSL_SUCCESS;
+   }
+
+   DSL_CCA_DEBUG(DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX
+      "ERROR - TCP CLI debug interface thread stop error" DSL_CPE_CRLF));
 
    return DSL_ERROR;
 }

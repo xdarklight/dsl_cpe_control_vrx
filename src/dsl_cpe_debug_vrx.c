@@ -336,8 +336,9 @@ DSL_int_t DSL_CPE_VRX_Reboot(
    DSL_int_t nRet = 0;
    DSL_char_t *pcFw = DSL_NULL, *pcFw2 = DSL_NULL;
    DSL_AutobootLoadFirmware_t ldFw;
-#if (DSL_CPE_LINES_PER_DEVICE > 1)
+#if (DSL_CPE_LINES_PER_DEVICE < 2)
    DSL_AutobootControl_t autobootCtrl;
+   DSL_AutobootStatus_t  autobootStatus;
 #endif
 #ifdef INCLUDE_SMS00976338
    DSL_AutobootConfig_t pAcfg;
@@ -434,18 +435,36 @@ DSL_int_t DSL_CPE_VRX_Reboot(
            ((ldFw.data.pFirmware2 != DSL_NULL) && (ldFw.data.nFirmwareSize2)) )
       {
 #if (DSL_CPE_LINES_PER_DEVICE < 2)
-         ldFw.data.bLastChunk = DSL_TRUE;
-
-         nRet = (DSL_Error_t) DSL_CPE_Ioctl(pContext->fd[nDevice],
-            DSL_FIO_AUTOBOOT_LOAD_FIRMWARE, (DSL_int_t) &ldFw);
-#else
-         /* Trigger Autoboot restart sequence. FW binary will be requested
-            from the DSL CPE API driver later*/
-         autobootCtrl.data.nCommand = DSL_AUTOBOOT_CTRL_RESTART_FULL;
+         memset(&autobootStatus, 0x00, sizeof(DSL_AutobootStatus_t));
 
          nRet = (DSL_Error_t) DSL_CPE_Ioctl (pContext->fd[nDevice],
-            DSL_FIO_AUTOBOOT_CONTROL_SET, (DSL_int_t) &autobootCtrl);
+            DSL_FIO_AUTOBOOT_STATUS_GET, (int) &autobootStatus);
+
+         if (nRet < 0)
+         {
+            DSL_CCA_DEBUG (DSL_CCA_DBG_ERR, (DSL_CPE_PREFIX "Reboot failed!"DSL_CPE_CRLF));
+            break;
+         }
+
+         if ( (autobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_FW_WAIT) ||
+              (autobootStatus.data.nStatus == DSL_AUTOBOOT_STATUS_STOPPED &&
+               autobootStatus.data.nFirmwareRequestType != DSL_FW_REQUEST_NA) )
+         {
+            ldFw.data.bLastChunk = DSL_TRUE;
+
+            nRet = (DSL_Error_t) DSL_CPE_Ioctl(pContext->fd[nDevice],
+               DSL_FIO_AUTOBOOT_LOAD_FIRMWARE, (DSL_int_t) &ldFw);
+         }
+         else
 #endif
+         {
+            /* Trigger Autoboot restart sequence. FW binary will be requested
+            from the DSL CPE API driver later*/
+            autobootCtrl.data.nCommand = DSL_AUTOBOOT_CTRL_RESTART_FULL;
+
+            nRet = (DSL_Error_t) DSL_CPE_Ioctl (pContext->fd[nDevice],
+               DSL_FIO_AUTOBOOT_CONTROL_SET, (DSL_int_t) &autobootCtrl);
+         }
 
          if (nRet < 0)
          {

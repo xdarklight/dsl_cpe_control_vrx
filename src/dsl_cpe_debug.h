@@ -25,7 +25,7 @@
 #define DSL_CCA_DBG_MAX_LEVEL DSL_CCA_DBG_ERR
 #endif
 
-#define DSL_CCA_DBG_MAX_ENTRIES 9
+#define DSL_CCA_DBG_MAX_ENTRIES 11
 
 #ifdef DSL_CCA_DBG_BLOCK
 #undef DSL_CCA_DBG_BLOCK
@@ -75,6 +75,12 @@ typedef enum
    DSL_CCA_DBG_TCPMSG = 7,
    /** Multimode debug messages */
    DSL_CCA_DBG_MULTIMODE = 8,
+   /** Debug output for notification related information's.
+       The related output can be used to checked that DSL Subsystem 'deliveres'
+       the required information towards the higher layer. For example the script
+       notification handling that includes important information for TC-Layer
+       configuration requirement. */
+   DSL_CCA_DBG_NOTIFICATIONS = 9,
    /** Last entry for debug blocks - only used as delimiter! */
    DSL_CCA_DBG_LAST_BLOCK
 } DSL_CCA_debugModules_t;
@@ -323,22 +329,44 @@ DSL_Error_t DSL_CPE_TcpDebugMessageResourceUsageGet (
 #endif /* INCLUDE_DSL_RESOURCE_STATISTICS*/
 
 DSL_Error_t DSL_CPE_TcpDebugMessageIntfStart (
+   DSL_CPE_Control_Context_t * pContext,
+   DSL_uint16_t nTcpListenPort, DSL_char_t *sTcpServerIp);
+
+DSL_Error_t DSL_CPE_TcpDebugMessageIntfStop (
    DSL_CPE_Control_Context_t * pContext);
 
 DSL_Error_t DSL_CPE_TcpDebugCliIntfStart (
+   DSL_CPE_Control_Context_t * pContext,
+   DSL_boolean_t bEnableTcpCli);
+
+DSL_Error_t DSL_CPE_TcpDebugCliIntfStop (
    DSL_CPE_Control_Context_t * pContext);
 
+#ifdef DSL_DEBUG_TOOL_INTERFACE
 /** TCP messages server ip address */
-extern DSL_char_t *sTcpMessagesSocketAddr;
+extern DSL_char_t *g_sTcpMessagesSocketAddr;
+/** TCP messages server port */
+extern DSL_uint16_t g_nTcpMessagesSocketPort;
+extern DSL_boolean_t g_bEnableTcpCli;
+#endif
 
 /** TCP messages server port */
 #define DSL_CPE_TCP_MESSAGES_PORT 2000
+
+/** default value for enabling TCP CLI */
+#define DSL_CPE_ENABLE_TCP_CLI_DEFAULT DSL_TRUE
 
 /** TCP CLI server port */
 #define DSL_CPE_TCP_CLI_PORT 2001
 
 /** TCP CLI command maximum length */
 #define DSL_CPE_TCP_CLI_COMMAND_LENGTH_MAX 2048
+
+/** TCP messages select timeout */
+#define DSL_CPE_TCP_LISTEN_SELECT_TIMEOUT 100
+
+/** TCP messages thread shutdown timeout */
+#define DSL_CPE_TCP_THREAD_SHUTDOWN_TIMEOUT 1000
 
 #endif /* #ifdef DSL_DEBUG_TOOL_INTERFACE*/
 
