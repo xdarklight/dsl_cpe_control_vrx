@@ -1,20 +1,32 @@
 NEXT VERSION
 
-V4.16.5.4 - 2014-04-21
+V4.16.6.3 - 2014-09-18
+CLI:
+- VRX (DSLCPE_SW-817) Extend interface of DSL Subsystem to configure PLL offset value)
+  + added "meipocg"/"MEI_PllOffsetConfigGet" for ioctl FIO_MEI_PLL_OFFSET_CONFIG_GET
+  + added "meipocs"/"MEI_PllOffsetConfigSet" for ioctl FIO_MEI_PLL_OFFSET_CONFIG_SET
+
+V4.16.6.2 - 2014-09-09
 common:
 - VRX (DSLCPE_SW-798) VDSL/ATM mode issue with API 4.16.5-pd1
   + Extended system interface status handler to trigger current xDSL status via
-    firmware version (application code) insted of current XTSE status
+    firmware version (application code) instead of current XTSE status
 
-V4.16.5.3 - 2014-04-15
--
+V4.16.6.1 - 2014-09-04
+CLI:
+- VRX (DSLCPE_SW-810) CPE configuration of supported VDSL Profiles
+  + Added "vpcs"/"VdslProfileConfigSet" for ioctl DSL_FIO_VDSL_PROFILE_CONFIG_SET
+  + Added "vpcg"/"VdslProfileConfigGet" for ioctl DSL_FIO_VDSL_PROFILE_CONFIG_GET
 
-V4.16.5.2 - 2014-04-01
--
-
-V4.16.5.1 - 2014-03-21
-- VRX320 (DSLCPE_SW-790) Changes for QCA platform
-  + added new device VR10_320 handling
+V4.16.6 - 2014-04-16
+common:
+- (DSLCPE_SW-793) Create a program (binary) that handles dsl_cpe pipes
+  + added dsp_cpe_pipe application handling within tools/pipe folder
+  + take max. number of pipes into account which are defined via c-flag
+CLI:
+- (DSLCPE_SW-784) State 0xff on CPE after activation of Debug messages
+  for mutlimode tests
+  + added "fdsg"/"FirmwareDownloadStatusGet"
 
 V4.16.5 - 2014-03-07
 -

@@ -5,7 +5,7 @@
 #define PACKAGE "dsl_cpe_control"
 
 /* Version number of package */
-#define VERSION "4.16.5.4"
+#define VERSION "4.16.6.3"
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION VERSION

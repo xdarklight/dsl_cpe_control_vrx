@@ -28,9 +28,6 @@
 /* Add VR10 support */
 #undef DSL_VRX_DEVICE_VR10
 
-/* Add VR10_320 support */
-#undef DSL_VRX_DEVICE_VR10_320
-
 /* Add VR9 support */
 #undef DSL_VRX_DEVICE_VR9
 

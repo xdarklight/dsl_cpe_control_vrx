@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = foreign 1.9 nostdinc
 
-SUBDIRS = src
+SUBDIRS = src tools/pipe
 
 DISTCHECK_CONFIGURE_FLAGS=@CONFIGURE_OPTIONS@
 

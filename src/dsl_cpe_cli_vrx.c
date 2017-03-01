@@ -2494,6 +2494,266 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_BND_PortModeSyncSet(
 
 #endif /* INCLUDE_DSL_BONDING*/
 
+static const DSL_char_t g_sVpcs[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Input Parameter" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_BF_VdslProfileConfigData_t nVdslProfile (hex)" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8A = 0x00000001" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8B = 0x00000002" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8C = 0x00000004" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8D = 0x00000008" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_12A = 0x00000010" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_12B = 0x00000020" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_17A = 0x00000040" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_30A = 0x00000080" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_VdslProfileConfigSet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0;
+   DSL_VdslProfileConfig_t pData;
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(DSL_VdslProfileConfig_t));
+
+   DSL_CPE_sscanf (pCommands, "%xu", &pData.data.nVdslProfile);
+
+   ret = DSL_CPE_Ioctl (fd, DSL_FIO_VDSL_PROFILE_CONFIG_SET, (int) &pData);
+
+   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out, DSL_CPE_RET DSL_CPE_CRLF, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
+   }
+
+   return 0;
+}
+
+#ifdef INCLUDE_DSL_CONFIG_GET
+static const DSL_char_t g_sVpcg[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "Input Parameter" DSL_CPE_CRLF
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+#endif
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_BF_VdslProfileConfigData_t nVdslProfile (hex)" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8A = 0x00000001" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8B = 0x00000002" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8C = 0x00000004" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_8D = 0x00000008" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_12A = 0x00000010" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_12B = 0x00000020" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_17A = 0x00000040" DSL_CPE_CRLF
+   "   DSL_BF_PROFILE_30A = 0x00000080" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_VdslProfileConfigGet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0;
+   DSL_VdslProfileConfig_t pData;
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 0, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(DSL_VdslProfileConfig_t));
+
+   ret = DSL_CPE_Ioctl (fd, DSL_FIO_VDSL_PROFILE_CONFIG_GET, (int) &pData);
+
+   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out,
+         DSL_CPE_RET"nVdslProfile=0x%08X" DSL_CPE_CRLF,
+         DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.data.nVdslProfile);
+   }
+
+   return 0;
+}
+#endif /* #ifdef INCLUDE_DSL_CONFIG_GET*/
+
+#ifdef INCLUDE_DSL_CONFIG_GET
+static const DSL_char_t g_sMEIPocg[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Input Parameter" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_uint16_t nPllOffset" DSL_CPE_CRLF
+   "   PLL_OFFSET_MIN = -32768" DSL_CPE_CRLF
+   "   PLL_OFFSET_MAX =  32767" DSL_CPE_CRLF
+   "   PLL_DISABLED   =  32768" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_MEI_PllOffsetConfigGet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0, mei_fd;
+   IOCTL_MEI_pllOffsetConfig_t pData;
+   DSL_uint32_t nDevice = 0;
+   DSL_char_t dev_name[32] = {0};
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 0, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(IOCTL_MEI_pllOffsetConfig_t));
+
+   DSL_CPE_Fd2DevNum(fd, &nDevice);
+
+   sprintf(dev_name, "/dev/mei_cpe/%u", nDevice);
+
+   mei_fd = DSL_CPE_Open(dev_name);
+   if (mei_fd <= 0) {
+      DSL_CPE_Close(mei_fd);
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(mei_fd));
+      return 0;
+   }
+
+   ret = ioctl(mei_fd, FIO_MEI_PLL_OFFSET_CONFIG_GET, (DSL_int_t)&pData);
+   if (ret != 0)
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.ictl.retCode));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nPllOffset=%d"
+         DSL_CPE_CRLF, DSL_CPE_RET_VAL(ret), pData.nPllOffset);
+   }
+
+   DSL_CPE_Close(mei_fd);
+
+   return 0;
+}
+#endif /* INCLUDE_DSL_CONFIG_GET */
+
+static const DSL_char_t g_sMEIPocs[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Input Parameter" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_uint16_t nPllOffset" DSL_CPE_CRLF
+   "   PLL_OFFSET_MIN = -32768" DSL_CPE_CRLF
+   "   PLL_OFFSET_MAX =  32767" DSL_CPE_CRLF
+   "   PLL_DISABLED   =  32768" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+      DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_MEI_PllOffsetConfigSet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0, mei_fd;
+   IOCTL_MEI_pllOffsetConfig_t pData;
+   DSL_uint32_t nDevice = 0;
+   DSL_char_t dev_name[32] = {0};
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 1, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(IOCTL_MEI_pllOffsetConfig_t));
+
+   DSL_CPE_sscanf (pCommands, "%d", &pData.nPllOffset);
+
+   DSL_CPE_Fd2DevNum(fd, &nDevice);
+
+   sprintf(dev_name, "/dev/mei_cpe/%u", nDevice);
+
+   mei_fd = DSL_CPE_Open(dev_name);
+   if (mei_fd <= 0) {
+      DSL_CPE_Close(mei_fd);
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(mei_fd));
+      return 0;
+   }
+
+   ret = ioctl(mei_fd, FIO_MEI_PLL_OFFSET_CONFIG_SET, (DSL_int_t)&pData);
+   if (ret != 0)
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.ictl.retCode));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out, DSL_CPE_RET DSL_CPE_CRLF, DSL_CPE_RET_VAL(ret));
+   }
+
+   DSL_CPE_Close(mei_fd);
+
+   return 0;
+}
+
 DSL_void_t DSL_CPE_CLI_DeviceCommandsRegister (DSL_void_t)
 {
    /* Debug functionalities */
@@ -2549,6 +2809,16 @@ DSL_void_t DSL_CPE_CLI_DeviceCommandsRegister (DSL_void_t)
    DSL_CPE_CLI_CMD_ADD_COMM ("bndethcg", "BND_ETH_CountersGet", DSL_CPE_CLI_BND_ETH_CountersGet, g_sBNDETHcg);
    DSL_CPE_CLI_CMD_ADD_COMM ("bndpmss", "BND_PortModeSyncSet", DSL_CPE_CLI_BND_PortModeSyncSet, g_sBNDpmss);
 #endif /* #ifdef INCLUDE_DSL_BONDING*/
+
+   DSL_CPE_CLI_CMD_ADD_COMM ("vpcs", "VdslProfileConfigSet", DSL_CPE_CLI_VdslProfileConfigSet, g_sVpcs);
+#ifdef INCLUDE_DSL_CONFIG_GET
+   DSL_CPE_CLI_CMD_ADD_COMM ("vpcg", "VdslProfileConfigGet", DSL_CPE_CLI_VdslProfileConfigGet, g_sVpcg);
+#endif /* INCLUDE_DSL_CONFIG_GET*/
+
+#ifdef INCLUDE_DSL_CONFIG_GET
+   DSL_CPE_CLI_CMD_ADD_COMM ("meipocg", "MEI_PllOffsetConfigGet", DSL_CPE_CLI_MEI_PllOffsetConfigGet, g_sMEIPocg);
+#endif /* INCLUDE_DSL_CONFIG_GET*/
+   DSL_CPE_CLI_CMD_ADD_COMM ("meipocs", "MEI_PllOffsetConfigSet", DSL_CPE_CLI_MEI_PllOffsetConfigSet, g_sMEIPocs);
 }
 
 #endif /* INCLUDE_DSL_CPE_CLI_SUPPORT */
