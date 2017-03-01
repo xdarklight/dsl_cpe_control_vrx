@@ -28,7 +28,7 @@ endif
 
 
 
-bin_SCRIPTS = ../scripts/alias_dsl_cpe.sh ../scripts/dsl_cpe_pipe.sh
+bin_SCRIPTS = ../scripts/alias_dsl_cpe.sh
 
 if DEVICE_VRX
 dsl_cpe_control_bnd_sources = \
@@ -54,7 +54,7 @@ dsl_cpe_control_cli_autogen_sources = \
 
 dsl_cpe_control_cli_danube_sources = \
 	dsl_cpe_cli_danube.c \
-        dsl_cpe_cli_mib.c
+	dsl_cpe_cli_mib.c
 
 dsl_cpe_control_cli_vrx_sources = \
 	dsl_cpe_cli_vrx.c
@@ -127,16 +127,16 @@ EXTRA_DIST = \
 	$(dsl_cpe_control_soap_sources) \
 	$(dsl_cpe_control_bnd_sources) \
 	$(dsl_cpe_control_cli_sources) \
-        $(dsl_cpe_control_dti_sources) \
+	$(dsl_cpe_control_dti_sources) \
 	$(dsl_cpe_control_cli_danube_sources) \
 	$(dsl_cpe_control_cli_vrx_sources) \
-        $(dsl_cpe_control_debug_danube_sources) \
-        $(dsl_cpe_control_debug_vrx_sources) \
+	$(dsl_cpe_control_debug_danube_sources) \
+	$(dsl_cpe_control_debug_vrx_sources) \
 	dsl_cpe_control.h \
 	dsl_cpe_init_cfg.h \
 	dsl_cpe_cli.h \
 	dsl_cpe_dti.h \
-        dsl_cpe_bnd_vrx.h \
+	dsl_cpe_bnd_vrx.h \
 	dsl_cpe_cli_console.h \
 	dsl_cpe_simulator.c \
 	dsl_cpe_simulator.h \
@@ -156,7 +156,8 @@ EXTRA_DIST = \
 	dsl_cpe_soap_H.h \
 	stdsoap2.h \
 	../scripts/alias_dsl_cpe.sh \
-	../scripts/dsl_cpe_pipe.sh
+	../scripts/dsl_cpe_pipe.sh \
+	../tools/pipe/dsl_pipe_client.h
 
 if ADD_APPL_CFLAGS_SET
 dsl_cpe_control_cflags = $(ADD_APPL_CFLAGS)

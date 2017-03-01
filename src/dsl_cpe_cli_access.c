@@ -12469,6 +12469,61 @@ DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_DeltSNRGet(
    return 0;
 }
 
+static const DSL_char_t g_sFdsg[] =
+#ifndef DSL_CPE_DEBUG_DISABLE
+   "Long Form: %s" DSL_CPE_CRLF
+   "Short Form: %s" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "Input Parameter" DSL_CPE_CRLF
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+   DSL_CPE_CRLF
+#endif
+   "Output Parameter" DSL_CPE_CRLF
+   "- DSL_Error_t nReturn" DSL_CPE_CRLF
+#if (DSL_CPE_MAX_DSL_ENTITIES > 1)
+   "- DSL_uint32_t nDevice (optional, not used in the 'backward compatible' mode)" DSL_CPE_CRLF
+#endif
+   "- DSL_FirmwareDownloadStatusType_t nStatus" DSL_CPE_CRLF
+   "   DSL_FW_DWNLD_STATUS_NA      = 0" DSL_CPE_CRLF
+   "   DSL_FW_DWNLD_STATUS_PENDING = 1" DSL_CPE_CRLF
+   "   DSL_FW_DWNLD_STATUS_READY   = 2" DSL_CPE_CRLF
+   "   DSL_FW_DWNLD_STATUS_FAILED  = 3" DSL_CPE_CRLF
+   DSL_CPE_CRLF "";
+#else
+   "";
+#endif
+
+DSL_CLI_LOCAL DSL_int_t DSL_CPE_CLI_FirmwareDownloadStatusGet(
+   DSL_int_t fd,
+   DSL_char_t *pCommands,
+   DSL_CPE_File_t *out)
+{
+   DSL_int_t ret = 0;
+   DSL_FirmwareDownloadStatus_t pData;
+
+   if (DSL_CPE_CLI_CheckParamNumber(pCommands, 0, DSL_CLI_EQUALS) == DSL_FALSE)
+   {
+      return -1;
+   }
+
+   memset(&pData, 0x0, sizeof(DSL_FirmwareDownloadStatus_t));
+
+   ret = DSL_CPE_Ioctl (fd, DSL_FIO_FIRMWARE_DOWNLOAD_STATUS_GET, (int) &pData);
+
+   if ((ret < 0) && (pData.accessCtl.nReturn < DSL_SUCCESS))
+   {
+      DSL_CPE_FPrintf (out, sFailureReturn, DSL_CPE_RET_VAL(pData.accessCtl.nReturn));
+   }
+   else
+   {
+      DSL_CPE_FPrintf (out, DSL_CPE_RET"nStatus=%d" DSL_CPE_CRLF,
+      DSL_CPE_RET_VAL(pData.accessCtl.nReturn), pData.data.nStatus);
+   }
+
+   return 0;
+}
+
 /**
    Register the CLI commands.
 
@@ -12859,7 +12914,7 @@ DSL_void_t DSL_CPE_CLI_AccessCommandsRegister(DSL_void_t)
 #endif /* INCLUDE_DSL_CPE_PM_RETX_COUNTERS */
 
    DSL_CPE_CLI_CMD_ADD_COMM ("dsnrg", "DeltSNRGet", DSL_CPE_CLI_DeltSNRGet,g_sDsnrg);
-
+   DSL_CPE_CLI_CMD_ADD_COMM ("fdsg", "FirmwareDownloadStatusGet", DSL_CPE_CLI_FirmwareDownloadStatusGet, g_sFdsg);
 }
 
 #endif /* defined(INCLUDE_DSL_CPE_CLI_SUPPORT) && !defined(INCLUDE_DSL_CPE_CLI_AUTOGEN_SUPPORT) */
